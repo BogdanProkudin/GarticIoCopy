@@ -1,0 +1,247 @@
+.board {
+  background-color: white;
+  margin-top: 1rem;
+  margin-left: 1rem;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  width: 652px;
+  height: 380px;
+  background-size: 100%;
+  background-position: 50%;
+  background-repeat: no-repeat;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+  border-radius: 12px;
+}
+.game_room_wait_text {
+  position: absolute;
+  left: 16.4rem;
+  top: 0.5rem;
+  font-size: 32px;
+  font-family: "Nunito";
+  color: #ffbf00;
+  text-transform: uppercase;
+  text-shadow: #001b51 4px 0 0, #001b51 3.87565px 0.989616px 0,
+    #001b51 3.51033px 1.9177px 0, #001b51 2.92676px 2.72656px 0,
+    #001b51 2.16121px 3.36588px 0, #001b51 1.26129px 3.79594px 0,
+    #001b51 0.282949px 3.98998px 0, #001b51 -0.712984px 3.93594px 0,
+    #001b51 -1.66459px 3.63719px 0, #001b51 -2.51269px 3.11229px 0,
+    #001b51 -3.20457px 2.39389px 0, #001b51 -3.69721px 1.52664px 0,
+    #001b51 -3.95997px 0.56448px 0, #001b51 -3.97652px -0.432781px 0,
+    #001b51 -3.74583px -1.40313px 0, #001b51 -3.28224px -2.28625px 0,
+    #001b51 -2.61457px -3.02721px 0, #001b51 -1.78435px -3.57996px 0,
+    #001b51 -0.843183px -3.91012px 0, #001b51 0.150409px -3.99717px 0,
+    #001b51 1.13465px -3.8357px 0, #001b51 2.04834px -3.43574px 0,
+    #001b51 2.83468px -2.82216px 0, #001b51 3.44477px -2.03312px 0,
+    #001b51 3.84068px -1.11766px 0, #001b51 3.9978px -0.132717px 0;
+}
+.game_room_wait_small_text {
+  position: absolute;
+  font-family: "Nunito";
+  top: 19rem;
+  font-size: 20px;
+  color: #797979;
+  letter-spacing: -0.65px;
+}
+
+.game_room_start_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  width: 180px;
+  height: 40px;
+  background-color: #ffbf00;
+  border-top-color: #ffe100;
+  border-bottom-color: #f88700;
+  border-radius: 34px;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  box-shadow: 0 0 0 5px #002043, 0 0 0 6px #7c92b0;
+  text-align: center;
+  padding-left: 15px;
+  margin-top: 2rem;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  strong {
+    font-size: 18px;
+    font-family: "Nunito";
+    color: #001b4d;
+    letter-spacing: 0;
+    margin: 0 15px 0 0;
+    text-transform: uppercase;
+    word-break: break-word;
+    padding-left: 0.6rem;
+  }
+
+  div {
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: contain;
+    width: 26px;
+    height: 23px;
+    background-image: url("https://gartic.io/static/images/new/ic_Play.svg");
+  }
+  &:hover {
+    background-color: #f4c949;
+  }
+  &:active {
+    background-color: orange;
+  }
+}
+.container {
+  position: relative;
+}
+.your_turn_draw_container {
+  display: flex;
+  flex-direction: column;
+  top: 1.3rem;
+  align-items: center;
+  position: absolute;
+
+  width: 100%;
+  height: 500px;
+  h1 {
+    margin-left: 1rem;
+    font-size: 32px;
+    font-family: "Nunito";
+    color: #ffbf00;
+    text-transform: uppercase;
+    text-shadow: #001b51 4px 0 0, #001b51 3.87565px 0.989616px 0,
+      #001b51 3.51033px 1.9177px 0, #001b51 2.92676px 2.72656px 0,
+      #001b51 2.16121px 3.36588px 0, #001b51 1.26129px 3.79594px 0,
+      #001b51 0.282949px 3.98998px 0, #001b51 -0.712984px 3.93594px 0,
+      #001b51 -1.66459px 3.63719px 0, #001b51 -2.51269px 3.11229px 0,
+      #001b51 -3.20457px 2.39389px 0, #001b51 -3.69721px 1.52664px 0,
+      #001b51 -3.95997px 0.56448px 0, #001b51 -3.97652px -0.432781px 0,
+      #001b51 -3.74583px -1.40313px 0, #001b51 -3.28224px -2.28625px 0,
+      #001b51 -2.61457px -3.02721px 0, #001b51 -1.78435px -3.57996px 0,
+      #001b51 -0.843183px -3.91012px 0, #001b51 0.150409px -3.99717px 0,
+      #001b51 1.13465px -3.8357px 0, #001b51 2.04834px -3.43574px 0,
+      #001b51 2.83468px -2.82216px 0, #001b51 3.44477px -2.03312px 0,
+      #001b51 3.84068px -1.11766px 0, #001b51 3.9978px -0.132717px 0;
+  }
+
+  span {
+    font-family: "Nunito";
+    position: relative;
+    bottom: 1.2rem;
+
+    font-size: 20px;
+    color: #797979;
+    letter-spacing: -0.65px;
+  }
+  strong {
+    color: black;
+    font-size: 26px;
+    font-family: "Nunito";
+    margin-top: -1rem;
+  }
+  .suggestion_word {
+    bottom: 0.5rem;
+    margin-left: 0.5rem;
+  }
+}
+.wait_turn_user_image {
+  height: 200px;
+  background-position: 58%;
+  width: 200px;
+  margin-top: -1.7rem;
+  background-repeat: no-repeat;
+}
+
+.suggestion_variants_container {
+  display: flex;
+  position: absolute;
+  justify-content: space-between;
+  top: 15rem;
+  width: 457px;
+  left: 7rem;
+  height: 130px;
+  .suggestion_word_container {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    span {
+      color: black;
+    }
+    button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      width: 180px;
+      height: 40px;
+      background-color: #ffbf00;
+      border-top-color: #ffe100;
+      border-bottom-color: #f88700;
+      border-radius: 34px;
+      border-top: 2px solid transparent;
+      border-bottom: 2px solid transparent;
+      box-shadow: 0 0 0 5px #002043, 0 0 0 6px #7c92b0;
+      text-align: center;
+      padding-left: 15px;
+
+      cursor: pointer;
+      transition-duration: 0.4s;
+      strong {
+        font-size: 18px;
+        font-family: "Nunito";
+        color: #001b4d;
+        letter-spacing: 0;
+        margin: 0 15px 0 0;
+        text-transform: uppercase;
+        word-break: break-word;
+        padding-left: 0.6rem;
+      }
+
+      div {
+        background-repeat: no-repeat;
+        background-position: 50%;
+        background-size: contain;
+        width: 26px;
+        height: 23px;
+        background-image: url("https://gartic.io/static/images/new/ic_Play.svg");
+      }
+      &:hover {
+        background-color: #f4c949;
+      }
+      &:active {
+        background-color: orange;
+      }
+    }
+  }
+}
+
+.progressBarContainer {
+  position: relative;
+  top: 1.2rem;
+  width: 600px;
+  height: 10px;
+  margin-left: 0.6rem;
+  background-color: rgb(5, 5, 103);
+  border-radius: 10px;
+
+  .progress_bar_lines {
+    height: 100%;
+    background-color: goldenrod;
+    border-radius: 10px;
+  }
+}
+
+.game_room_inactive_small_text {
+  font-family: "Nunito";
+  position: relative;
+
+  top: 11rem;
+  left: 0.6rem;
+  font-size: 20px;
+  color: #797979;
+  letter-spacing: -0.65px;
+}

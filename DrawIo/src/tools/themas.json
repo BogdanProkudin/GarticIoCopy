@@ -1,0 +1,35 @@
+{
+  "themes": [
+    {
+      "name": "Animal",
+      "words": ["кот", "собака", "крокодил", "жираф", "пингвин"],
+      "icon": "https://gartic.io/static/images/subjects/2.svg?v=1"
+    },
+    {
+      "name": "Froots",
+      "words": ["яблоко", "банан", "ананас", "киви", "манго"],
+      "icon": "https://gartic.io/static/images/subjects/4.svg?v=1"
+    },
+    {
+      "name": "General",
+      "icon": "https://gartic.io/static/images/subjects/1.svg?v=1",
+      "words": [
+        "книга",
+        "машина",
+        "дом",
+        "солнце",
+        "компьютер",
+        "молоко",
+        "луна",
+        "смартфон",
+        "велосипед",
+        "море"
+      ]
+    },
+    {
+      "name": "Games",
+      "icon": "https://gartic.io/static/images/subjects/12.svg?v=1",
+      "words": ["Фортнайт", "Валорант", "Киберпанк", "Ведьмак", "Майнкрафт"]
+    }
+  ]
+}

@@ -1,0 +1,577 @@
+@import url("https://fonts.cdnfonts.com/css/iso");
+
+body {
+  background-image: url("https://gartic.io/static/images/new/textura.png");
+  background-color: rgba(0, 0, 255, 0.7);
+}
+.welcome_page_container {
+  max-height: 100vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100vw;
+  width: 95%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+.welcome_text_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  span {
+    font-family: "Nunito";
+    font-size: 18px;
+    color: #fff;
+    user-select: none;
+    letter-spacing: 1.29px;
+    text-align: center;
+    margin: 8px 0 0;
+    padding: 0 0 0 2px;
+  }
+  .welcome_logo {
+    background-image: url("https://gartic.io/static/images/new/gartic.svg");
+    background-repeat: no-repeat;
+    width: 254px;
+    height: 53px;
+  }
+}
+
+.welcome_info_container {
+  background-color: #fff;
+  max-width: 862px;
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-left: 50px;
+  margin-right: 50px;
+  height: 412px;
+  border-radius: 10px;
+  padding-top: 0.5rem;
+  .welcome_info_container_play_image {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 62px;
+  }
+  .welcome_info_play_image {
+    display: flex;
+    justify-content: center;
+    background-image: url("https://gartic.io/static/images/new/title.png");
+    max-width: 320px;
+    background-size: cover;
+
+    background-position: 50%;
+    width: 100%;
+    height: auto;
+    background-repeat: no-repeat;
+    h2 {
+      user-select: none;
+      padding: 0 5px;
+      text-transform: uppercase;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: "Nunito";
+      text-align: center;
+      line-height: 2;
+      color: #ffbf00;
+      letter-spacing: 0;
+      margin: 12px 0 0;
+      max-width: 230px;
+      font-size: 20px;
+      margin: 8px 0 0;
+      text-shadow: 0 -1px 0 #fffa6d, #001b51 3px 0 0,
+        #001b51 2.83487px 0.981584px 0, #001b51 2.35766px 1.85511px 0,
+        #001b51 1.62091px 2.52441px 0, #001b51 0.705713px 2.91581px 0,
+        #001b51 -0.287171px 2.98622px 0, #001b51 -1.24844px 2.72789px 0,
+        #001b51 -2.07227px 2.16926px 0, #001b51 -2.66798px 1.37182px 0,
+        #001b51 -2.96998px 0.42336px 0, #001b51 -2.94502px -0.571704px 0,
+        #001b51 -2.59586px -1.50383px 0, #001b51 -1.96093px -2.27041px 0,
+        #001b51 -1.11013px -2.78704px 0, #001b51 -0.137119px -2.99686px 0,
+        #001b51 0.850987px -2.87677px 0, #001b51 1.74541px -2.43999px 0,
+        #001b51 2.44769px -1.73459px 0, #001b51 2.88051px -0.838247px 0;
+    }
+  }
+}
+
+.welcome_user_info_container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  h3 {
+    font-family: "Nunito";
+    padding: 0;
+    user-select: none;
+    margin: 0;
+    font-size: 17px;
+    color: #0257bc;
+  }
+}
+
+.welcome_user_avatar_container {
+  position: relative;
+  background-size: cover;
+  background-position: 50%;
+  margin: 0;
+  margin-top: 1.4rem;
+  border-radius: 100%;
+
+  width: 110px;
+  height: 110px;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 4px #043173;
+  .welcome_user_avatar {
+    width: 110px;
+    height: 138px;
+    background-repeat: no-repeat;
+    position: absolute;
+    background-size: 100%;
+    bottom: 0;
+    background-position: bottom;
+  }
+  .welcome_user_select_avatar {
+    width: 54px;
+    height: 54px;
+    position: absolute;
+    right: -17px;
+    top: -10px;
+    background-color: #0a5efb; /* Синий цвет */
+    border: 4px solid #fff;
+    border-radius: 50%;
+    transition: background-color 0.3s ease; /* Плавное изменение цвета фона */
+    cursor: pointer;
+    &:hover {
+      background-color: #447af7; /* Белый цвет */
+    }
+  }
+  ::before {
+    speak: none;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #fff;
+    font-size: 24px;
+  }
+}
+
+.modal_content {
+  transform: scale(1);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  max-width: 700px;
+  width: 95%;
+
+  height: 430px;
+  overflow: none;
+  border-radius: 22px;
+  background-color: #fff;
+  border: 1px solid #979797;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  animation: slideInContent 0.5s forwards, centerContent 0.3s forwards;
+}
+.change_avatar_title_container {
+  display: flex;
+  justify-content: center;
+  width: 300px;
+
+  .change_avatar_title {
+    display: flex;
+    justify-content: center;
+    background-image: url("https://gartic.io/static/images/new/title.png");
+    background-repeat: no-repeat;
+    max-width: 320px;
+    background-size: cover;
+    user-select: none;
+    background-position: 50%;
+    width: 100%;
+    height: 70px;
+    margin: -50px 0 0;
+    h3 {
+      user-select: none;
+      max-width: 250px;
+      padding: 0 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: "Nunito";
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 26px;
+      line-height: 2;
+      color: #ffbf00;
+      letter-spacing: 0;
+      margin: 7px 0 0;
+      text-shadow: 0 -1px 0 #fffa6d, #001b51 3px 0 0,
+        #001b51 2.83487px 0.981584px 0, #001b51 2.35766px 1.85511px 0,
+        #001b51 1.62091px 2.52441px 0, #001b51 0.705713px 2.91581px 0,
+        #001b51 -0.287171px 2.98622px 0, #001b51 -1.24844px 2.72789px 0,
+        #001b51 -2.07227px 2.16926px 0, #001b51 -2.66798px 1.37182px 0,
+        #001b51 -2.96998px 0.42336px 0, #001b51 -2.94502px -0.571704px 0,
+        #001b51 -2.59586px -1.50383px 0, #001b51 -1.96093px -2.27041px 0,
+        #001b51 -1.11013px -2.78704px 0, #001b51 -0.137119px -2.99686px 0,
+        #001b51 0.850987px -2.87677px 0, #001b51 1.74541px -2.43999px 0,
+        #001b51 2.44769px -1.73459px 0;
+    }
+  }
+}
+.welcome_user_avatar_list {
+  display: grid;
+  margin-top: 1rem;
+  background-color: #9fbdc9;
+  border-radius: 12px;
+  width: 593px;
+  grid-template-columns: repeat(5, 1fr);
+  .avatar_item_container {
+    width: 102px;
+    height: 130px;
+    margin-left: 6px;
+    margin-bottom: 6px;
+    margin-top: 6px;
+    background-color: #fff;
+    border: 5px solid #fff;
+
+    border-radius: 6px;
+    transition: all 0.4s ease;
+    justify-content: center;
+    cursor: pointer;
+    &:hover {
+      border-color: #1791ff;
+    }
+  }
+  .welcome_user_avatar {
+    width: 88px;
+    height: 111px;
+    background-repeat: no-repeat;
+    position: relative;
+
+    background-size: 100%;
+    transform: translateX(-50%);
+
+    left: 50%;
+    background-position: bottom;
+  }
+}
+.weclcome_avatar_confirm_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 186px;
+  height: 40px;
+  background-color: #ffbf00;
+  border-top-color: #ffe100;
+  border-bottom-color: #f88700;
+  border-radius: 34px;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  box-shadow: 0 0 0 5px #002043, 0 0 0 6px #7c92b0;
+  text-align: center;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition-duration: 0.4s; /* Длительность анимации */
+  strong {
+    font-size: 18px;
+    font-family: "Nunito";
+    color: #001b4d;
+    letter-spacing: 0;
+    margin: 0 15px 0 0;
+    text-transform: uppercase;
+    word-break: break-word;
+    padding-left: 0.6rem;
+  }
+
+  div {
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: contain;
+    width: 26px;
+    height: 23px;
+    background-image: url("https://gartic.io/static/images/new/ic_Yes.svg");
+  }
+  &:hover {
+    background-color: #f4c949;
+  }
+  &:active {
+    background-color: orange;
+  }
+}
+.welcome_avatar_close_button {
+  width: 31px;
+  border: none;
+  background-color: transparent;
+  height: 29px;
+  position: absolute;
+  right: 20px;
+  top: 8px;
+  cursor: pointer;
+}
+::before {
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 25px;
+  color: #868d96;
+}
+.welcome_user_form_container {
+  display: flex;
+  align-items: center;
+  margin-top: 1.5rem;
+  width: 340px;
+  height: 50px;
+  .welcome_user_form_icon {
+    color: #0a5efb;
+    font-size: 22px;
+    margin: 0 10px 0 0;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+  }
+  span {
+    font-family: "Nunito";
+    font-size: 16px;
+    color: #797979;
+    padding: 0 15px 0 0;
+  }
+  input {
+    width: 154px;
+    height: 30px;
+    border-radius: 7px;
+    text-align: left;
+    padding: 0 10px;
+    font-size: 18px;
+    border: 2px solid #868d96;
+    font-family: "Nunito";
+    font-size: 18px;
+    color: #797979;
+  }
+}
+.userName_not_correct_title {
+  display: flex;
+  justify-content: center;
+  background-image: url(https://gartic.io/static/images/new/title.png);
+  background-repeat: no-repeat;
+  max-width: 330px;
+  background-size: cover;
+  user-select: none;
+  background-position: 50%;
+  align-items: center;
+  width: 100%;
+  height: 80px;
+  margin: -57px 0 0;
+  h3 {
+    user-select: none;
+    max-width: 250px;
+    padding: 0 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: "Nunito";
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 26px;
+    line-height: 2;
+    color: #ffbf00;
+    letter-spacing: 0;
+    margin: -8px 0 0;
+    text-shadow: 0 -1px 0 #fffa6d, #001b51 3px 0 0,
+      #001b51 2.83487px 0.981584px 0, #001b51 2.35766px 1.85511px 0,
+      #001b51 1.62091px 2.52441px 0, #001b51 0.705713px 2.91581px 0,
+      #001b51 -0.287171px 2.98622px 0, #001b51 -1.24844px 2.72789px 0,
+      #001b51 -2.07227px 2.16926px 0, #001b51 -2.66798px 1.37182px 0,
+      #001b51 -2.96998px 0.42336px 0, #001b51 -2.94502px -0.571704px 0,
+      #001b51 -2.59586px -1.50383px 0, #001b51 -1.96093px -2.27041px 0,
+      #001b51 -1.11013px -2.78704px 0, #001b51 -0.137119px -2.99686px 0,
+      #001b51 0.850987px -2.87677px 0, #001b51 1.74541px -2.43999px 0,
+      #001b51 2.44769px -1.73459px 0;
+  }
+}
+.userName_error_text {
+  max-width: 476px;
+  margin-top: 1rem;
+  text-align: center;
+  font-family: "Nunito";
+  color: #797979;
+  font-size: 18px;
+}
+.welcome_avatar_submit_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 186px;
+  height: 40px;
+  background-color: #ffbf00;
+  border-top-color: #ffe100;
+  border-bottom-color: #f88700;
+  border-radius: 34px;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  box-shadow: 0 0 0 5px #002043, 0 0 0 6px #7c92b0;
+  text-align: center;
+  margin-top: 2rem;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  div {
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: contain;
+    width: 26px;
+    height: 23px;
+    background-image: url("https://gartic.io/static/images/new/ic_Yes.svg");
+  }
+  &:hover {
+    background-color: #f4c949;
+  }
+  &:active {
+    background-color: orange;
+  }
+
+  strong {
+    font-size: 18px;
+    font-family: "Nunito";
+    color: #001b4d;
+    letter-spacing: 0;
+    margin: 0 15px 0 0;
+    text-transform: uppercase;
+    word-break: break-word;
+    padding-left: 0.6rem;
+  }
+}
+.welcome_avatar_play_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 180px;
+  height: 40px;
+  background-color: #ffbf00;
+  border-top-color: #ffe100;
+  border-bottom-color: #f88700;
+  border-radius: 34px;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  box-shadow: 0 0 0 5px #002043, 0 0 0 6px #7c92b0;
+  text-align: center;
+  padding-left: 15px;
+  margin-top: 2rem;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  div {
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: contain;
+    width: 26px;
+    height: 23px;
+    background-image: url("https://gartic.io/static/images/new/ic_Play.svg");
+  }
+  &:hover {
+    background-color: #f4c949;
+  }
+  &:active {
+    background-color: orange;
+  }
+
+  strong {
+    font-size: 18px;
+    font-family: "Nunito";
+    color: #001b4d;
+    letter-spacing: 0;
+    margin: 0 15px 0 0;
+    text-transform: uppercase;
+    word-break: break-word;
+    padding-left: 0.6rem;
+  }
+}
+
+@keyframes slideInContent {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes centerContent {
+  from {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  to {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media screen and (max-width: 641px) {
+  .modal_content {
+    max-width: 350px;
+    height: 470px;
+  }
+
+  .welcome_user_avatar_list {
+    grid-template-columns: repeat(3, 1fr);
+    width: auto;
+    background-color: transparent;
+    .avatar_item_container {
+      width: auto;
+      height: auto;
+      margin: 0;
+    }
+    .welcome_user_avatar {
+      width: 65px;
+      height: 95px;
+      border: 5px solid #fff;
+      border-radius: 50%;
+    }
+  }
+  .change_avatar_title_container {
+    width: 220px;
+    .change_avatar_title {
+      max-width: 229px;
+      background-size: contain;
+    }
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .welcome_user_form_container {
+    width: 100%;
+    flex-direction: column;
+  }
+  .welcome_info_container {
+    .welcome_info_play_image {
+      max-width: 265px;
+    }
+  }
+  .welcome_text_container {
+    .welcome_logo {
+      width: 194px;
+      background-size: contain;
+    }
+  }
+}
