@@ -1,21 +1,19 @@
 import { TfiCup } from "react-icons/tfi";
-import useGetRoomData from "../../../hooks/useRoomInfo";
+
 import styles from "../styles.module.scss";
 import { FaRegUser } from "react-icons/fa6";
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../store/hook";
-import { setRoomData } from "../../../store/slices/drawThema";
+
+import { useAppSelector } from "../../../store/hook";
 
 const PrepareGameRoomData = () => {
   const currentUrl = window.location.href;
   const path = currentUrl;
   const parts = path.split("/");
   const roomId = parts[parts.length - 1];
-  const userNameStorage = localStorage.getItem("userName");
-  const dispatch = useAppDispatch();
+
   const roomData = useAppSelector((state) => state.drawThema.roomData);
 
-  if (roomData.length === 0) {
+  if (!roomData || (roomData && roomData.usersInfo.length === 0)) {
     return;
   }
   return (
@@ -46,7 +44,9 @@ const PrepareGameRoomData = () => {
           </div>
           <span>
             <p>PLAYERS</p>
-            <strong>1/{roomData.players}</strong>
+            <strong>
+              {roomData.usersInfo.length}/{roomData.players}
+            </strong>
           </span>
         </li>
       </ul>

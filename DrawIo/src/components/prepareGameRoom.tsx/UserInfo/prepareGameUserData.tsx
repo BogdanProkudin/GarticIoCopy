@@ -37,6 +37,7 @@ const PrepareGameUserData = () => {
       const generateUserName = `User${randomNumbers}`;
       localStorage.setItem("userName", generateUserName);
       setGeneredUserName(`User${generateUserName}`);
+      console.log(generedUserName);
     }
     if (userAvatar === null) {
       localStorage.setItem(

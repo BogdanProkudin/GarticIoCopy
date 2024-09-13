@@ -1,4 +1,3 @@
-import { socket } from "../../../socket";
 import { useAppDispatch, useAppSelector } from "../../../store/hook";
 import { setIsUserNameError } from "../../../store/slices/userAuth";
 import styles from "../styles.module.scss";

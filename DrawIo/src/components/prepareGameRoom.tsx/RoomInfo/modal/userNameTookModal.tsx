@@ -3,7 +3,6 @@ import animationData from "../../../../tools/Animation - 1709999171287 (1).json"
 import ReactModal from "react-modal";
 import styles from "../../../welcomePage/styles.module.scss";
 
-import { useNavigate } from "react-router-dom";
 import { Dispatch, SetStateAction } from "react";
 type UserNameTookModalProps = {
   setIsUserNameTook: Dispatch<SetStateAction<boolean>>;
@@ -13,8 +12,6 @@ const UserNameTookModal: React.FC<UserNameTookModalProps> = ({
   setIsUserNameTook,
   isUserNameTook,
 }) => {
-  const navigate = useNavigate();
-
   const defaultOptions = {
     loop: true,
     autoplay: true,

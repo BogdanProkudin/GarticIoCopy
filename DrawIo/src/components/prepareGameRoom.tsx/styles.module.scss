@@ -13,9 +13,10 @@
 }
 .prepare_room_text_container {
   display: flex;
-  justify-content: right;
+  position: relative;
+  justify-content: center;
   align-items: center;
-  max-width: 686px;
+  max-width: 890px;
   width: 100%;
   .welcome_logo {
     background-image: url(https://gartic.io/static/images/new/gartic.svg);
@@ -25,8 +26,8 @@
     height: 53px;
   }
   .prepare_room_user_info_container {
-    position: relative;
-    left: 5rem;
+    position: absolute;
+    right: 20px;
     display: flex;
     align-items: center;
     span {
@@ -139,7 +140,8 @@
 }
 
 .prepare_game_room_info_container {
-  width: 851px;
+  max-width: 851px;
+  width: 100%;
   height: 341px;
   display: -webkit-box;
   display: -webkit-flex;
@@ -454,5 +456,100 @@
     background-position: 50%;
     margin: 0 10px 0 15px;
     background-size: contain;
+  }
+}
+
+@media screen and (max-width: 790px) {
+  .prepare_game_user_data_container {
+    margin-left: 1rem;
+  }
+  .prepare_game_room_data_container {
+    max-width: 390px;
+    width: 100%;
+    margin-left: 2rem;
+    ul {
+      width: 100%;
+      margin-left: 30px;
+    }
+  }
+}
+
+@media screen and (max-width: 719px) {
+  .prepare_room_info_container {
+    height: 600px;
+  }
+  .prepare_game_user_data_container {
+    width: 100%;
+    justify-content: center;
+  }
+  .prepare_game_room_info_container {
+    flex-direction: column;
+    height: 420px;
+  }
+  .prepare_game_user_data_container {
+    .prepare_game_user_container {
+      max-width: 663px;
+      width: 100%;
+      justify-content: center;
+      gap: 30px;
+    }
+  }
+  .prepare_game_button {
+    margin-top: 2.5rem;
+  }
+  .prepare_game_userName_input {
+    max-width: 230px;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 451px) {
+  .prepare_game_room_data_container {
+    max-width: 320px;
+  }
+  .prepare_game_userName_input {
+    max-width: 150px;
+  }
+  .prepare_game_room_data_container {
+    ul {
+      flex-wrap: nowrap;
+      flex-direction: column;
+      max-width: 380px;
+      margin-left: 5px;
+      li {
+        margin: 5px 5px;
+        max-width: 150px;
+        width: 100%;
+        span {
+          p {
+            font-size: 12px;
+          }
+        }
+        div {
+          width: 35px;
+          height: 35px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 376px) {
+  .prepare_game_room_data_container {
+    max-width: 270px;
+  }
+}
+
+@media screen and (max-width: 355px) {
+  .prepare_game_user_data_container {
+    .prepare_game_user_container {
+      .prepare_game_user_avatar_container {
+        width: 65px;
+        height: 60px;
+        .prepare_game_user_avatar {
+          width: 61px;
+        }
+      }
+    }
   }
 }

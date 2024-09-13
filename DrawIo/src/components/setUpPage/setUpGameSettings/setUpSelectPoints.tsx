@@ -1,7 +1,7 @@
 import Select from "react-select";
 import styles from "../styles.module.scss";
 import { useAppDispatch } from "../../../store/hook";
-import { setSelectedPoints } from "../../../store/slices/drawThema";
+import { setSelectedPoints } from "../../../store/slices/roomInfo";
 const SetUpSelectPoints = () => {
   const dispatch = useAppDispatch();
   const customStyles = {

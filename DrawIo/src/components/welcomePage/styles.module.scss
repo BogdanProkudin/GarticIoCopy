@@ -163,6 +163,7 @@ body {
 }
 
 .modal_content {
+  z-index: 999;
   transform: scale(1);
   display: flex;
   justify-content: center;
@@ -458,6 +459,38 @@ body {
     padding-left: 0.6rem;
   }
 }
+.send_link_input {
+  height: 37px;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  margin-top: 1rem;
+  -o-border-radius: 7px;
+  border-radius: 7px;
+  text-align: left;
+  padding-left: 20px;
+  padding-right: 20px;
+  font-size: 17px;
+  z-index: 2;
+  border-color: #a9c8d3;
+  color: #868d96;
+  background-color: #fff;
+  opacity: 1;
+  font-family: "Nunito";
+  transition: background-color 0.5s ease; /* Плавное изменение цвета за 0.5 секунды */
+  width: 240px;
+
+  margin-left: 1rem;
+}
+.copy_link_icon {
+  position: relative;
+  right: 13px;
+}
+.copy_succes_text {
+  color: #1791ff;
+  font-size: 14px;
+  font-family: "Nunito";
+}
 .welcome_avatar_play_button {
   display: flex;
   justify-content: center;
@@ -573,5 +606,24 @@ body {
       width: 194px;
       background-size: contain;
     }
+  }
+}
+
+.modal_room_info_container {
+  display: flex;
+  max-width: 550px;
+  justify-content: space-around;
+  width: 100%;
+  padding-bottom: 10px;
+  border-bottom: 1px solid grey;
+}
+.modal_room_info_item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  span {
+    color: #979797;
+    font-family: "Nunito";
   }
 }

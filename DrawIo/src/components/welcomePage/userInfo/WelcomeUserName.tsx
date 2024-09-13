@@ -3,7 +3,7 @@ import { setUserNameInputValue } from "../../../store/slices/userAuth";
 import styles from "../styles.module.scss";
 import { FaRegUser } from "react-icons/fa";
 import UserNameErrorModal from "./modal/UserNameErrorModal";
-import { useState } from "react";
+
 function WelcomeUserName() {
   const dispatch = useAppDispatch();
   const userNameInputValue = useAppSelector(

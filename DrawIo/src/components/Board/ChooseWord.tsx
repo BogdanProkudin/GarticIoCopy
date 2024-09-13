@@ -1,40 +1,61 @@
-import React, { useEffect, useState } from "react";
-import io from "socket.io-client";
+import { useEffect, memo } from "react";
+
 import LottieSettings from "../../tools/Animation - 1711653829862.json";
 import Lottie from "react-lottie";
 import styles from "./styles.module.scss";
 import { socket } from "../../socket";
 import {
   setChoosedWord,
+  setChoosedWordsList,
+  setChosenWords,
   setIsGameStarted,
-  setIsRoundEnd,
-  setIsUserDraw,
-} from "../../store/slices/drawThema";
+  setIsRoundTimerOver,
+  setRoundCount,
+} from "../../store/slices/roomInfo";
+
 import { useAppDispatch, useAppSelector } from "../../store/hook";
 
 import ProgressBar from "./Timers/IntervalTimer";
 import VariantWord from "./VariantWord";
 import WaitTurn from "./WaitTurn";
 import BoardInactive from "./roundResult/BoardInactive";
-const ChooseWord = () => {
-  const [chosenWords, setChosenWords] = useState([]);
-  const [guess, setGuess] = useState("");
-  const currentUrl = window.location.href;
+import { setIsUserDraw } from "../../store/slices/userInfo";
+import { setToolsPanel } from "../../store/slices/drawInfo";
+import axios from "axios";
+import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 
-  const path = currentUrl;
-  const parts = path.split("/");
-  const roomId = parts[parts.length - 1];
-  const activeIndex = useAppSelector((state) => state.drawThema.activeIndex);
-  const isUserDraw = useAppSelector((state) => state.drawThema.isUserDraw);
-  const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
-  const choosedWord = useAppSelector((state) => state.drawThema.choosedWord);
-  const [correctGuess, setCorrectGuess] = useState(null);
-  const activeUser = useAppSelector((state) => state.drawThema.activeUser);
-  const isRoundEnd = useAppSelector((state) => state.drawThema.isRoundEnd);
+const ChooseWord = memo(function ChooseWord() {
+  const roomId = useGetRoomIdFromUrl();
+
+  const { activeUser, choosedWordsList, chosenWords, isRoundEnd } =
+    useAppSelector((state) => ({
+      activeUser: state.drawThema.activeUser,
+      chosenWords: state.drawThema.chosenWords,
+      isRoundEnd: state.drawThema.isRoundEnd,
+      choosedWordsList: state.drawThema.choosedWordsList,
+    }));
   const userName = localStorage.getItem("userName");
   const dispatch = useAppDispatch();
   const handleChooseDrawWord = (choosedWord: string) => {
-    socket.emit("wordChoosed", { choosedWord, roomId });
+    const sendWordChoosed = async (url: string) => {
+      try {
+        const response = await axios.post(url, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          roomId,
+        });
+        if (response.data) {
+          socket.emit("wordChoosed", { choosedWord, roomId });
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    const url = "http://localhost:3000/wordChoosed";
+
+    sendWordChoosed(url);
   };
   const defaultOptions = {
     loop: true,
@@ -46,73 +67,79 @@ const ChooseWord = () => {
     },
   };
 
+  // useEffect(() => {
+  //   const getWhoIsNext = async () => {
+  //     const foundActiveUser = await roomUsers.find(
+  //       (el: { userName: any }) => el.userName === activeUser.userName
+  //     );
+  //     if (foundActiveUser) {
+  //       const activeUserIndex = await roomUsers.indexOf(foundActiveUser);
+
+  //       if (userName === roomUsers[activeUserIndex].userName) {
+  //         setTimeout(() => {}, 1000);
+  //       }
+  //     }
+  //   };
+  //   getWhoIsNext();
+  // }, [roomUsers]);
+
   useEffect(() => {
-    socket.on("getWordChoosed", (data) => {
+    socket.on("getWordChoosed", (data: any) => {
       dispatch(setChoosedWord(data));
+      dispatch(setToolsPanel(true));
+      dispatch(setRoundCount());
+      dispatch(setChoosedWordsList([...choosedWordsList, data]));
+      dispatch(setIsUserDraw(false));
+
       dispatch(setIsGameStarted(true));
     });
-    socket.on("gameWords", (words) => {
-      setChosenWords(words);
+    socket.on("gameWords", async (words) => {
+      dispatch(setChosenWords(words));
     });
 
     return () => {
       socket.off("gameWords");
+      socket.off("getWord");
     };
-  }, [socket]);
-  console.log(isRoundEnd, "round");
+  }, []);
 
   return (
     <div className={styles.container}>
-      {activeUser.userName === userName && isRoundEnd ? (
-        <div className={styles.your_turn_draw_container}>
-          <h1>Its your Turn</h1>
-          <span>Choose a word to Draw</span>
-          <Lottie
-            options={defaultOptions}
-            style={{ height: "150px", width: "150px" }}
-          />
-          <h2
-            style={{
-              position: "relative",
-              left: "0.5rem",
-              bottom: "2rem",
-              color: "grey",
-            }}
-          >
-            or
-          </h2>
-          <div
-            style={{
-              borderRight: "1px solid grey",
-              height: "40px",
-              position: "absolute",
-              top: "18rem",
-              right: "20.5rem",
-            }}
-          />
-          <div className={styles.suggestion_variants_container}>
-            {chosenWords.map((word) => {
-              return (
-                <div
-                  onClick={() => handleChooseDrawWord(word)}
-                  className={styles.suggestion_word_container}
-                >
-                  <VariantWord word={word} />
-                </div>
-              );
-            })}
+      <div className={styles.white_background}>
+        {activeUser.userName === userName && isRoundEnd ? (
+          <div className={styles.your_turn_draw_container}>
+            <h1>Its your Turn</h1>
+            <span>Choose a word to Draw</span>
+            <div className={styles.choose_word_animation}>
+              <Lottie options={defaultOptions} />
+            </div>
+            <h2 className={styles.or_text}>or</h2>
+            <div className={styles.board_choose_word_container} />
+            <div className={styles.suggestion_variants_container}>
+              {chosenWords.map((word) => {
+                return (
+                  <div
+                    key={word}
+                    onClick={() => handleChooseDrawWord(word)}
+                    className={styles.suggestion_word_container}
+                  >
+                    <VariantWord word={word} />
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ marginTop: "0.6rem" }}>
+              <ProgressBar />
+            </div>
           </div>
-          <div style={{ marginTop: "0.6rem" }}>
-            <ProgressBar />
-          </div>
-        </div>
-      ) : isRoundEnd ? (
-        <WaitTurn />
-      ) : (
-        <BoardInactive />
-      )}
+        ) : isRoundEnd ? (
+          <WaitTurn />
+        ) : (
+          <BoardInactive />
+        )}
+      </div>
     </div>
   );
-};
+});
 
 export default ChooseWord;

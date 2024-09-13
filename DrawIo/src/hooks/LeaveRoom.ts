@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Socket } from "socket.io-client";
 import { useAppDispatch } from "../store/hook";
-import { handleleaveRoom } from "../store/slices/drawThema";
+import { handleleaveRoom } from "../store/slices/roomInfo";
 
 const useLeaveRoomOnUnload = (
   socket: Socket,
@@ -29,7 +29,7 @@ const useLeaveRoomOnUnload = (
 
       const resetTimeout = () => {
         if (!isActive) return;
-        timeoutId = setTimeout(handleUserInactive, 300000);
+        // timeoutId = setTimeout(handleUserInactive, 300000);
       };
 
       document.addEventListener("mousemove", handleUserActive);

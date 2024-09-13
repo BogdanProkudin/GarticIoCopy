@@ -1,7 +1,7 @@
 import Select from "react-select";
 import styles from "../styles.module.scss";
 import { useAppDispatch } from "../../../store/hook";
-import { setSelectedPlayers } from "../../../store/slices/drawThema";
+import { setSelectedPlayers } from "../../../store/slices/roomInfo";
 const SetUpSelectPlayers = () => {
   const dispatch = useAppDispatch();
   const customStyles = {

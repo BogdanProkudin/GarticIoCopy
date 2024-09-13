@@ -1,11 +1,9 @@
 .set_up_page_container {
   max-height: 100vh;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  height: auto;
   max-width: 100vw;
-  width: 95%;
+  width: 100%;
+  min-height: 97vh; /* Минимальная высота контейнера равна высоте окна */
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -72,12 +70,65 @@
     }
   }
 }
+.set_up_info_small_screen_container {
+  display: flex;
+  align-items: center;
+
+  flex-direction: column;
+  width: 100%;
+  .welcome_info_container_play_image {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 62px;
+  }
+  .welcome_info_play_image {
+    display: flex;
+    justify-content: center;
+    background-image: url("https://gartic.io/static/images/new/title.png");
+    max-width: 320px;
+    background-size: cover;
+
+    background-position: 50%;
+    width: 100%;
+    height: auto;
+    background-repeat: no-repeat;
+    h2 {
+      user-select: none;
+      padding: 0 5px;
+      text-transform: uppercase;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: "Nunito";
+      text-align: center;
+      line-height: 2;
+      color: #ffbf00;
+      letter-spacing: 0;
+      margin: 12px 0 0;
+      max-width: 230px;
+      font-size: 20px;
+      margin: 8px 0 0;
+      text-shadow: 0 -1px 0 #fffa6d, #001b51 3px 0 0,
+        #001b51 2.83487px 0.981584px 0, #001b51 2.35766px 1.85511px 0,
+        #001b51 1.62091px 2.52441px 0, #001b51 0.705713px 2.91581px 0,
+        #001b51 -0.287171px 2.98622px 0, #001b51 -1.24844px 2.72789px 0,
+        #001b51 -2.07227px 2.16926px 0, #001b51 -2.66798px 1.37182px 0,
+        #001b51 -2.96998px 0.42336px 0, #001b51 -2.94502px -0.571704px 0,
+        #001b51 -2.59586px -1.50383px 0, #001b51 -1.96093px -2.27041px 0,
+        #001b51 -1.11013px -2.78704px 0, #001b51 -0.137119px -2.99686px 0,
+        #001b51 0.850987px -2.87677px 0, #001b51 1.74541px -2.43999px 0,
+        #001b51 2.44769px -1.73459px 0, #001b51 2.88051px -0.838247px 0;
+    }
+  }
+}
 
 .set_up_text_container {
   display: flex;
-  justify-content: right;
+  position: relative;
+  justify-content: center;
   align-items: center;
-  max-width: 686px;
+  max-width: 900px;
   width: 100%;
 
   span {
@@ -102,8 +153,8 @@
     height: 53px;
   }
   .set_up_user_info_container {
-    position: relative;
-    left: 5rem;
+    position: absolute;
+    right: 0px;
     display: flex;
     align-items: center;
 
@@ -147,7 +198,8 @@
   justify-content: space-between;
   background-color: #9fbdc9;
   border: 1px solid #5d8899;
-  width: 862px;
+  max-width: 862px;
+  width: 100%;
   margin-top: 1rem;
   height: 341px;
   align-items: flex-start;
@@ -286,7 +338,8 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
 
-    width: 575px;
+    max-width: 575px;
+    width: 100%;
     max-height: 250px;
     height: 100%;
     overflow-y: auto;
@@ -483,8 +536,8 @@
   background-size: contain;
 }
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -501,4 +554,128 @@
 /* Для ползунка при наведении курсора */
 ::-webkit-scrollbar-thumb:hover {
   background: #555; /* Цвет ползунка при наведении курсора */
+}
+.set_up_loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 97vw;
+  height: 97vh;
+}
+
+@media screen and (max-width: 935px) {
+  .set_up_thema_title_container {
+    max-width: 560px;
+    margin-left: 0px;
+    margin-right: 0px;
+    width: 92%;
+  }
+  .set_up_content_container {
+    justify-content: flex-start;
+    overflow: auto;
+  }
+  .set_up_thema_container {
+    width: 100%;
+    .set_up_thema_list {
+      grid-template-columns: repeat(3, 1fr);
+      width: 100%;
+      overflow-x: hidden;
+      .set_up_thema_item_container {
+        width: 90%;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .set_up_thema_container {
+    .set_up_thema_list {
+      .set_up_thema_item_container {
+        width: 85%;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 690px) {
+  .set_up_thema_container {
+    width: 100%;
+    .set_up_thema_list {
+      grid-template-columns: repeat(2, 1fr);
+      width: 100%;
+      overflow-x: hidden;
+      .set_up_thema_item_container {
+        width: 90%;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 620px) {
+  // .set_up_content_container {
+  //   flex-direction: column;
+  // }
+  // .set_up_settings_container {
+  //   max-width: 560px;
+  //   width: 92%;
+  // }
+  .set_up_thema_container {
+    .set_up_thema_list {
+      justify-items: center;
+      .set_up_thema_item_container {
+        width: 90%;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 580px) {
+  .set_up_page_container {
+    justify-content: flex-start;
+  }
+  .set_up_settings_container {
+    width: 90%;
+    max-height: 150px;
+    margin-right: 10px;
+  }
+  .set_up_player_count_container {
+    .set_up_players_wrapper_items {
+      max-width: 140px;
+      width: 100%;
+      .set_up_player_icon {
+        font-size: 18px;
+      }
+      span {
+        font-size: 16px;
+      }
+    }
+  }
+  .set_up_points_container {
+    .set_up_points_wrapper_items {
+      .set_up_points_icon {
+        font-size: 18px;
+      }
+      span {
+        font-size: 16px;
+      }
+    }
+  }
+  .set_up_select_players {
+    font-size: 14px;
+  }
+  .set_up_select_points {
+    font-size: 14px;
+    display: block;
+    width: 100px;
+    left: 0;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .set_up_thema_container {
+    .set_up_thema_list {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
 }

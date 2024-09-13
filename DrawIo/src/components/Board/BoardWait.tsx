@@ -3,96 +3,116 @@ import { useAppDispatch, useAppSelector } from "../../store/hook";
 import styles from "./styles.module.scss";
 import LottieSettings from "../../tools/Animation - 1711477541401.json";
 import { socket } from "../../socket";
-import {
-  setIsGameStarted,
-  setIsRoundEnd,
-  setIsUserDraw,
-} from "../../store/slices/drawThema";
-import { useEffect } from "react";
+import { setIsGameStarted, setIsRoundEnd } from "../../store/slices/roomInfo";
+import { memo, useEffect } from "react";
+import { handleGameStartButton } from "../../utils/handleStartGame";
+import { setIsUserDraw } from "../../store/slices/userInfo";
+import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
+
+export const useGameSelectors = () => {
+  return {
+    activeIndex: useAppSelector((state) => state.drawThema.activeIndex),
+    isGameStarted: useAppSelector((state) => state.drawThema.isGameStarted),
+    roomUsers: useAppSelector((state) => state.drawThema.roomUsers),
+    host: useAppSelector((state) => state.drawThema.host),
+    selectedThema: useAppSelector((state) => state.drawThema.selectedThema),
+  };
+};
 
 const BoardWait = () => {
   const dispatch = useAppDispatch();
+  const roomId = useGetRoomIdFromUrl();
+  const { activeIndex, roomUsers, host, selectedThema } = useGameSelectors();
+  const userNameStorage = localStorage.getItem("userName");
 
-  const currentUrl = window.location.href;
-
-  const path = currentUrl;
-  const parts = path.split("/");
-  const roomId = parts[parts.length - 1];
-  const activeIndex = useAppSelector((state) => state.drawThema.activeIndex);
+  const maxGamePoints = useAppSelector(
+    (state) => state.drawThema.maxRoomPoints
+  );
   const defaultOptions = {
     loop: true,
     autoplay: true,
-
     animationData: LottieSettings,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-  const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
-  const host = useAppSelector((state) => state.drawThema.host);
-  const selectedThema = useAppSelector(
-    (state) => state.drawThema.selectedThema
-  );
+  if (!roomUsers) {
+    return <div>IN BOARD WAIT ZERO USERS</div>;
+  }
 
-  const userNameStorage = localStorage.getItem("userName");
-  const handleGameStartButton = () => {
-    console.log("game button clicked");
-
-    socket.emit("nextUserCall", {
-      users: roomUsers,
-      index: activeIndex,
-      roomId,
-    });
-    socket.emit("startGame", { words: selectedThema.words, roomId });
-  };
   useEffect(() => {
-    socket.on("gameStarted", () => {
+    const onGameStarted = () => {
       dispatch(setIsUserDraw(true));
       dispatch(setIsRoundEnd(true));
+
       dispatch(setIsGameStarted(true));
-    });
-  }, []);
+    };
+
+    socket.on("gameStarted", onGameStarted);
+
+    return () => {
+      socket.off("gameStarted", onGameStarted);
+    };
+  }, [dispatch]);
+
+  const waitingTextStyles = {
+    top:
+      roomUsers.length > 1 && host.hostName !== userNameStorage ? "3rem" : "",
+  };
+
+  const animationContainerStyles = {
+    top:
+      roomUsers.length > 1 && host.hostName !== userNameStorage
+        ? "5rem"
+        : "2rem",
+  };
+
+  const waitingForOwnerTextStyles = {
+    top:
+      roomUsers.length > 1 && host.hostName !== userNameStorage
+        ? "21.5rem"
+        : "",
+  };
+
   return (
-    <div
-      style={{
-        position: "relative",
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-      <h1
-        style={{
-          top: roomUsers.length > 1 && host !== userNameStorage ? "3rem" : "",
-        }}
-        className={styles.game_room_wait_text}
-      >
+    <div className={styles.board_wait_container}>
+      <h1 className={styles.game_room_wait_text} style={waitingTextStyles}>
         WAITING
       </h1>
-      <Lottie
-        style={{
-          position: "absolute",
-          height: "300px",
-          width: "300px",
-          top:
-            roomUsers.length > 1 && host !== userNameStorage ? "5rem" : "2rem",
-          left: "11.7rem",
-        }}
-        options={defaultOptions}
-        isClickToPauseDisabled
-      />
+      <div
+        className={styles.board_wait_animation}
+        style={animationContainerStyles}
+      >
+        <Lottie
+          options={defaultOptions}
+          height={190}
+          width={280}
+          style={{ marginTop: "3.5rem" }}
+          isClickToPauseDisabled
+        />
+      </div>
       {roomUsers.length <= 1 && (
         <span className={styles.game_room_wait_small_text}>
           Waiting for players
         </span>
       )}
-      {roomUsers.length > 1 && host === userNameStorage && (
+      {roomUsers.length > 1 && host.hostName === userNameStorage && (
         <>
           <span className={styles.game_room_wait_small_text}>
             Players are waiting for you to start
           </span>
           <button
-            onClick={() => handleGameStartButton()}
-            style={{ position: "absolute", top: "20rem" }}
+            data-testid={"button-id"}
+            onClick={() =>
+              handleGameStartButton({
+                words: selectedThema.words,
+                roomUsers,
+                maxGamePoints,
+                roomId,
+                activeIndex,
+                dispatch: dispatch,
+              })
+            }
             className={styles.game_room_start_button}
           >
             <div />
@@ -100,13 +120,10 @@ const BoardWait = () => {
           </button>
         </>
       )}
-      {roomUsers.length > 1 && host !== userNameStorage && (
+      {roomUsers.length > 1 && host.hostName !== userNameStorage && (
         <span
-          style={{
-            top:
-              roomUsers.length > 1 && host !== userNameStorage ? "21.5rem" : "",
-          }}
           className={styles.game_room_wait_small_text}
+          style={waitingForOwnerTextStyles}
         >
           Waiting for the owner to start
         </span>
@@ -114,4 +131,5 @@ const BoardWait = () => {
     </div>
   );
 };
-export default BoardWait;
+
+export default memo(BoardWait);

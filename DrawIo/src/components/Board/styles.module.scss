@@ -16,6 +16,22 @@
   -o-border-radius: 12px;
   border-radius: 12px;
 }
+.canvas_content {
+  border: 1px solid black;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+
+  border-radius: 10px;
+  cursor: crosshair;
+}
+.board_wait_container {
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+}
+
 .game_room_wait_text {
   position: absolute;
   left: 16.4rem;
@@ -46,8 +62,19 @@
   color: #797979;
   letter-spacing: -0.65px;
 }
+.board_wait_animation {
+  position: absolute;
+  height: 300px;
+  width: 300px;
+  left: 11.7rem;
+}
+.progress_bar_container {
+  margin-top: 0.6rem;
+}
 
 .game_room_start_button {
+  position: absolute;
+  top: 20rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -94,16 +121,14 @@
 }
 .container {
   position: relative;
+  z-index: 150;
 }
 .your_turn_draw_container {
   display: flex;
   flex-direction: column;
-  top: 1.3rem;
   align-items: center;
   position: absolute;
-
   width: 100%;
-  height: 500px;
   h1 {
     margin-left: 1rem;
     font-size: 32px;
@@ -152,7 +177,23 @@
   margin-top: -1.7rem;
   background-repeat: no-repeat;
 }
-
+.choose_word_animation {
+  width: 150px;
+  height: 150px;
+}
+.or_text {
+  position: relative;
+  left: 0.5rem;
+  bottom: 2rem;
+  color: grey;
+}
+.board_choose_word_container {
+  border-right: 1px solid grey;
+  height: 40px;
+  position: absolute;
+  top: 18rem;
+  right: 20.5rem;
+}
 .suggestion_variants_container {
   display: flex;
   position: absolute;
@@ -244,4 +285,328 @@
   font-size: 20px;
   color: #797979;
   letter-spacing: -0.65px;
+}
+
+.board_word_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background-color: #132d85;
+  border: 1px solid #006fff;
+  box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.5);
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+  border-radius: 8px;
+  width: auto;
+  max-width: 476px;
+  height: auto;
+  min-height: 60px;
+  position: absolute;
+  white-space: nowrap;
+  padding: 5px 10px;
+  z-index: 2;
+  top: -40px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  -o-transform: translateX(-50%);
+  transform: translateX(-50%);
+  text-align: center;
+  opacity: 1;
+}
+
+.board_word {
+  color: #fff;
+  text-transform: uppercase;
+  font-family: "Nunito";
+  font-size: 18px;
+}
+
+.draw_settings_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 580px;
+  margin-top: 1rem;
+  overflow: hidden;
+  background-color: #001b4d;
+  border: 3px solid blue;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  .tools_picker_container {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+    cursor: pointer;
+    height: 100px;
+    width: 115px;
+    margin-top: 5px;
+    .tools_picker {
+      height: 48px;
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      border-bottom: 1px solid #9b9b9b;
+      &:hover {
+        .tools_icon {
+          color: gold;
+        }
+      }
+    }
+  }
+}
+.tools_icon {
+  color: white;
+}
+
+.eraser_square {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  background: transparent;
+  border: 1px solid gray;
+
+  z-index: 1; // Установите z-index для квадрата
+  pointer-events: none; // Чтобы квадрат не перехватывал события мыши
+}
+
+.colors_pickers_container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  cursor: pointer;
+
+  padding-right: 0.2rem;
+
+  margin-top: 10px;
+  .color_picker_container {
+    width: 35px;
+    height: 35px;
+    padding: 0.2rem;
+    .color_picker_item {
+      height: 35px;
+      width: 35px;
+      align-items: center;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      border: 2.5px solid #0a1e41;
+      // border-bottom: 1px solid #9b9b9b;
+    }
+    &:hover {
+      .color_picker_item {
+        border: 2.5px solid goldenrod;
+      }
+    }
+  }
+}
+.one_user_guessed_animation_container {
+  position: relative;
+  top: 7rem;
+
+  background-color: red;
+  z-index: 999;
+  .one_user_guessed_animation {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    left: 15rem;
+  }
+}
+
+.game_room_inactive_timer_animation {
+  position: absolute;
+  height: 250px;
+  width: 250px;
+  top: 2.5rem;
+  left: 13.6rem;
+}
+.success_animation {
+  position: absolute;
+  height: 250px;
+  width: 250px;
+  top: 2.5rem;
+  left: 13.6rem;
+}
+
+.draw_brush_width_input_container {
+  display: flex;
+  position: relative;
+  align-items: center;
+
+  flex-direction: column;
+  margin-top: 70px;
+  .draw_brush_big_circle {
+    position: relative;
+    bottom: 3rem;
+    width: 25px;
+    height: 25px;
+    background-color: #fff;
+    border-radius: 50%;
+  }
+  .draw_brush_small_circle {
+    position: relative;
+    top: 3rem;
+    width: 18px;
+    height: 18px;
+    background-color: #fff;
+    border-radius: 50%;
+  }
+}
+.draw_brush_width_input {
+  -webkit-appearance: none; /* Убирает стандартный стиль в браузерах на основе WebKit */
+  width: 70%; /* Ширина ползунка */
+  border-radius: 8px;
+  transform: rotate(270deg); /* Поворот на 90 градусов */
+  height: 5px; /* Высота трека */
+  background: #ddd; /* Цвет трека */
+  outline: none; /* Убирает обводку */
+  opacity: 0.7; /* Прозрачность */
+  transition: opacity 0.15s ease-in-out; /* Плавный переход прозрачности */
+  &:hover {
+    opacity: 1;
+  }
+}
+.draw_brush_width_input::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Убирает стандартный стиль */
+  appearance: none;
+  width: 20px; /* Ширина ручки */
+  height: 20px; /* Высота ручки */
+  background: #ffffff; /* Цвет ручки */
+  cursor: pointer; /* Курсор при наведении */
+  border-radius: 50%; /* Скругленные углы ручки */
+}
+.colors_picker_additional_container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  justify-content: space-between;
+  width: 80%;
+  border-bottom: 2px solid blue;
+  padding-bottom: 0.5rem;
+}
+.color_additional_picker {
+  position: relative;
+  width: 50px;
+  height: 50px;
+
+  cursor: pointer;
+}
+
+.current_color_item {
+  height: 35px;
+  width: 35px;
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  border: 2.5px solid #002565d6;
+}
+
+.select_any_color_input {
+  -webkit-appearance: none; /* Убираем стандартное оформление для WebKit браузеров */
+  -moz-appearance: none; /* Убираем стандартное оформление для Firefox */
+  appearance: none; /* Убираем стандартное оформление для других браузеров */
+  width: 50px; /* Ширина инпута */
+  height: 50px; /* Высота инпута */
+  border: none; /* Убираем границу */
+  border-radius: 50%; /* Делаем инпут кругом */
+  cursor: pointer; /* Меняем курсор при наведении */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Добавляем тень */
+  transition: box-shadow 0.3s ease-in-out; /* Плавный переход для тени */
+}
+.select_any_color_input::-webkit-color-swatch-wrapper {
+  padding: 0; /* Убираем отступы */
+}
+
+.select_any_color_input::-webkit-color-swatch {
+  border: none; /* Убираем границу */
+  border-radius: 50%; /* Делаем кругом */
+}
+
+.select_any_color_input:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Изменяем тень при наведении */
+}
+
+.sidebar_overlay {
+  width: 0px;
+  height: 0px;
+}
+
+.progress_round_line_container {
+  position: relative;
+  top: 24.2rem;
+  z-index: 999;
+  width: 600px;
+  left: 1rem;
+  height: 6px;
+  margin-left: 0.6rem;
+  background-color: rgb(5, 5, 103);
+  border-radius: 10px;
+  .progress_bar_lines {
+    height: 6px;
+    background-color: goldenrod;
+    border-radius: 10px;
+  }
+}
+.white_background {
+  position: absolute;
+  width: 650px;
+  height: 400px;
+  top: 1rem;
+  border: 1px solid black;
+  background-color: white;
+  border-radius: 10px;
+}
+.not_guessed_container {
+  display: flex;
+  flex-direction: column;
+  top: 1.2rem;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+
+  span {
+    font-family: "Nunito";
+    position: relative;
+    bottom: 1.2rem;
+    font-size: 20px;
+    color: #797979;
+    letter-spacing: -0.65px;
+  }
+  h1 {
+    margin-left: 1rem;
+    font-size: 32px;
+    font-family: "Nunito";
+    color: #ffbf00;
+    text-transform: uppercase;
+    text-shadow: #001b51 4px 0 0, #001b51 3.87565px 0.989616px 0,
+      #001b51 3.51033px 1.9177px 0, #001b51 2.92676px 2.72656px 0,
+      #001b51 2.16121px 3.36588px 0, #001b51 1.26129px 3.79594px 0,
+      #001b51 0.282949px 3.98998px 0, #001b51 -0.712984px 3.93594px 0,
+      #001b51 -1.66459px 3.63719px 0, #001b51 -2.51269px 3.11229px 0,
+      #001b51 -3.20457px 2.39389px 0, #001b51 -3.69721px 1.52664px 0,
+      #001b51 -3.95997px 0.56448px 0, #001b51 -3.97652px -0.432781px 0,
+      #001b51 -3.74583px -1.40313px 0, #001b51 -3.28224px -2.28625px 0,
+      #001b51 -2.61457px -3.02721px 0, #001b51 -1.78435px -3.57996px 0,
+      #001b51 -0.843183px -3.91012px 0, #001b51 0.150409px -3.99717px 0,
+      #001b51 1.13465px -3.8357px 0, #001b51 2.04834px -3.43574px 0,
+      #001b51 2.83468px -2.82216px 0, #001b51 3.44477px -2.03312px 0,
+      #001b51 3.84068px -1.11766px 0, #001b51 3.9978px -0.132717px 0;
+  }
+}
+.not_guessed_animation {
+  position: absolute;
+
+  top: 4.5rem;
+  left: 13.6rem;
+  width: 250px;
+  height: 200px;
+}
+
+.not_guessed_small_text {
+  top: 12rem;
 }

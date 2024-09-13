@@ -3,7 +3,7 @@ import SetUpGameThemaItem from "./setUpGameThemaItem";
 import themaList from "../../../tools/themas.json";
 
 import { useAppDispatch, useAppSelector } from "../../../store/hook";
-import { setSelectedThema } from "../../../store/slices/drawThema";
+import { setSelectedThema } from "../../../store/slices/roomInfo";
 
 const SetUpThemaList = () => {
   const dispatch = useAppDispatch();

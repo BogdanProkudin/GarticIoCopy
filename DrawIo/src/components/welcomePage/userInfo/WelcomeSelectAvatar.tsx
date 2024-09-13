@@ -20,6 +20,7 @@ const WelcomeSelectAvatar: React.FC<WelcomeSelectAvatarProps> = ({
   return (
     <div
       onClick={() => handleSelectAvatar(index)}
+      data-testid={`avatar-${index}`} // Добавленный атрибут для теста
       key={index}
       style={{ borderColor: index === activeAvatarIndex ? "#1791ff" : "" }}
       className={styles.avatar_item_container}

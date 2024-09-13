@@ -1,8 +1,13 @@
+import { useState } from "react";
+import GameStartedErrorModal from "./RoomInfo/modal/gameStartedErrorModal";
+import UserNameTookModal from "./RoomInfo/modal/userNameTookModal";
 import PrepareGameRoomData from "./RoomInfo/prepareGameRoomData";
 import PrepareGameUserData from "./UserInfo/prepareGameUserData";
 import PrepareGameButton from "./prepareGameButton";
 import styles from "./styles.module.scss";
 const PrepareGameRoomInfo = () => {
+  const [isUserNameTook, setIsUserNameTook] = useState(false);
+  const [isGameStartedError, setIsGameStartedError] = useState(false);
   return (
     <div className={styles.prepare_room_info_container}>
       <link
@@ -18,7 +23,21 @@ const PrepareGameRoomInfo = () => {
         <PrepareGameUserData />
         <PrepareGameRoomData />
       </div>
-      <PrepareGameButton />
+      <PrepareGameButton
+        setIsGameStartedError={setIsGameStartedError}
+        setIsUserNameTook={setIsUserNameTook}
+        isGameStartedError={isGameStartedError}
+        isUserNameTook={isUserNameTook}
+      />
+
+      <UserNameTookModal
+        setIsUserNameTook={setIsUserNameTook}
+        isUserNameTook={isUserNameTook}
+      />
+      <GameStartedErrorModal
+        isGameStartedError={isGameStartedError}
+        setIsGameStartedError={setIsGameStartedError}
+      />
     </div>
   );
 };

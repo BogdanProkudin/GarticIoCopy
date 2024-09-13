@@ -1,3 +1,4 @@
+import { memo } from "react";
 import styles from "./styles.module.scss";
 type VariantWordProps = {
   word: string;
@@ -13,4 +14,4 @@ const VariantWord: React.FC<VariantWordProps> = ({ word }) => {
     </>
   );
 };
-export default VariantWord;
+export default memo(VariantWord);
