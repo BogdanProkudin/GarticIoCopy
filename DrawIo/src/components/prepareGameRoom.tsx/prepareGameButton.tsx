@@ -9,6 +9,7 @@ import UserNameTookModal from "./RoomInfo/modal/userNameTookModal";
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import GameStartedErrorModal from "./RoomInfo/modal/gameStartedErrorModal";
 import { setIsGameRoomLoading } from "../../store/slices/roomInfo";
+import { useJoinGameRoom } from "../../hooks/useJoinGameRoom";
 type PrepareGameButtonProps = {
   setIsGameStartedError: Dispatch<SetStateAction<boolean>>;
   isGameStartedError: boolean;
@@ -28,63 +29,77 @@ const PrepareGameButton: React.FC<PrepareGameButtonProps> = ({
   const dispatch = useAppDispatch();
   const roomData = useAppSelector((state) => state.drawThema.roomData);
   const roomId = useGetRoomIdFromUrl();
-  const handleJoinRoom = async () => {
-    try {
-      if (userName.length >= 3 && userName.length <= 24) {
-        // const generatedUserId = generateUserId();
+  // const handleJoinRoom = async () => {
+  //   try {
+  //     if (userName.length >= 3 && userName.length <= 24) {
+  //       // const generatedUserId = generateUserId();
 
-        const userIdExists = roomData.usersInfo.some((user: any) => {
-          return user.userId === userId;
-        });
-        const userExists = roomData.usersInfo.some((user: any) => {
-          return user.userName === userName;
-        });
+  //       const userIdExists = roomData.usersInfo.some((user: any) => {
+  //         return user.userId === userId;
+  //       });
+  //       const userExists = roomData.usersInfo.some((user: any) => {
+  //         return user.userName === userName;
+  //       });
 
-        setIsGameStartedError(false);
-        if (roomData.isGameStarted) {
-          setIsGameStartedError(true);
-          return;
-        }
-        setIsUserNameTook(false);
-        if (userExists || userIdExists) {
-          setIsUserNameTook(true);
-          console.log("error your id  already in the game");
-          return;
-        }
-        dispatch(setIsGameRoomLoading(true));
-        const response = await axios.post("http://localhost:3000/joinRoom", {
-          roomId,
-          userInfo: {
-            userId: userId,
-            userAvatar: activeAvatar ? activeAvatar : userAvatar && userAvatar,
-            userName: userName.length > 1 ? userName : userNameStorage,
-            userPoints: 0,
-            isActive: false,
-          },
-        });
-        console.log("REPSSS", response);
+  //       setIsGameStartedError(false);
+  //       if (roomData.isGameStarted) {
+  //         setIsGameStartedError(true);
+  //         return;
+  //       }
+  //       setIsUserNameTook(false);
+  //       if (userExists || userIdExists) {
+  //         setIsUserNameTook(true);
+  //         console.log("error your id  already in the game");
+  //         return;
+  //       }
+  //       dispatch(setIsGameRoomLoading(true));
+  //       const response = await axios.post("http://localhost:3000/joinRoom", {
+  //         roomId,
+  //         userInfo: {
+  //           userId: userId,
+  //           userAvatar: activeAvatar ? activeAvatar : userAvatar && userAvatar,
+  //           userName: userName.length > 1 ? userName : userNameStorage,
+  //           userPoints: 0,
+  //           isActive: false,
+  //         },
+  //       });
+  //       console.log("REPSSS", response);
 
-        localStorage.setItem("userName", userName);
-        axios.post("http://localhost:3000/ping", { roomId, userId });
-        navigate(`/game/${roomId}`, { replace: true });
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Error response:", error.response?.data); // Логируем ответ с ошибкой
-        if (error.response?.status === 400) {
-          console.log("REquest returns code 400");
-          navigate("/LobbyNotFound", { replace: true });
-          return;
-          // Выполнить действия, если ошибка 404
-        } else {
-          console.log("An error occurred.");
-          // Выполнить другие действия
-        }
-      } else {
-        console.error("An unknown error occurred:", error);
-      }
-    }
-  };
+  //       localStorage.setItem("userName", userName);
+  //       axios.post("http://localhost:3000/ping", { roomId, userId });
+  //       navigate(`/game/${roomId}`, { replace: true });
+  //     }
+  //   } catch (error) {
+  //     if (axios.isAxiosError(error)) {
+  //       console.error("Error response:", error.response?.data); // Логируем ответ с ошибкой
+  //       if (error.response?.status === 400) {
+  //         console.log("REquest returns code 400");
+  //         navigate("/LobbyNotFound", { replace: true });
+  //         return;
+  //         // Выполнить действия, если ошибка 404
+  //       } else {
+  //         console.log("An error occurred.");
+  //         // Выполнить другие действия
+  //       }
+  //     } else {
+  //       console.error("An unknown error occurred:", error);
+  //     }
+  //   }
+  // };
+  if (!userAvatar || !userId || !userNameStorage) {
+    return <div>Error ocured no useravatar or userid or username </div>;
+  }
+  const handleJoinRoom = useJoinGameRoom({
+    userAvatar,
+    setIsGameStartedError,
+    userId,
+    userName,
+    roomData,
+    roomId,
+    activeAvatar,
+    setIsUserNameTook,
+    userNameStorage,
+  });
 
   return (
     <>

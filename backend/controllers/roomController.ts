@@ -42,6 +42,7 @@ const handleGameWin = async (
     { $set: { gameWinners: winners } },
     { new: true }
   );
+  return winners;
 
   // Сохраняем состояние победы в состоянии комнаты
 };
@@ -51,76 +52,108 @@ export const handleNextUserCall = async (
   res: Response | null,
   roomId: any
 ) => {
-  const roomFirstId = req?.body.roomId;
-  const roomData = await RoomModel.findOne({
-    roomId: roomFirstId ? roomFirstId : roomId,
-  });
+  try {
+    const roomFirstId = req?.body.roomId;
+    const roomData = await RoomModel.findOne({
+      roomId: roomFirstId ? roomFirstId : roomId,
+    });
 
-  if (!roomData) {
-    return { message: "Room data not found. ERROR" };
-  }
-  if (roomData.isGameStarted === false) {
+    if (!roomData) {
+      return { message: "Room data not found. ERROR" };
+    }
+    if (roomData.isGameStarted === false) {
+      await RoomModel.findOneAndUpdate(
+        { roomId: roomFirstId ? roomFirstId : roomId },
+        { isGameStarted: true },
+        { new: true }
+      );
+    }
+
+    const users = roomData?.usersInfo;
+    const maxGamePoints = roomData?.points;
+    if (!users || !maxGamePoints) {
+      return;
+    }
+
+    const nextActiveUser = await getNextActiveUser(users);
+    const updatedUsers = await updateUserActivity(users, nextActiveUser);
     await RoomModel.findOneAndUpdate(
-      { roomId: roomFirstId ? roomFirstId : roomId },
-      { isGameStarted: true },
+      {
+        roomId: roomFirstId ? roomFirstId : roomId,
+      },
+      { $set: { activeUser: nextActiveUser } },
       { new: true }
     );
-  }
+    const roomInfo = await RoomModel.findOne({ roomId });
+    const activeUser = await roomInfo?.activeUser;
 
-  const users = roomData?.usersInfo;
-  const maxGamePoints = roomData?.points;
-  if (!users || !maxGamePoints) {
-    return;
-  }
-
-  const nextActiveUser = await getNextActiveUser(users);
-  const updatedUsers = await updateUserActivity(users, nextActiveUser);
-  await RoomModel.findOneAndUpdate(
-    {
-      roomId: roomFirstId ? roomFirstId : roomId,
-    },
-    { $set: { activeUser: nextActiveUser } },
-    { new: true }
-  );
-  const roomInfo = await RoomModel.findOne({ roomId });
-  const activeUser = await roomInfo?.activeUser;
-
-  const updatedUsersInfo = await RoomModel.findOneAndUpdate(
-    {
-      roomId: roomFirstId ? roomFirstId : roomId,
-    },
-    { usersInfo: updatedUsers },
-    { new: true }
-  );
-
-  if (isGameWon(users, maxGamePoints)) {
-    console.log("is game won", users);
-
-    handleGameWin(
-      roomId.length !== 6 ? roomFirstId : roomId,
-      users,
-      maxGamePoints
+    const updatedUsersInfo = await RoomModel.findOneAndUpdate(
+      {
+        roomId: roomFirstId ? roomFirstId : roomId,
+      },
+      { usersInfo: updatedUsers },
+      { new: true }
     );
 
-    const roomInfo = await RoomModel.findOne({ roomId });
-    const gameWinners = roomInfo?.gameWinners;
-    io.to(roomId.length !== 6 ? roomFirstId : roomId).emit("gameWon", {
-      winners: gameWinners,
-    });
-  } else {
-    io.to(roomId.length !== 6 ? roomFirstId : roomId).emit("getNextUserCall", {
-      activeUser: nextActiveUser,
-      users: updatedUsersInfo?.usersInfo,
-    });
-  }
-  return res ? res?.status(200).json("alles goed") : "";
-};
+    if (isGameWon(users, maxGamePoints)) {
+      console.log("game won");
 
+      const gameWinners = await handleGameWin(
+        roomId.length !== 6 ? roomFirstId : roomId,
+        users,
+        maxGamePoints
+      );
+
+      const roomInfo = await RoomModel.findOne({ roomId });
+
+      io.to(roomId.length !== 6 ? roomFirstId : roomId).emit("gameWon", {
+        winners: gameWinners,
+      });
+    } else {
+      io.to(roomId.length !== 6 ? roomFirstId : roomId).emit(
+        "getNextUserCall",
+        {
+          activeUser: nextActiveUser,
+          users: updatedUsersInfo?.usersInfo,
+        }
+      );
+    }
+    return res ? res?.status(200).json("alles goed") : "";
+  } catch (err) {
+    console.log("ERROR WHEN UPDATING NEXT ACTIVE USER", err);
+  }
+};
+export const isUserInGame = async (req: Request, res: Response) => {
+  const { userId } = req.body;
+  console.log("USERID", userId, "BOD", req.body);
+
+  const isPlayerFound = await RoomModel.find({
+    usersInfo: {
+      $elemMatch: { userId: userId, isUserLeave: undefined },
+    },
+  });
+  console.log("IS PLAYER FOUND", isPlayerFound.length, userId);
+  if (isPlayerFound.length >= 1) {
+    console.log("REDIRECT TO MAIN PAGE SECOND ACTIVE GAME", userId);
+    return res.status(200).json({ message: "You are already in the room" });
+  }
+  return res.status(200).json({ message: "User is not in the game" });
+};
 export const createRoom = async (req: Request, res: Response) => {
   try {
     // Получаем данные для создания комнаты из запроса
 
     const { host, points, players, thema, usersInfo, roomId } = req.body;
+    const isPlayerFound = await RoomModel.find({
+      usersInfo: {
+        $elemMatch: { userId: host.hostId, isUserLeave: undefined },
+      },
+    });
+    console.log("IS PLAYER FOUND", isPlayerFound.length, host.hostId);
+    if (isPlayerFound.length >= 1) {
+      console.log("REDIRECT TO MAIN PAGE SECOND ACTIVE GAME", host.hostId);
+      return res.status(200).json({ message: "You are already in the room" });
+    }
 
     const isUserCreateRoom = await RoomModel.findOne({
       "host.hostId": host.hostId,
@@ -144,6 +177,7 @@ export const createRoom = async (req: Request, res: Response) => {
 
     // Сохраняем созданную комнату в базе данных
     await newRoom.save();
+
     console.log("sucessesfull created room ");
 
     res.status(201).json({
@@ -166,8 +200,8 @@ export const getRoomInfo = async (req: Request, res: Response) => {
     }
 
     if (roomData[0].host.hostId === userId) {
-      console.log("zxc1");
     }
+
     return res.status(201).json(roomData);
   } catch (error) {
     console.error("Error getting room:", error);
@@ -178,6 +212,16 @@ export const getRoomInfo = async (req: Request, res: Response) => {
 export const joinRoom = async (req: Request, res: Response) => {
   try {
     const { roomId, userInfo } = req.body;
+    const isPlayerFound = await RoomModel.find({
+      usersInfo: {
+        $elemMatch: { userId: userInfo.userId, isUserLeave: undefined },
+      },
+    });
+    console.log("IS PLAYER FOUND", isPlayerFound.length, userInfo.userId);
+    if (isPlayerFound.length >= 1) {
+      console.log("REDIRECT TO MAIN PAGE SECOND ACTIVE GAME", userInfo.userId);
+      return res.status(404).json({ message: "You are already in the room" });
+    }
     userInfo.isInGame = true;
     const roomData = await RoomModel.findOneAndUpdate(
       { roomId: roomId },
@@ -191,6 +235,7 @@ export const joinRoom = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(400).json({ message: "ERROR! ROOM DATA NOT FOUND" });
     }
+
     io.to(roomId).emit("userJoined", roomData);
     return res.status(200).json({ message: "Successfully joined the room" });
   } catch (error) {
@@ -276,7 +321,7 @@ export const wordChoosed = async (req: Request, res: Response) => {
   }
 
   if (timers[roomId].wordTimer) {
-    console.log("остановка таймера");
+    console.log("остановка таймера при выборе слова");
 
     clearTimeout(timers[roomId].wordTimer); // Остановка таймера выбора слова
 
@@ -315,7 +360,7 @@ export const intervalTimer = async (
     const activeUser = await roomData?.activeUser;
     timers[roomId] = timers[roomId] || {};
     if (!activeUser) {
-      console.log("в интервале нет активного юзера ");
+      console.log("в интервале юзера активного нет  ");
 
       return;
     }
@@ -406,8 +451,6 @@ export const usersNotGuessedTimer = async (
   res: Response | null
 ) => {
   try {
-    console.log("в юзеры не угадали айди", req);
-
     const roomId = req.body;
     io.to(roomId).emit("getAnswer", {
       message: `the answer was`,
@@ -447,7 +490,6 @@ export const usersNotGuessedTimer = async (
 export const allUsersGuessed = async (req: Request, res: Response) => {
   try {
     const roomId = req.body.roomId;
-    console.log(roomId, "ROOO!@");
 
     const roomData = await RoomModel.findOne({ roomId });
     if (!roomId) {
@@ -633,7 +675,7 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
         }
         // Удаление комнаты
         await RoomModel.deleteOne({ roomId });
-        console.log("ROOM DELETED ");
+        console.log("ROOM DELETED when all users left room ");
 
         return { message: "All users left, room deleted" };
       }
@@ -766,6 +808,12 @@ export const Ping = async (req: Request, res: Response) => {
 
   const userRoomKey = `${roomId}-${userId}`; // Создаем уникальный ключ для пользователя в комнат
   if (!rooomData || currentUser.isUserLeave) {
+    if (timers[roomId]) {
+      clearTimeout(timers[roomId].wordTimer);
+      clearTimeout(timers[roomId].roundTimer);
+      clearTimeout(timers[roomId].inactiveTimeout);
+      delete timers[roomId];
+    }
     return res.status(404).json({ message: "Room no longer exists" });
 
     // Если ping получен, сбрасываем таймер для данного пользователя в данной комнате

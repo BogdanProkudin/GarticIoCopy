@@ -1,28 +1,15 @@
-import { useEffect, memo } from "react";
-
+import { memo } from "react";
 import LottieSettings from "../../tools/Animation - 1711653829862.json";
 import Lottie from "react-lottie";
 import styles from "./styles.module.scss";
-import { socket } from "../../socket";
-import {
-  setChoosedWord,
-  setChoosedWordsList,
-  setChosenWords,
-  setIsGameStarted,
-  setIsRoundTimerOver,
-  setRoundCount,
-} from "../../store/slices/roomInfo";
-
-import { useAppDispatch, useAppSelector } from "../../store/hook";
-
+import { useAppSelector } from "../../store/hook";
 import ProgressBar from "./Timers/IntervalTimer";
 import VariantWord from "./VariantWord";
 import WaitTurn from "./WaitTurn";
 import BoardInactive from "./roundResult/BoardInactive";
-import { setIsUserDraw } from "../../store/slices/userInfo";
-import { setToolsPanel } from "../../store/slices/drawInfo";
-import axios from "axios";
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
+import { useChooseWord } from "../../hooks/useChooseWord";
+import { useGetWords } from "../../hooks/useGetWords";
 
 const ChooseWord = memo(function ChooseWord() {
   const roomId = useGetRoomIdFromUrl();
@@ -34,29 +21,9 @@ const ChooseWord = memo(function ChooseWord() {
       isRoundEnd: state.drawThema.isRoundEnd,
       choosedWordsList: state.drawThema.choosedWordsList,
     }));
+  const { handleChooseDrawWord } = useChooseWord(roomId);
   const userName = localStorage.getItem("userName");
-  const dispatch = useAppDispatch();
-  const handleChooseDrawWord = (choosedWord: string) => {
-    const sendWordChoosed = async (url: string) => {
-      try {
-        const response = await axios.post(url, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          roomId,
-        });
-        if (response.data) {
-          socket.emit("wordChoosed", { choosedWord, roomId });
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    const url = "http://localhost:3000/wordChoosed";
-
-    sendWordChoosed(url);
-  };
+  useGetWords(roomId, choosedWordsList);
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -66,42 +33,6 @@ const ChooseWord = memo(function ChooseWord() {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-
-  // useEffect(() => {
-  //   const getWhoIsNext = async () => {
-  //     const foundActiveUser = await roomUsers.find(
-  //       (el: { userName: any }) => el.userName === activeUser.userName
-  //     );
-  //     if (foundActiveUser) {
-  //       const activeUserIndex = await roomUsers.indexOf(foundActiveUser);
-
-  //       if (userName === roomUsers[activeUserIndex].userName) {
-  //         setTimeout(() => {}, 1000);
-  //       }
-  //     }
-  //   };
-  //   getWhoIsNext();
-  // }, [roomUsers]);
-
-  useEffect(() => {
-    socket.on("getWordChoosed", (data: any) => {
-      dispatch(setChoosedWord(data));
-      dispatch(setToolsPanel(true));
-      dispatch(setRoundCount());
-      dispatch(setChoosedWordsList([...choosedWordsList, data]));
-      dispatch(setIsUserDraw(false));
-
-      dispatch(setIsGameStarted(true));
-    });
-    socket.on("gameWords", async (words) => {
-      dispatch(setChosenWords(words));
-    });
-
-    return () => {
-      socket.off("gameWords");
-      socket.off("getWord");
-    };
-  }, []);
 
   return (
     <div className={styles.container}>

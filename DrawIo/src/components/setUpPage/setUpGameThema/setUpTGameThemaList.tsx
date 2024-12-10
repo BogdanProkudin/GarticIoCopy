@@ -19,6 +19,7 @@ const SetUpThemaList = () => {
       {themaList.themes.map((thema, index) => {
         return (
           <div
+            id="set_up_thema_item_container"
             onClick={() => handleSelectThema(index)}
             key={thema.name}
             style={{

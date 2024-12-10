@@ -9,6 +9,7 @@ import {
   setIsUserInLobbdy,
 } from "../../../store/slices/roomInfo";
 import axios from "axios";
+import { resetUserInfoState } from "../../../store/slices/userInfo";
 
 interface themaProps {
   name: string;
@@ -76,9 +77,6 @@ const SetUpGameThemaStartButton = ({ setIsLoading }: any) => {
   }
   const handleCreateNewRoom = async () => {
     if (selectedThema.name.length !== 0) {
-      dispatch(resetGameState());
-      dispatch(setIsGameRoomLoading(true));
-
       const roomId = generateRoomId();
       const generatedUserId = generateUserId();
       const roomData: roomDataProps = {
@@ -97,9 +95,21 @@ const SetUpGameThemaStartButton = ({ setIsLoading }: any) => {
         thema: selectedThema,
         roomId: roomId,
       };
+      const response = await dispatch(createRoom(roomData));
+      console.log("response", response);
+
+      if (response.payload.message === "You are already in the room") {
+        console.log("hello from if");
+
+        navigate("/youalreadyintheroom");
+        return;
+      }
+      dispatch(resetGameState());
+      dispatch(resetUserInfoState());
+      dispatch(setIsGameRoomLoading(true));
 
       socket.connect();
-      await dispatch(createRoom(roomData));
+
       axios.post("http://localhost:3000/startTimer", {
         roomId,
         userId: generatedUserId,
@@ -114,6 +124,7 @@ const SetUpGameThemaStartButton = ({ setIsLoading }: any) => {
   return (
     <>
       <button
+        id="set_up_button"
         onClick={() => handleCreateNewRoom()}
         className={
           selectedThema.name.length > 1

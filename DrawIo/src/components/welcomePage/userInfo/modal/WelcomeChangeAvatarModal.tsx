@@ -211,6 +211,7 @@ const WelcomeChangeAvatarModal = ({
           <MdClose fontSize={40} color="grey" />
         </button>
         <button
+          id="SubmitAvatarBtn"
           className={styles.weclcome_avatar_confirm_button}
           onClick={confirmModal}
         >

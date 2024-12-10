@@ -22,6 +22,7 @@ const SetUpSelectPoints = () => {
   };
   return (
     <Select
+      id="set_up_select_points"
       className={styles.set_up_select_points}
       onChange={handleChange}
       options={options}

@@ -22,6 +22,7 @@ const ShareGameModal: React.FC<ShareShowModalProps> = ({
         () => {
           setCopySuccess("LINK COPIED!");
         },
+
         (err) => {
           setCopySuccess("Ошибка при копировании!");
           console.error("Ошибка копирования текста: ", err);

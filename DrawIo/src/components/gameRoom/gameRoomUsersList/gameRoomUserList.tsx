@@ -1,10 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hook";
 import styles from "../styles.module.scss";
 import GameRoomUserItem from "./gameRoomUserItem";
 import { setIsPointAnimation } from "../../../store/slices/roomInfo";
-
-const GameRoomUserList: React.FC = () => {
+type GameRoomUserListProps = {
+  setShowUserActionModal: Dispatch<SetStateAction<boolean>>;
+};
+const GameRoomUserList: React.FC<GameRoomUserListProps> = ({
+  setShowUserActionModal,
+}) => {
   const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
   const selectedPlayers = useAppSelector(
     (state) => state.drawThema.selectedPlayers
@@ -55,7 +65,11 @@ const GameRoomUserList: React.FC = () => {
         const currentUser = sortedRoomUsers[index];
 
         return (
-          <div key={index} className={styles.game_room_user}>
+          <div
+            onClick={() => setShowUserActionModal(true)}
+            key={index}
+            className={styles.game_room_user}
+          >
             <GameRoomUserItem
               userAvatar={currentUser?.userAvatar || ""}
               userName={currentUser?.userName || ""}

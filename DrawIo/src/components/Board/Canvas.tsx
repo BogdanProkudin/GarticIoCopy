@@ -35,63 +35,6 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
   );
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // useEffect(() => {
-  //   const canvas = new fabric.Canvas(canvasRef.current, {
-  //     width: 650,
-  //     height: 400,
-  //     backgroundColor: "white",
-  //     isDrawingMode: false,
-  //     selectionFullyContained: false,
-  //     selection: false,
-  //   });
-
-  //   canvas.hoverCursor = "crosshair";
-  //   canvas.moveCursor = "crosshair";
-  //   canvas.defaultCursor = "crosshair";
-
-  //   drawRef.current = canvas;
-  //   contextRef.current = canvas.getContext() as CanvasRenderingContext2D;
-
-  //   socket.on("getDraw2", (data: any) => {
-  //     if (
-  //       data.type === "path" &&
-  //       drawRef.current &&
-  //       activeUser.userName &&
-  //       activeUser.userName !== userNameStorage
-  //     ) {
-  //       const path = new fabric.Path(data.path, data.options);
-  //       drawRef.current.add(path);
-  //       drawRef.current.renderAll();
-  //       canvas.selection = false;
-  //       drawRef.current.forEachObject((obj: any) => {
-  //         obj.selectable = false;
-  //       });
-  //     }
-  //   });
-
-  //   canvas.on("path:created", (e: any) => {
-  //     const path = e.path;
-  //     const pathData = {
-  //       type: "path",
-  //       roomId,
-  //       path: path.path,
-  //       options: path.toObject([
-  //         "left",
-  //         "top",
-  //         "fill",
-  //         "stroke",
-  //         "strokeWidth",
-  //       ]),
-  //     };
-  //     canvas.renderAll();
-  //     socket.emit("drawing2", pathData);
-  //   });
-
-  //   return () => {
-  //     canvas.dispose();
-  //   };
-  // }, [roomId, activeUser.userName, userNameStorage]);
-
   useInitializeCanvas({
     userNameStorage,
     activeUser,

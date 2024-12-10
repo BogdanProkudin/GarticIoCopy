@@ -9,7 +9,7 @@ function WelcomeUserAvatar() {
   const activeAvatar = useAppSelector((state) => state.userAuth.activeAvatar);
   const openModal = () => setIsOpen(true);
   return (
-    <div className={styles.welcome_user_avatar_container}>
+    <div id="selectUserAvatar" className={styles.welcome_user_avatar_container}>
       <div
         style={{
           backgroundImage: `url(${activeAvatar})`,
@@ -18,7 +18,11 @@ function WelcomeUserAvatar() {
         }}
         className={styles.welcome_user_avatar}
       />
-      <button onClick={openModal} className={styles.welcome_user_select_avatar}>
+      <button
+        id="ChangeAvatar"
+        onClick={openModal}
+        className={styles.welcome_user_select_avatar}
+      >
         <FaPen color="white" fontSize={24} />
       </button>
       <WelcomeChangeAvatarModal isOpen={isOpen} setIsOpen={setIsOpen} />

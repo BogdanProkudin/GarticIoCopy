@@ -4,6 +4,7 @@ import winAnimation from "../../../tools/Animation - 1719930962364.json";
 import styles from "../styles.module.scss";
 import { RootState } from "../../../store/store";
 import { useAppSelector } from "../../../store/hook";
+import { useNavigate } from "react-router-dom";
 
 const defaultOptions = {
   loop: false,
@@ -16,8 +17,8 @@ const defaultOptions = {
 
 const Winners: React.FC = () => {
   const winners = useAppSelector((state: RootState) => state.drawThema.winners);
-  console.log("WQQQ", winners);
 
+  const navigate = useNavigate();
   const getWinnerStyle = useMemo(
     () => (index: number) => ({
       background: `url(${
@@ -62,7 +63,12 @@ const Winners: React.FC = () => {
           </div>
         ))}
       </div>
-      <button className={styles.win_new_game_button}>NEW GAME</button>
+      <button
+        onClick={() => navigate("/", { replace: true })}
+        className={styles.win_new_game_button}
+      >
+        NEW GAME
+      </button>
     </div>
   );
 };

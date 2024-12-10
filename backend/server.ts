@@ -145,7 +145,7 @@ app.post("/wordChoosed", RoomController.wordChoosed);
 app.post("/startNewGame", RoomController.handleNextUserCall);
 // app.post("/startTimer", RoomController.startTimer);
 app.post("/userGuessed", RoomController.userGuessedCorrect);
-
+app.post("/isUserInLobby", RoomController.isUserInGame);
 app.post("/updateUserState", RoomController.updateUserState);
 app.post("/ping", RoomController.Ping);
 server.listen(PORT, () => {

@@ -12,6 +12,7 @@ export interface IActiveUser {
   addedPoints: number;
 }
 export interface IRoomUsers {
+  userId: string;
   isActive: boolean;
   userAvatar: string;
   userName: string;
@@ -120,6 +121,7 @@ const initialState: initialStateProps = {
       userAvatar: "",
       userName: "",
       userPoints: 0,
+      userId: "",
       addedPoints: 0,
       isUserInLobby: false,
       isUserLeave: false,
@@ -155,7 +157,7 @@ export const createRoom = createAsyncThunk(
 
       return response.data; // Возвращаем только данные из ответа
     } catch (err) {
-      console.log("ERROR WHEN FETCHING AnimeData :", err);
+      console.log("ERROR WHEN creating new room", err);
       throw err; // Пробрасываем ошибку дальше для обработки в компоненте
     }
   }

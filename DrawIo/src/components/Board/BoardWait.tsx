@@ -8,6 +8,7 @@ import { memo, useEffect } from "react";
 import { handleGameStartButton } from "../../utils/handleStartGame";
 import { setIsUserDraw } from "../../store/slices/userInfo";
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
+import { useGameStarted } from "../../hooks/useGameStarted";
 
 export const useGameSelectors = () => {
   return {
@@ -40,20 +41,7 @@ const BoardWait = () => {
     return <div>IN BOARD WAIT ZERO USERS</div>;
   }
 
-  useEffect(() => {
-    const onGameStarted = () => {
-      dispatch(setIsUserDraw(true));
-      dispatch(setIsRoundEnd(true));
-
-      dispatch(setIsGameStarted(true));
-    };
-
-    socket.on("gameStarted", onGameStarted);
-
-    return () => {
-      socket.off("gameStarted", onGameStarted);
-    };
-  }, [dispatch]);
+  useGameStarted();
 
   const waitingTextStyles = {
     top:

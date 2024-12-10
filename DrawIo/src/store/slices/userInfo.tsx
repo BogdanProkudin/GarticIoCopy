@@ -7,6 +7,8 @@ interface IUserInfo {
   isUserWonGame: boolean;
   isUsersNotGuessed: boolean; //users
   isUserDraw: boolean; //user
+  isUserOnline: boolean;
+  isUserJustLeftGame: boolean;
 }
 
 const initialState: IUserInfo = {
@@ -16,6 +18,8 @@ const initialState: IUserInfo = {
   isOneUserGuessed: false,
   isUsersNotGuessed: false,
   isUserDraw: false,
+  isUserOnline: true,
+  isUserJustLeftGame: false,
 };
 
 // Создание среза
@@ -41,6 +45,15 @@ const userInfoSlice = createSlice({
     setIsUserDraw: (state, action) => {
       state.isUserDraw = action.payload;
     },
+    setIsUserOnline: (state, action) => {
+      state.isUserOnline = action.payload;
+    },
+    setIsUserJustLeftGame: (state, action) => {
+      state.isUserJustLeftGame = action.payload;
+    },
+    resetUserInfoState(state) {
+      return initialState;
+    },
   },
 });
 
@@ -48,9 +61,11 @@ export const {
   setIsUsersNotGuessedStarted,
   setIsAllUsersGuessed,
   setIsUserWonGame,
-
+  resetUserInfoState,
   setIsOneUserGuessed,
   setIsUsersNotGuessed,
+  setIsUserOnline,
+  setIsUserJustLeftGame,
   setIsUserDraw,
 } = userInfoSlice.actions;
 export default userInfoSlice.reducer;

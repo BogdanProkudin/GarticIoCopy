@@ -39,8 +39,7 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   const roundCount = useAppSelector((state) => state.drawThema.roundCount);
   const activeTool = useAppSelector((state) => state.drawInfo.activeTool);
   const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
-  const roomId = useGetRoomIdFromUrl();
-  const userNameStorage = localStorage.getItem("userName");
+
   const isAllUsersGuessed = useAppSelector(
     (state) => state.userInfo.isAllUsersGuessed
   );
@@ -54,8 +53,6 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   );
 
   useEffect(() => {
-    console.log("slibidirizz");
-
     socket.on("getNextUserCall", (data) => {
       handleNextUserCall({
         dispatch,

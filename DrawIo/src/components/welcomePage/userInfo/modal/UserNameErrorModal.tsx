@@ -6,11 +6,12 @@ import styles from "../../styles.module.scss";
 import { useAppDispatch, useAppSelector } from "../../../../store/hook";
 import { setIsUserNameError } from "../../../../store/slices/userAuth";
 
-const UserNameErrorModal: React.FC = () => {
-  const isUserNameError = useAppSelector(
-    (state) => state.userAuth.isUserNameError
-  );
-  const dispatch = useAppDispatch();
+const UserNameErrorModal: React.FC<{
+  errorText: string;
+  modalName: string;
+  isModalOpen: boolean;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ errorText, modalName, isModalOpen, setIsModalOpen }) => {
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -20,11 +21,11 @@ const UserNameErrorModal: React.FC = () => {
     },
   };
   const closeModal = () => {
-    dispatch(setIsUserNameError(false));
+    setIsModalOpen(false);
   };
   return (
     <ReactModal
-      isOpen={isUserNameError}
+      isOpen={isModalOpen}
       onRequestClose={closeModal}
       className={styles.modal_content}
       overlayClassName={styles.modal_overlay}
@@ -41,7 +42,7 @@ const UserNameErrorModal: React.FC = () => {
       }}
     >
       <div className={styles.userName_not_correct_title}>
-        <h3>ALERT</h3>
+        <h3>{modalName}</h3>
       </div>
       <Lottie
         options={defaultOptions}
@@ -49,10 +50,7 @@ const UserNameErrorModal: React.FC = () => {
         width={250}
         style={{ marginTop: "0.6rem" }}
       />
-      <span className={styles.userName_error_text}>
-        Invalid nickname: It must contain at least 2 characters, without special
-        characters.
-      </span>
+      <span className={styles.userName_error_text}>{errorText}</span>
       <button
         onClick={closeModal}
         className={styles.welcome_avatar_submit_button}
