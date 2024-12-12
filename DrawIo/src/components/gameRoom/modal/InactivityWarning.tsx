@@ -1,21 +1,20 @@
 import React from "react";
 import ReactModal from "react-modal";
-import styles from "../../styles.module.scss";
+import styles from "../../welcomePage/styles.module.scss";
+import { MESSAGES } from "../../../constants/messages";
 import Lottie from "react-lottie";
-import animationData from "../../../../tools/Animation - 1709999171287 (1).json";
+import animationData from "../../../tools/Animation - 1709999171287 (1).json";
 
-interface UserNameErrorModalProps {
+interface InactivityWarningProps {
   isOpen: boolean;
-  errorText: string;
-  modalName: string;
-  closeModal: () => void;
+  timeToDisconnect: number;
+  onStayActive: () => void;
 }
 
-const UserNameErrorModal: React.FC<UserNameErrorModalProps> = ({
+export const InactivityWarning: React.FC<InactivityWarningProps> = ({
   isOpen,
-  errorText,
-  modalName,
-  closeModal,
+  timeToDisconnect,
+  onStayActive,
 }) => {
   const defaultOptions = {
     loop: true,
@@ -51,7 +50,7 @@ const UserNameErrorModal: React.FC<UserNameErrorModalProps> = ({
       }}
     >
       <div className={styles.userName_not_correct_title}>
-        <h3>{modalName}</h3>
+        <h3>WARNING</h3>
       </div>
       <Lottie
         options={defaultOptions}
@@ -59,15 +58,19 @@ const UserNameErrorModal: React.FC<UserNameErrorModalProps> = ({
         width={250}
         style={{ marginTop: "0.6rem" }}
       />
-      <span className={styles.userName_error_text}>{errorText}</span>
+      <span className={styles.userName_error_text}>
+        {MESSAGES.INACTIVITY_WARNING.replace(
+          "{time}",
+          timeToDisconnect.toString()
+        )}
+      </span>
       <button
-        onClick={closeModal}
+        onClick={onStayActive}
         className={styles.welcome_avatar_submit_button}
       >
         <div />
-        <strong>OK</strong>
+        <strong>STAY IN GAME</strong>
       </button>
     </ReactModal>
   );
 };
-export default UserNameErrorModal;

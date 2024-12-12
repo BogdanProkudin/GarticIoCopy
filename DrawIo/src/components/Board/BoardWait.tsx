@@ -9,6 +9,7 @@ import { handleGameStartButton } from "../../utils/handleStartGame";
 import { setIsUserDraw } from "../../store/slices/userInfo";
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import { useGameStarted } from "../../hooks/useGameStarted";
+import Loading from "../LoadingGame/Loading";
 
 export const useGameSelectors = () => {
   return {
@@ -37,10 +38,11 @@ const BoardWait = () => {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-  if (!roomUsers) {
-    return <div>IN BOARD WAIT ZERO USERS</div>;
-  }
+  if (!roomUsers || roomUsers.length === 0) {
+    console.log("NO ROOM USERS в board wait");
 
+    return <Loading />;
+  }
   useGameStarted();
 
   const waitingTextStyles = {

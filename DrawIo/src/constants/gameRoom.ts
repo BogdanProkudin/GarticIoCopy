@@ -4,10 +4,12 @@ export const API_ENDPOINTS = {
   PING: "http://localhost:3000/ping",
   UPDATE_USER_STATE: "http://localhost:3000/updateUserState",
   USER_LEAVE_ROOM: "http://localhost:3000/userLeaveRoom",
+  GET_ROOM_DATA: "http://localhost:3000/getRoomData",
 } as const;
 
 export const STYLES = {
-  FONT_URL: "https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,900;1,900&display=swap",
+  FONT_URL:
+    "https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,900;1,900&display=swap",
 } as const;
 
 export const MESSAGES = {

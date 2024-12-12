@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction } from "react";
 type GameRoomHeaderProps = {
   setShowShareModal: Dispatch<SetStateAction<boolean>>;
   setShowRulesModal: Dispatch<SetStateAction<boolean>>;
+  handleLeaveClick: () => void;
 };
 const GameRoomHeader: React.FC<GameRoomHeaderProps> = ({
   setShowShareModal,

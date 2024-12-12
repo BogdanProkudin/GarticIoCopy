@@ -36,8 +36,8 @@ function WelcomeUserName() {
         modalName="Alert"
         errorText=" Invalid nickname: It must contain at least 2 characters, without special
         characters."
-        isModalOpen={isUserNameError}
-        setIsModalOpen={() => dispatch(setIsUserNameError(false))}
+        isOpen={isUserNameError}
+        closeModal={() => dispatch(setIsUserNameError(false))}
       />
     </div>
   );

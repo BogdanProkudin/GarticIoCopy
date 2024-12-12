@@ -7,7 +7,7 @@ import UserNameErrorModal from "./userInfo/modal/UserNameErrorModal";
 import UserOfflineModal from "./userInfo/modal/UserOfflineModal";
 function WelcomePage() {
   const isUserOnline = useAppSelector((state) => state.userInfo.isUserOnline);
-  const isUserFullyLeft = useAppSelector(
+  const isUserJustLeftGame = useAppSelector(
     (state) => state.userInfo.isUserJustLeftGame
   );
   const dispatch = useAppDispatch();
@@ -17,10 +17,10 @@ function WelcomePage() {
       <WelcomeInfo />
       {!isUserOnline && <UserOfflineModal />}
       <UserNameErrorModal
-        isModalOpen={isUserFullyLeft}
-        setIsModalOpen={() => dispatch(setIsUserJustLeftGame(false))}
+        isOpen={isUserJustLeftGame}
+        closeModal={() => dispatch(setIsUserJustLeftGame(false))}
         modalName="Alert"
-        errorText="You have just left the game room. Please wait a moment before joining a new game or creating a room."
+        errorText="You have left or are already in a room. Please wait before joining or creating another."
       />
     </div>
   );

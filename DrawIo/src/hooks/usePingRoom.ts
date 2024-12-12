@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { NavigateFunction } from 'react-router-dom';
-import axios from 'axios';
-import { API_ENDPOINTS, PING_INTERVAL, MESSAGES } from '../constants/gameRoom';
+import { useEffect } from "react";
+import { NavigateFunction } from "react-router-dom";
+import axios from "axios";
+import { API_ENDPOINTS, PING_INTERVAL, MESSAGES } from "../constants/gameRoom";
 
 export const usePingRoom = (
   roomId: string,

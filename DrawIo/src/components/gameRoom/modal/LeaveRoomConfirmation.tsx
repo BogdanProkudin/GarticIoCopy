@@ -1,21 +1,22 @@
 import React from "react";
 import ReactModal from "react-modal";
-import styles from "../../styles.module.scss";
+import styles from "../../welcomePage/styles.module.scss";
+import { MESSAGES } from "../../../constants/messages";
 import Lottie from "react-lottie";
-import animationData from "../../../../tools/Animation - 1709999171287 (1).json";
+import animationData from "../../../tools/Animation - 1709999171287 (1).json";
 
-interface UserNameErrorModalProps {
+interface LeaveRoomConfirmationProps {
   isOpen: boolean;
-  errorText: string;
-  modalName: string;
-  closeModal: () => void;
+  isLoading?: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
 }
 
-const UserNameErrorModal: React.FC<UserNameErrorModalProps> = ({
+export const LeaveRoomConfirmation: React.FC<LeaveRoomConfirmationProps> = ({
   isOpen,
-  errorText,
-  modalName,
-  closeModal,
+  isLoading = false,
+  onConfirm,
+  onCancel,
 }) => {
   const defaultOptions = {
     loop: true,
@@ -34,6 +35,7 @@ const UserNameErrorModal: React.FC<UserNameErrorModalProps> = ({
       ariaHideApp={false}
       style={{
         overlay: {
+          zIndex: 1000,
           backgroundColor: "rgba(0, 0, 0, 0.5)",
         },
         content: {
@@ -51,7 +53,7 @@ const UserNameErrorModal: React.FC<UserNameErrorModalProps> = ({
       }}
     >
       <div className={styles.userName_not_correct_title}>
-        <h3>{modalName}</h3>
+        <h3>CONFIRMATION</h3>
       </div>
       <Lottie
         options={defaultOptions}
@@ -59,15 +61,27 @@ const UserNameErrorModal: React.FC<UserNameErrorModalProps> = ({
         width={250}
         style={{ marginTop: "0.6rem" }}
       />
-      <span className={styles.userName_error_text}>{errorText}</span>
-      <button
-        onClick={closeModal}
-        className={styles.welcome_avatar_submit_button}
-      >
-        <div />
-        <strong>OK</strong>
-      </button>
+      <span className={styles.userName_error_text}>
+        {MESSAGES.LEAVE_CONFIRMATION}
+      </span>
+      <div className={styles.buttons_container}>
+        <button
+          onClick={onCancel}
+          disabled={isLoading}
+          className={styles.welcome_avatar_cancel_button}
+        >
+          <div />
+          <strong>CANCEL</strong>
+        </button>
+        <button
+          onClick={onConfirm}
+          disabled={isLoading}
+          className={styles.welcome_avatar_submit_button}
+        >
+          <div />
+          <strong>{isLoading ? "LEAVING..." : "LEAVE"}</strong>
+        </button>
+      </div>
     </ReactModal>
   );
 };
-export default UserNameErrorModal;

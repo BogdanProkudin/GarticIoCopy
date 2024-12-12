@@ -86,9 +86,7 @@ const PrepareGameButton: React.FC<PrepareGameButtonProps> = ({
   //     }
   //   }
   // };
-  if (!userAvatar || !userId || !userNameStorage) {
-    return <div>Error ocured no useravatar or userid or username </div>;
-  }
+
   const handleJoinRoom = useJoinGameRoom({
     userAvatar,
     setIsGameStartedError,

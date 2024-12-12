@@ -268,11 +268,13 @@
   margin-left: 0.6rem;
   background-color: rgb(5, 5, 103);
   border-radius: 10px;
+  transition: all 0.5s ease-in-out;
 
   .progress_bar_lines {
     height: 100%;
     background-color: goldenrod;
     border-radius: 10px;
+    transition: all 0.5s ease-in-out;
   }
 }
 
@@ -550,6 +552,10 @@
     height: 6px;
     background-color: goldenrod;
     border-radius: 10px;
+  }
+
+  &.opacity_transition {
+    transition: opacity 0.3s ease-in-out;
   }
 }
 .white_background {

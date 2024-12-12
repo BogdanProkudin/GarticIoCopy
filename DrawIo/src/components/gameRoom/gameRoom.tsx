@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hook";
 import { useNavigate } from "react-router-dom";
 import styles from "./styles.module.scss";
@@ -18,6 +18,12 @@ import { usePingRoom } from "../../hooks/usePingRoom";
 import { GameRoomModals } from "./GameRoomModals";
 import { API_ENDPOINTS, MESSAGES, STYLES } from "../../constants/gameRoom";
 import { SideContentProps } from "../../types/gameRoom";
+import { LeaveRoomConfirmation } from "./modal/LeaveRoomConfirmation";
+import { InactivityWarning } from "./modal/InactivityWarning";
+import useLeaveRoomOnUnload from "../../hooks/LeaveRoom";
+import { MESSAGES as MESSAGES_CONSTANT } from "../../constants/messages";
+import { useBeforeUnload } from "../../hooks/useBeforeUnload";
+import { LeaveRoomService } from "../../services/leaveRoomService";
 
 const GameRoom = () => {
   const dispatch = useAppDispatch();
@@ -30,6 +36,7 @@ const GameRoom = () => {
   // Local state
   const [showShareModal, setShowShareModal] = useState(false);
   const [showRulesModal, setShowRulesModal] = useState(false);
+  const [showLeaveConfirmation, setShowLeaveConfirmation] = useState(false);
 
   // Redux state
   const userNameStorage = localStorage.getItem("userName");
@@ -40,6 +47,49 @@ const GameRoom = () => {
   const isToolsPanel = useAppSelector((state) => state.drawInfo.toolsPanel);
   const host = useAppSelector((state) => state.drawThema.host);
   const isUserWonGame = useAppSelector((state) => state.userInfo.isUserWonGame);
+  const userName = useAppSelector((state) => state.userAuth.userNameInputValue);
+  const userAvatar = localStorage.getItem("userAvatar");
+  const activeAvatar = useAppSelector((state) => state.userAuth.activeAvatar);
+
+  const {
+    isActive,
+    isLeaving,
+    showWarning,
+    timeToDisconnect,
+    handleLeaveRoom,
+  } = useLeaveRoomOnUnload(roomId, userNameStorage);
+
+  // Обработчики для модальных окон
+  const handleConfirmLeave = async () => {
+    await handleLeaveRoom();
+  };
+
+  const handleCancelLeave = () => {
+    setShowLeaveConfirmation(false);
+  };
+
+  const handleStayActive = () => {
+    // Действие будет выполнено автоматически при любом взаимодействии пользователя
+    document.dispatchEvent(new Event("mousemove"));
+  };
+
+  // Добавляем обработчик для кнопки выхода
+  const handleBeforeUnload = useCallback(async () => {
+    try {
+      await LeaveRoomService.leaveRoom(roomId, userNameStorage!);
+    } catch (error) {
+      console.error("Error during page unload:", error);
+    }
+  }, [roomId, userNameStorage]);
+
+  // Используем обновленный хук
+  const { confirmLeave } = useBeforeUnload(handleBeforeUnload);
+
+  // Обработчик для кнопки выхода
+  const handleLeaveClick = () => {
+    confirmLeave(); // Устанавливаем флаг, что пользователь подтвердил выход
+    setShowLeaveConfirmation(true);
+  };
 
   // Custom hooks
   useSocketConnection(roomId);
@@ -56,15 +106,11 @@ const GameRoom = () => {
     [activeUser.userName, userNameStorage, isToolsPanel]
   );
 
-  // Effects
   useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.returnValue = MESSAGES.LEAVE_PAGE_CONFIRMATION;
-      return MESSAGES.LEAVE_PAGE_CONFIRMATION;
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    axios.post(API_ENDPOINTS.PING, {
+      roomId,
+      userId,
+    });
   }, []);
 
   useEffect(() => {
@@ -99,6 +145,17 @@ const GameRoom = () => {
     }
   }, [host, userNameStorage]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = MESSAGES.LEAVE_PAGE_CONFIRMATION;
+      return MESSAGES.LEAVE_PAGE_CONFIRMATION;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   return (
     <div className={styles.game_page_container}>
       <link rel="stylesheet" href={STYLES.FONT_URL} />
@@ -106,6 +163,7 @@ const GameRoom = () => {
         <GameRoomHeader
           setShowShareModal={setShowShareModal}
           setShowRulesModal={setShowRulesModal}
+          handleLeaveClick={handleLeaveClick}
         />
 
         <GameRoomModals
@@ -113,6 +171,19 @@ const GameRoom = () => {
           showRulesModal={showRulesModal}
           setShowShareModal={setShowShareModal}
           setShowRulesModal={setShowRulesModal}
+        />
+
+        <LeaveRoomConfirmation
+          isOpen={showLeaveConfirmation}
+          isLoading={isLeaving}
+          onConfirm={handleConfirmLeave}
+          onCancel={handleCancelLeave}
+        />
+
+        <InactivityWarning
+          isOpen={showWarning}
+          timeToDisconnect={timeToDisconnect}
+          onStayActive={handleStayActive}
         />
 
         {!isUserWonGame ? (

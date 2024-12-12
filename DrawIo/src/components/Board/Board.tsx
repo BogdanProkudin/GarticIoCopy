@@ -34,6 +34,7 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   const [isGuessedAnimationFinished, setIsGuessedAnimationFinished] =
     useState(false);
   const mousePosition = useMousePosition();
+
   const activeUser = useAppSelector((state) => state.drawThema.activeUser);
   const dispatch = useAppDispatch();
   const roundCount = useAppSelector((state) => state.drawThema.roundCount);
@@ -43,7 +44,6 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   const isAllUsersGuessed = useAppSelector(
     (state) => state.userInfo.isAllUsersGuessed
   );
-
   const toolsPanel = useAppSelector((state) => state.drawInfo.toolsPanel);
   const isGameStarted = useAppSelector(
     (state) => state.drawThema.isGameStarted
@@ -73,6 +73,7 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
     activeUser,
     drawRef,
     contextRef,
+
     userNameLocalStorage,
   });
 

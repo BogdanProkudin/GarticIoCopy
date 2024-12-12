@@ -40,28 +40,25 @@ export const useCanvas = (roomId: string) => {
   }, []);
 
   const startDrawing = useCallback(
-    (e: MouseEvent) => {
+    (event: MouseEvent) => {
       const canvas = canvasRef.current;
       const ctx = contextRef.current;
       if (!canvas || !ctx) return;
+      console.log("TRUEEE");
 
       setIsDrawing(true);
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
 
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-
-      const drawingEvent: DrawingEvent = {
+      emit("drawing", {
+        type: "start",
         x,
         y,
         roomId,
-        type: "start",
-      };
-      emit("drawing", drawingEvent);
+      });
     },
-    [roomId, emit]
+    [emit, roomId]
   );
 
   const draw = useCallback(
@@ -93,18 +90,18 @@ export const useCanvas = (roomId: string) => {
   const stopDrawing = useCallback(() => {
     const ctx = contextRef.current;
     if (!ctx) return;
+    console.log("STOP DRAWING");
 
     setIsDrawing(false);
     ctx.closePath();
 
-    const drawingEvent: DrawingEvent = {
+    emit("drawing", {
+      type: "end",
       x: 0,
       y: 0,
       roomId,
-      type: "end",
-    };
-    emit("drawing", drawingEvent);
-  }, [roomId, emit]);
+    });
+  }, [emit, roomId]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

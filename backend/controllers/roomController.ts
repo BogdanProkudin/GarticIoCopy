@@ -124,21 +124,32 @@ export const handleNextUserCall = async (
   }
 };
 export const isUserInGame = async (req: Request, res: Response) => {
-  const { userId } = req.body;
-  console.log("USERID", userId, "BOD", req.body);
+  try {
+    const { userId } = req.body;
+    console.log("USERID", userId, "BOD", req.body);
 
-  const isPlayerFound = await RoomModel.find({
-    usersInfo: {
-      $elemMatch: { userId: userId, isUserLeave: undefined },
-    },
-  });
-  console.log("IS PLAYER FOUND", isPlayerFound.length, userId);
-  if (isPlayerFound.length >= 1) {
-    console.log("REDIRECT TO MAIN PAGE SECOND ACTIVE GAME", userId);
-    return res.status(200).json({ message: "You are already in the room" });
+    const isPlayerFound = await RoomModel.find(
+      {
+        usersInfo: {
+          $elemMatch: { userId: userId, isUserLeave: undefined },
+        },
+      },
+      { maxTimeMS: 10000 }
+    );
+    console.log("IS PLAYER FOUND", isPlayerFound.length, userId);
+    if (isPlayerFound.length >= 1) {
+      console.log("REDIRECT TO MAIN PAGE SECOND ACTIVE GAME", userId);
+      return res.status(200).json({ message: "You are already in the room" });
+    }
+    return res.status(200).json({ message: "User is not in the game" });
+  } catch (error: any) {
+    if (error.name === "MongoTimeoutError") {
+      return res.status(408).json({ message: "Request timeout" });
+    }
+    return res.status(500).json({ message: "Internal server error" });
   }
-  return res.status(200).json({ message: "User is not in the game" });
 };
+
 export const createRoom = async (req: Request, res: Response) => {
   try {
     // Получаем данные для создания комнаты из запроса
@@ -435,7 +446,9 @@ export const roundTimer = async (req: Request, res: Response) => {
         io.to(roomId).emit("getNextUserCall", data);
 
         usersNotGuessedTimer({ body: roomId }, null);
-        res.status(200).json({ timer: true, message: "round timer is over" });
+        return res
+          .status(200)
+          .json({ timer: true, message: "round timer is over" });
       }
     }, 50000);
 

@@ -226,6 +226,7 @@
     }
   }
 }
+
 .welcome_user_avatar_list {
   display: grid;
   margin-top: 1rem;
@@ -263,7 +264,7 @@
     background-position: bottom;
   }
 }
-.weclcome_avatar_confirm_button {
+.welcome_avatar_confirm_button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -306,6 +307,51 @@
     background-color: orange;
   }
 }
+.welcome_avatar_cancel_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 186px;
+  height: 40px;
+  background-color: #13bafe;
+  border-top-color: #66cfff;
+  border-bottom-color: #248aed;
+
+  border-radius: 34px;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  box-shadow: 0 0 0 5px #002043, 0 0 0 6px #7c92b0;
+  text-align: center;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition-duration: 0.4s; /* Длительность анимации */
+  strong {
+    font-size: 18px;
+    font-family: "Nunito";
+    color: #001b4d;
+    letter-spacing: 0;
+    margin: 0 15px 0 0;
+    text-transform: uppercase;
+    word-break: break-word;
+    padding-left: 0.6rem;
+  }
+
+  div {
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: contain;
+    width: 26px;
+    height: 23px;
+    background-image: url("https://gartic.io/static/images/new/ic_No.svg");
+  }
+  &:hover {
+    background-color: #00aeff;
+  }
+  &:active {
+    background-color: #00aeff;
+  }
+}
+
 .welcome_avatar_close_button {
   width: 31px;
   border: none;
@@ -409,6 +455,49 @@
   font-family: "Nunito";
   color: #797979;
   font-size: 18px;
+}
+.welcome_avatar_confirm_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 186px;
+  height: 40px;
+  background-color: #ffbf00;
+  border-top-color: #ffe100;
+  border-bottom-color: #f88700;
+  border-radius: 34px;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  box-shadow: 0 0 0 5px #002043, 0 0 0 6px #7c92b0;
+  text-align: center;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  div {
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: contain;
+    width: 26px;
+    height: 23px;
+    background-image: url("https://gartic.io/static/images/new/ic_Yes.svg");
+  }
+  &:hover {
+    background-color: #f4c949;
+  }
+  &:active {
+    background-color: orange;
+  }
+
+  strong {
+    font-size: 18px;
+    font-family: "Nunito";
+    color: #001b4d;
+    letter-spacing: 0;
+    margin: 0 15px 0 0;
+    text-transform: uppercase;
+    word-break: break-word;
+    padding-left: 0.6rem;
+  }
 }
 .welcome_avatar_submit_button {
   display: flex;

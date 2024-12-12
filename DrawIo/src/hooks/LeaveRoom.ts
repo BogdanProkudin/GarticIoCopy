@@ -1,54 +1,125 @@
-import { useState, useEffect } from "react";
-import { Socket } from "socket.io-client";
+import { useState, useEffect, useCallback } from "react";
 import { useAppDispatch } from "../store/hook";
 import { handleleaveRoom } from "../store/slices/roomInfo";
+import { TIMEOUTS } from "../constants/timeouts";
+import { MESSAGES } from "../constants/messages";
+import { LeaveRoomService } from "../services/leaveRoomService";
+import { useNavigate } from "react-router-dom";
 
-const useLeaveRoomOnUnload = (
-  socket: Socket,
-  roomId: string,
-  userName: string | null
-) => {
+interface UseLeaveRoomState {
+  isActive: boolean;
+  isLeaving: boolean;
+  showWarning: boolean;
+  timeToDisconnect: number;
+}
+
+const useLeaveRoomOnUnload = (roomId: string, userName: string | null) => {
   const dispatch = useAppDispatch();
-  const [isActive, setIsActive] = useState(true);
+  const navigate = useNavigate();
+  const [state, setState] = useState<UseLeaveRoomState>({
+    isActive: true,
+    isLeaving: false,
+    showWarning: false,
+    timeToDisconnect: 0,
+  });
+
+  // Синхронизация состояния между вкладками
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "roomActivity") {
+        const activity = JSON.parse(e.newValue || "{}");
+        if (activity.roomId === roomId) {
+          setState(prev => ({ ...prev, isActive: activity.isActive }));
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [roomId]);
+
+  const updateActivity = useCallback(
+    (isActive: boolean) => {
+      setState(prev => ({ ...prev, isActive }));
+      localStorage.setItem(
+        "roomActivity",
+        JSON.stringify({ roomId, isActive })
+      );
+    },
+    [roomId]
+  );
+
+  const handleLeaveRoom = useCallback(async () => {
+    try {
+      setState(prev => ({ ...prev, isLeaving: true }));
+      await LeaveRoomService.leaveRoom(roomId, userName!);
+      navigate("/");
+    } catch (error) {
+      console.error("Error leaving room:", error);
+      if ((error as any).code === "ROOM_NOT_FOUND") {
+        navigate("/");
+      }
+    } finally {
+      setState(prev => ({ ...prev, isLeaving: false }));
+    }
+  }, [roomId, userName, navigate]);
 
   useEffect(() => {
-    if (isActive) {
-      let timeoutId: number | undefined;
+    if (state.isActive) {
+      let inactivityTimer: NodeJS.Timeout;
+      let warningTimer: NodeJS.Timeout;
 
       const handleUserInactive = async () => {
-        await dispatch(handleleaveRoom({ roomId, userName }));
-
-        setIsActive(false);
+        await handleLeaveRoom();
+        updateActivity(false);
       };
 
-      const handleUserActive = () => {
-        setIsActive(true);
-        if (timeoutId) clearTimeout(timeoutId);
-        resetTimeout();
+      const showInactivityWarning = () => {
+        setState(prev => ({
+          ...prev,
+          showWarning: true,
+          timeToDisconnect: Math.floor(
+            (TIMEOUTS.INACTIVITY - TIMEOUTS.INACTIVITY_WARNING) / 1000
+          ),
+        }));
       };
 
-      const resetTimeout = () => {
-        if (!isActive) return;
-        // timeoutId = setTimeout(handleUserInactive, 300000);
+      const resetTimers = () => {
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        if (warningTimer) clearTimeout(warningTimer);
+
+        warningTimer = setTimeout(
+          showInactivityWarning,
+          TIMEOUTS.INACTIVITY_WARNING
+        );
+        inactivityTimer = setTimeout(handleUserInactive, TIMEOUTS.INACTIVITY);
       };
 
-      document.addEventListener("mousemove", handleUserActive);
-      document.addEventListener("keydown", handleUserActive);
-      document.addEventListener("resize", handleUserActive);
+      const handleUserActivity = () => {
+        updateActivity(true);
+        setState(prev => ({ ...prev, showWarning: false }));
+        resetTimers();
+      };
 
-      resetTimeout();
+      document.addEventListener("mousemove", handleUserActivity);
+      document.addEventListener("keydown", handleUserActivity);
+      document.addEventListener("resize", handleUserActivity);
+
+      resetTimers();
 
       return () => {
-        if (timeoutId) clearTimeout(timeoutId);
-        document.removeEventListener("mousemove", handleUserActive);
-        document.removeEventListener("keydown", handleUserActive);
-        document.removeEventListener("resize", handleUserActive);
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        if (warningTimer) clearTimeout(warningTimer);
+        document.removeEventListener("mousemove", handleUserActivity);
+        document.removeEventListener("keydown", handleUserActivity);
+        document.removeEventListener("resize", handleUserActivity);
       };
     }
-  }, [socket, roomId, userName, dispatch, isActive]);
+  }, [state.isActive, roomId, userName, handleLeaveRoom, updateActivity]);
 
   return {
-    isActive,
+    ...state,
+    handleLeaveRoom,
   };
 };
 

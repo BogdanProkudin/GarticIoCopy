@@ -14,7 +14,12 @@ app.use(express.json());
 const PORT = 3000;
 mongoose
   .connect(
-    "mongodb+srv://quard:Screaper228@cluster0.zyg0fil.mongodb.net/?retryWrites=true&w=majority"
+    "mongodb+srv://quard:Screaper228@cluster0.zyg0fil.mongodb.net/?retryWrites=true&w=majority",
+    {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
+    }
   )
   .then(() => {
     console.log("BD Ok");

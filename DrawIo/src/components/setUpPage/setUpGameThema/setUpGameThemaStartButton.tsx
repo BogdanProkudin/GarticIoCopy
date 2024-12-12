@@ -9,7 +9,11 @@ import {
   setIsUserInLobbdy,
 } from "../../../store/slices/roomInfo";
 import axios from "axios";
-import { resetUserInfoState } from "../../../store/slices/userInfo";
+import {
+  resetUserInfoState,
+  setIsUserJustLeftGame,
+} from "../../../store/slices/userInfo";
+import { useState } from "react";
 
 interface themaProps {
   name: string;
@@ -37,6 +41,7 @@ export interface roomDataProps {
 const SetUpGameThemaStartButton = ({ setIsLoading }: any) => {
   const hostUserName = localStorage.getItem("userName");
   const userAvatar = localStorage.getItem("userAvatar");
+  const [isLoadingRoom, setIsLoadingRoom] = useState(false);
   const dispatch = useAppDispatch();
   const userId = localStorage.getItem("userId");
   const selectedThema = useAppSelector(
@@ -79,6 +84,7 @@ const SetUpGameThemaStartButton = ({ setIsLoading }: any) => {
     if (selectedThema.name.length !== 0) {
       const roomId = generateRoomId();
       const generatedUserId = generateUserId();
+      setIsLoadingRoom(true);
       const roomData: roomDataProps = {
         usersInfo: [
           {
@@ -96,12 +102,10 @@ const SetUpGameThemaStartButton = ({ setIsLoading }: any) => {
         roomId: roomId,
       };
       const response = await dispatch(createRoom(roomData));
-      console.log("response", response);
 
       if (response.payload.message === "You are already in the room") {
-        console.log("hello from if");
-
-        navigate("/youalreadyintheroom");
+        dispatch(setIsUserJustLeftGame(true));
+        setIsGameRoomLoading(false);
         return;
       }
       dispatch(resetGameState());
@@ -110,14 +114,11 @@ const SetUpGameThemaStartButton = ({ setIsLoading }: any) => {
 
       socket.connect();
 
-      axios.post("http://localhost:3000/startTimer", {
-        roomId,
-        userId: generatedUserId,
-      });
       socket.emit("createRoom", roomData);
       localStorage.setItem("userId", generatedUserId);
       localStorage.setItem("pageAccessedByReload", `false`);
-      axios.post("http://localhost:3000/ping", { roomId, userId });
+      setIsGameRoomLoading(false);
+
       navigate(`/game/${roomId}`, { replace: true });
     }
   };
@@ -133,7 +134,7 @@ const SetUpGameThemaStartButton = ({ setIsLoading }: any) => {
         }
       >
         <div className={styles.set_up_logo} />
-        <strong>NEW ROOM</strong>
+        <strong>{isLoadingRoom ? "CREATING... " : "NEW ROOM"}</strong>
         <span className={styles.set_up_button_error_message}>
           You must select a theme
         </span>

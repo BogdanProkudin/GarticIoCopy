@@ -1,84 +1,3 @@
-// // hooks/useInitializeCanvas.ts
-// import { MutableRefObject, useEffect } from "react";
-// import { fabric } from "fabric";
-// import { socket } from "../socket";
-// interface IuseInitializeCanvas {
-//   canvasRef: React.RefObject<HTMLCanvasElement>;
-//   drawRef: any;
-//   contextRef: MutableRefObject<CanvasRenderingContext2D | null>;
-//   activeUser: any;
-//   userNameStorage: string | null;
-//   roomId: string;
-// }
-// export const useInitializeCanvas = ({
-//   canvasRef,
-//   activeUser,
-//   contextRef,
-//   roomId,
-//   drawRef,
-//   userNameStorage,
-// }: IuseInitializeCanvas) => {
-//   useEffect(() => {
-//     const canvas = new fabric.Canvas(canvasRef.current, {
-//       width: 650,
-//       height: 400,
-//       backgroundColor: "white",
-//       isDrawingMode: false,
-//       selectionFullyContained: false,
-//       selection: false,
-//     });
-
-//     canvas.hoverCursor = "crosshair";
-//     canvas.moveCursor = "crosshair";
-//     canvas.defaultCursor = "crosshair";
-
-//     drawRef.current = canvas;
-//     contextRef.current = canvas.getContext() as CanvasRenderingContext2D;
-
-//     const handleDraw = (data: any) => {
-//       if (
-//         data.type === "path" &&
-//         drawRef.current &&
-//         activeUser.userName &&
-//         activeUser.userName !== userNameStorage
-//       ) {
-//         const path = new fabric.Path(data.path, data.options);
-//         drawRef.current.add(path);
-//         drawRef.current.renderAll();
-//         canvas.selection = false;
-//         drawRef.current.forEachObject((obj: any) => {
-//           obj.selectable = false;
-//         });
-//       }
-//     };
-
-//     socket.on("getDraw2", handleDraw);
-
-//     canvas.on("path:created", (e: any) => {
-//       const path = e.path;
-//       const pathData = {
-//         type: "path",
-//         roomId,
-//         path: path.path,
-//         options: path.toObject([
-//           "left",
-//           "top",
-//           "fill",
-//           "stroke",
-//           "strokeWidth",
-//         ]),
-//       };
-//       canvas.renderAll();
-//       socket.emit("drawing2", pathData);
-//     });
-
-//     return () => {
-//       canvas.dispose();
-//       socket.off("getDraw2", handleDraw);
-//     };
-//   }, [roomId, activeUser.userName, userNameStorage]);
-// };
-
 import { MutableRefObject, useEffect, useCallback } from "react";
 import { fabric } from "fabric";
 import { socket } from "../socket";
@@ -108,13 +27,13 @@ export const useInitializeCanvas = ({
         activeUser.userName &&
         activeUser.userName !== userNameStorage
       ) {
-        const path = new fabric.Path(data.path, data.options);
+        const path = new fabric.Path(data.path, {
+          ...data.options,
+          selectable: false,
+          evented: false,
+        });
         drawRef.current.add(path);
         drawRef.current.renderAll();
-        drawRef.current.selection = false;
-        drawRef.current.forEachObject((obj: any) => {
-          obj.selectable = false;
-        });
       }
     },
     [activeUser.userName, userNameStorage, drawRef]
@@ -147,13 +66,28 @@ export const useInitializeCanvas = ({
       height: 400,
       backgroundColor: "white",
       isDrawingMode: false,
-      selectionFullyContained: false,
       selection: false,
+
+      skipTargetFind: true,
+      interactive: false,
+      hoverCursor: "crosshair",
+      defaultCursor: "crosshair",
     });
 
-    canvas.hoverCursor = "crosshair";
-    canvas.moveCursor = "crosshair";
-    canvas.defaultCursor = "crosshair";
+    // Disable selection globally
+    canvas.selection = false;
+    canvas.forEachObject((obj: any) => {
+      obj.selectable = false;
+      obj.evented = false;
+    });
+
+    // Prevent selection on object added
+    canvas.on("object:added", (e) => {
+      if (e.target) {
+        e.target.selectable = false;
+        e.target.evented = false;
+      }
+    });
 
     drawRef.current = canvas;
     contextRef.current = canvas.getContext() as CanvasRenderingContext2D;

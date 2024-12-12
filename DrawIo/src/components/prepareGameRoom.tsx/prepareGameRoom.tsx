@@ -26,6 +26,7 @@ const PrepareGameRoom = () => {
         setIsLoading(true); // Установка состояния загрузки перед запросом данных
 
         const response = await dispatch(getRoomData({ roomId, userId }));
+        console.log("11");
 
         if (!response.payload) {
           console.error("Error fetching room data:");

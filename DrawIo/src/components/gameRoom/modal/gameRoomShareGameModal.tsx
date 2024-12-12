@@ -86,7 +86,7 @@ const ShareGameModal: React.FC<ShareShowModalProps> = ({
       <input
         ref={inputRef}
         className={styles.send_link_input}
-        value={window.location.href}
+        value={window.location.href.replace("/game/", "/prepareRoom/")}
         disabled
       />
       {copySuccess.length > 1 && (

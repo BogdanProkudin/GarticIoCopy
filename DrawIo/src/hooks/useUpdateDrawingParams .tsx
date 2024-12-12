@@ -12,15 +12,38 @@ export const useUpdateDrawingParams = (
 ) => {
   useEffect(() => {
     const canvas = drawRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      console.log("Canvas not initialized");
+      return;
+    }
 
-    if (activeUser.userName === userNameStorage) {
-      canvas.isDrawingMode = activeTool === "pen" || activeTool === "eraser";
-      canvas.freeDrawingBrush.width =
-        activeTool === "eraser" ? 60 : Number(brushWidth);
-      canvas.freeDrawingBrush.color =
-        activeTool === "eraser" ? "white" : drawColor || "black";
+    const isActiveUser = activeUser.userName === userNameStorage;
+    console.log("Updating drawing params:", {
+      isActiveUser,
+      activeTool,
+      drawColor,
+      brushWidth,
+      currentUser: userNameStorage,
+      activeUser: activeUser.userName
+    });
+
+    if (isActiveUser) {
+      const isDrawingMode = activeTool === "pen" || activeTool === "eraser";
+      const brushColor = activeTool === "eraser" ? "white" : drawColor || "black";
+      const width = activeTool === "eraser" ? 60 : Number(brushWidth);
+
+      canvas.isDrawingMode = isDrawingMode;
+      canvas.freeDrawingBrush.width = width;
+      canvas.freeDrawingBrush.color = brushColor;
       canvas.selection = false;
+
+      console.log("Updated canvas properties:", {
+        isDrawingMode,
+        brushColor,
+        width
+      });
+    } else {
+      console.log("Not active user - skipping drawing param updates");
     }
   }, [
     activeUser.userName,

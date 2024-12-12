@@ -53,7 +53,7 @@ export const useJoinGameRoom = ({
         dispatch(setIsGameRoomLoading(true));
         const response = await axios.post("http://localhost:3000/joinRoom", {
           roomId,
-          
+
           userInfo: {
             userId: userId,
             userAvatar: activeAvatar ? activeAvatar : userAvatar && userAvatar,
@@ -65,7 +65,7 @@ export const useJoinGameRoom = ({
         console.log("REPSSS", response);
 
         localStorage.setItem("userName", userName);
-        axios.post("http://localhost:3000/ping", { roomId, userId });
+
         navigate(`/game/${roomId}`, { replace: true });
       }
     } catch (error) {
