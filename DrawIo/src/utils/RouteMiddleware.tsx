@@ -55,7 +55,7 @@ const RouteMiddleware = ({ children }: any) => {
           return "lobbyNotFound";
         }
 
-        const roomDataFromResponse = response?.payload?.[0];
+        const roomDataFromResponse = response?.payload;
         if (!roomDataFromResponse) {
           setIsChecking(false); // Завершаем проверку
           return "lobbyNotFound";
@@ -76,7 +76,6 @@ const RouteMiddleware = ({ children }: any) => {
           setIsChecking(false); // Завершаем проверку
           return "prepare";
         }
-
         // Обновляем данные комнаты
         dispatch(setRoomData(roomDataFromResponse));
         dispatch(setSelectedThema(roomDataFromResponse.thema));

@@ -32,7 +32,7 @@ export const useDrawing = ({
     (x: number, y: number, drawingColor: string, lineWidth: number) => {
       if (!contextRef.current || isDrawingRef.current) return;
       console.log("startDrawing");
-      
+
       isDrawingRef.current = true;
       contextRef.current.strokeStyle = drawingColor;
       contextRef.current.lineWidth = lineWidth;
@@ -61,7 +61,14 @@ export const useDrawing = ({
   const fillBucket = useCallback(
     (drawingColor: string) => {
       if (!drawRef.current) return;
+      
+      // Сохраняем существующие объекты
+      const currentObjects = drawRef.current.getObjects();
+      
+      // Устанавливаем новый цвет фона
       drawRef.current.backgroundColor = drawingColor;
+      
+      // Отрисовываем все
       drawRef.current.renderAll();
     },
     [drawRef]
@@ -100,9 +107,9 @@ export const useDrawing = ({
 
   // Set up socket listener
   useEffect(() => {
-    socket.on("getDraw", handleDrawing);
+    socket.on("drawing", handleDrawing);
     return () => {
-      socket.off("getDraw", handleDrawing);
+      socket.off("drawing", handleDrawing);
     };
   }, [handleDrawing]);
 

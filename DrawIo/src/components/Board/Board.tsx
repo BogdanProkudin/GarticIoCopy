@@ -11,6 +11,8 @@ import { logDOM } from "@testing-library/react";
 import { useDrawing } from "../../hooks/useDrawing";
 import axios from "axios";
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
+import { useSocket } from "../../hooks/useSocket";
+import { setHost, setRoomUsers } from "../../store/slices/roomInfo";
 
 type BoardProps = {
   roomId: string;
@@ -41,6 +43,27 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   const activeTool = useAppSelector((state) => state.drawInfo.activeTool);
   const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
 
+  useEffect(() => {
+    // Обработчик события getUserLeft
+    const handleUserLeft = (data: {
+      roomId: string;
+      userName: string;
+      roomUsers: any[];
+      host: { userName: string; userId: string };
+    }) => {
+      console.log("User left:", data.userName, data.roomUsers, data.host);
+      dispatch(setRoomUsers(data.roomUsers));
+      dispatch(
+        setHost({ hostName: data.host.userName, hostId: data.host.userId })
+      );
+    };
+
+    socket.on("getUserLeft", handleUserLeft);
+
+    return () => {
+      socket.off("getUserLeft", handleUserLeft);
+    };
+  }, []);
   const isAllUsersGuessed = useAppSelector(
     (state) => state.userInfo.isAllUsersGuessed
   );
@@ -68,6 +91,8 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
       socket.off("getNextUserCall", handleNextUserCall);
     };
   }, []);
+
+  useEffect(() => {});
 
   const { handleDrawing } = useDrawing({
     activeUser,

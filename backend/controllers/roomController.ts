@@ -69,7 +69,7 @@ export const handleNextUserCall = async (
       );
     }
 
-    const users = roomData?.usersInfo;
+    const users = roomData?.usersInfo.filter((user: any) => !user.isUserLeave);
     const maxGamePoints = roomData?.points;
     if (!users || !maxGamePoints) {
       return;
@@ -114,7 +114,9 @@ export const handleNextUserCall = async (
         "getNextUserCall",
         {
           activeUser: nextActiveUser,
-          users: updatedUsersInfo?.usersInfo,
+          users: updatedUsersInfo?.usersInfo.filter(
+            (user: any) => !user.isUserLeave
+          ),
         }
       );
     }
@@ -203,55 +205,101 @@ export const createRoom = async (req: Request, res: Response) => {
 
 export const getRoomInfo = async (req: Request, res: Response) => {
   try {
-    const userId = req.query.userId; // Получаем параметр userId из строки запроса
-    const roomId = req.query.roomId; // Получаем параметр roomId из строки запроса
-    const roomData = await RoomModel.find({ roomId: roomId });
-    if (roomData.length === 0) {
+    const { roomId } = req.query;
+
+    if (!roomId) {
+      return res.status(400).json({ message: "Room ID is required" });
+    }
+
+    // Находим комнату
+    const roomData = await RoomModel.findOne({ roomId });
+
+    if (!roomData) {
       return res.status(404).json({ message: "Room does not exist" });
     }
 
-    if (roomData[0].host.hostId === userId) {
-    }
+    // Фильтруем только активных пользователей (не покинули комнату)
+    const filteredUsers = roomData.usersInfo.filter(
+      (user: any) => !user.isUserLeave
+    );
 
-    return res.status(201).json(roomData);
-  } catch (error) {
+    // Формируем ответ без изменения базы данных
+    const responseData = {
+      roomId: roomData.roomId,
+      usersInfo: filteredUsers,
+      host: roomData.host,
+      points: roomData.points,
+      thema: roomData.thema,
+      players: roomData.players,
+      isGameStarted: roomData.isGameStarted,
+      usersLeftCount: roomData.usersLeftCount,
+      gameWinners: roomData.gameWinners,
+      usersGuessedList: roomData.usersGuessedList,
+      skippedRoundsinLine: roomData.skippedRoundsinLine,
+    };
+
+    return res.status(200).json(responseData);
+  } catch (error: any) {
     console.error("Error getting room:", error);
-    res.status(500).json({ message: "Error getting room" });
+    return res
+      .status(500)
+      .json({ message: "Error getting room", error: error.message });
   }
 };
 
 export const joinRoom = async (req: Request, res: Response) => {
   try {
     const { roomId, userInfo } = req.body;
-    const isPlayerFound = await RoomModel.find({
-      usersInfo: {
-        $elemMatch: { userId: userInfo.userId, isUserLeave: undefined },
-      },
-    });
-    console.log("IS PLAYER FOUND", isPlayerFound.length, userInfo.userId);
-    if (isPlayerFound.length >= 1) {
-      console.log("REDIRECT TO MAIN PAGE SECOND ACTIVE GAME", userInfo.userId);
-      return res.status(404).json({ message: "You are already in the room" });
-    }
-    userInfo.isInGame = true;
-    const roomData = await RoomModel.findOneAndUpdate(
-      { roomId: roomId },
-      {
-        $push: {
-          usersInfo: userInfo,
-        },
-      },
-      { new: true }
-    );
-    if (!roomData) {
-      return res.status(400).json({ message: "ERROR! ROOM DATA NOT FOUND" });
+
+    if (!roomId || !userInfo || !userInfo.userId) {
+      return res.status(400).json({ message: "Invalid data" });
     }
 
-    io.to(roomId).emit("userJoined", roomData);
-    return res.status(200).json({ message: "Successfully joined the room" });
-  } catch (error) {
+    // Проверяем, есть ли пользователь уже в комнате
+    const existingRoom = await RoomModel.findOne({
+      roomId,
+      usersInfo: {
+        $elemMatch: { userId: userInfo.userId, isUserLeave: false },
+      },
+    });
+
+    if (existingRoom) {
+      console.log("User is already in the room:", userInfo.userId);
+      return res.status(409).json({ message: "You are already in the room" });
+    }
+
+    // Обновляем данные пользователя
+    userInfo.isInGame = true;
+
+    // Добавляем пользователя в комнату
+    const updatedRoom = await RoomModel.findOneAndUpdate(
+      { roomId },
+      { $push: { usersInfo: userInfo } },
+      { new: true }
+    );
+
+    if (!updatedRoom) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    // Фильтруем список пользователей, исключая тех, кто покинул комнату
+    const filteredUsers = updatedRoom.usersInfo.filter(
+      (user) => !user.isUserLeave
+    );
+
+    // Уведомляем всех участников комнаты о новом пользователе
+    io.to(roomId).emit("userJoined", { roomId, usersInfo: filteredUsers });
+
+    return res.status(200).json({
+      message: "Successfully joined the room",
+      roomId,
+      usersInfo: filteredUsers,
+    });
+  } catch (error: any) {
     console.error("Error joining room:", error);
-    res.status(500).json({ message: "Error joining room" });
+    return res
+      .status(500)
+      .json({ message: "Error joining room", error: error.message });
   }
 };
 
@@ -692,6 +740,24 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
 
         return { message: "All users left, room deleted" };
       }
+      if (updatedRoomData?.host.hostId === userId) {
+        console.log("ХОСТ ВЫШЕЛ");
+        const nextHost = await roomUsers?.find((user) => !user.isUserLeave);
+        if (nextHost) {
+          await updatedRoomData.updateOne({
+            host: {
+              hostName: nextHost.userName,
+              hostId: nextHost.userId,
+            },
+          });
+        }
+      }
+      io.to(roomId).emit("getUserLeft", {
+        roomId,
+        userName: userId,
+        roomUsers: roomUsers?.filter((user) => !user.isUserLeave),
+        host: roomUsers?.find((user) => !user.isUserLeave),
+      });
 
       return { message: "User left the room" };
     } catch (error) {
@@ -725,7 +791,7 @@ export const updateUserState = async (req: Request, res: Response) => {
     const updatedRoomData = await RoomModel.findOne({ roomId });
     return res.status(200).json({
       message: "user state upgraded with no error",
-      roomUsers: updatedRoomData?.usersInfo,
+      roomUsers: updatedRoomData?.usersInfo.filter((user) => !user.isUserLeave),
     });
   }
 };

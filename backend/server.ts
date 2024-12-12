@@ -42,6 +42,8 @@ io.on("connection", (socket) => {
 
     socket.leave(room.roomId);
   });
+
+  socket.on("userLeft", (data) => {});
   socket.on("answersSent", (data) => {
     io.to(data.roomId).emit("getAnswer", data);
   });

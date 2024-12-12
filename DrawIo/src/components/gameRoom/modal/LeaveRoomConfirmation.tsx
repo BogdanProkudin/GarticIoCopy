@@ -1,10 +1,10 @@
 import React from "react";
 import ReactModal from "react-modal";
-import styles from "../../welcomePage/styles.module.scss";
+
 import { MESSAGES } from "../../../constants/messages";
 import Lottie from "react-lottie";
-import animationData from "../../../tools/Animation - 1709999171287 (1).json";
-
+import animationData from "../../../tools/Animation - 1734009134112.json";
+import styles from "./styles.module.scss";
 interface LeaveRoomConfirmationProps {
   isOpen: boolean;
   isLoading?: boolean;
@@ -30,30 +30,12 @@ export const LeaveRoomConfirmation: React.FC<LeaveRoomConfirmationProps> = ({
   return (
     <ReactModal
       isOpen={isOpen}
-      className={styles.modal_content}
+      className={styles.leave_warning_modal_content}
       overlayClassName={styles.modal_overlay}
       ariaHideApp={false}
-      style={{
-        overlay: {
-          zIndex: 1000,
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-        },
-        content: {
-          position: "relative",
-          background: "#fff",
-          borderRadius: "20px",
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          outline: "none",
-          width: "517px",
-          height: "358px",
-        },
-      }}
     >
-      <div className={styles.userName_not_correct_title}>
-        <h3>CONFIRMATION</h3>
+      <div className={styles.leave_modal_text}>
+        <h3>Exit</h3>
       </div>
       <Lottie
         options={defaultOptions}
@@ -61,25 +43,25 @@ export const LeaveRoomConfirmation: React.FC<LeaveRoomConfirmationProps> = ({
         width={250}
         style={{ marginTop: "0.6rem" }}
       />
-      <span className={styles.userName_error_text}>
+      <span className={styles.leave_modal_description}>
         {MESSAGES.LEAVE_CONFIRMATION}
       </span>
       <div className={styles.buttons_container}>
         <button
           onClick={onCancel}
           disabled={isLoading}
-          className={styles.welcome_avatar_cancel_button}
+          className={styles.leave_modal_cancel_button}
         >
           <div />
-          <strong>CANCEL</strong>
+          <strong>NO</strong>
         </button>
         <button
           onClick={onConfirm}
           disabled={isLoading}
-          className={styles.welcome_avatar_submit_button}
+          className={styles.leave_modal_submit_button}
         >
           <div />
-          <strong>{isLoading ? "LEAVING..." : "LEAVE"}</strong>
+          <strong>{isLoading ? "LEAVING..." : "Yes"}</strong>
         </button>
       </div>
     </ReactModal>

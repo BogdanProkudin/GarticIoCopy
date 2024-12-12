@@ -1,6 +1,7 @@
 // hooks/useUpdateDrawingParams.ts
 import { useEffect } from "react";
 import { IActiveUser } from "../store/slices/roomInfo";
+import { fabric } from "fabric";
 
 export const useUpdateDrawingParams = (
   drawRef: any,
@@ -24,26 +25,57 @@ export const useUpdateDrawingParams = (
       drawColor,
       brushWidth,
       currentUser: userNameStorage,
-      activeUser: activeUser.userName
+      activeUser: activeUser.userName,
     });
 
     if (isActiveUser) {
-      const isDrawingMode = activeTool === "pen" || activeTool === "eraser";
-      const brushColor = activeTool === "eraser" ? "white" : drawColor || "black";
-      const width = activeTool === "eraser" ? 60 : Number(brushWidth);
-
-      canvas.isDrawingMode = isDrawingMode;
-      canvas.freeDrawingBrush.width = width;
-      canvas.freeDrawingBrush.color = brushColor;
+      // Сначала отключаем режим рисования для всех инструментов
+      canvas.isDrawingMode = false;
       canvas.selection = false;
+      canvas.skipTargetFind = true;
+      canvas.interactive = false;
+
+      // Настраиваем параметры в зависимости от инструмента
+      switch (activeTool) {
+        case "pen":
+          canvas.isDrawingMode = true;
+          canvas.freeDrawingBrush.width = Number(brushWidth);
+          canvas.freeDrawingBrush.color = drawColor;
+          break;
+
+        case "eraser":
+          canvas.isDrawingMode = true;
+          canvas.freeDrawingBrush.width = 60;
+          canvas.freeDrawingBrush.color = "white";
+          break;
+
+        case "bucket":
+          // Для заливки режим рисования не нужен
+          canvas.isDrawingMode = false;
+          break;
+
+        case "getColor":
+          // Для пипетки режим рисования должен быть выключен
+          canvas.isDrawingMode = false;
+          canvas.selection = true;  // Разрешаем выбор объектов
+          canvas.skipTargetFind = false;
+          canvas.interactive = true;
+          break;
+
+        default:
+          canvas.isDrawingMode = false;
+          break;
+      }
 
       console.log("Updated canvas properties:", {
-        isDrawingMode,
-        brushColor,
-        width
+        isDrawingMode: canvas.isDrawingMode,
+        brushColor: canvas.freeDrawingBrush?.color,
+        width: canvas.freeDrawingBrush?.width,
+        tool: activeTool,
       });
     } else {
-      console.log("Not active user - skipping drawing param updates");
+      canvas.isDrawingMode = false;
+      console.log("Not active user - disabled drawing mode");
     }
   }, [
     activeUser.userName,

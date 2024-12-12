@@ -25,23 +25,21 @@ export const useMouseEvents = (
 
       const { x, y } = canvas.getPointer(options.e);
       const pointer = canvas.getPointer(options.e);
-      const objects = canvas.getObjects();
 
       if (activeUser.userName !== userNameStorage) {
         return;
       }
 
-      if (isDrawing.current) {
-        isDrawing.current = false;
-        setIsMouseDown(false);
-        return;
-      }
-
-      isDrawing.current = true;
-
       if (activeTool === "getColor") {
-        // Находим все объекты под курсором
+        // Проверяем цвет фона
+        canvas.isDrawingMode = false;
+        const backgroundColor = canvas.backgroundColor;
+
+        // Получаем все объекты под курсором
+        const objects = canvas.getObjects();
         const clickedObjects = objects.filter((obj: any) => {
+          if (!obj.visible) return false;
+
           const objLeft = obj.left || 0;
           const objTop = obj.top || 0;
           const objWidth = obj.width || 0;
@@ -55,18 +53,38 @@ export const useMouseEvents = (
           );
         });
 
+        // Берем самый верхний объект
         const topObject = clickedObjects[clickedObjects.length - 1];
 
-        if (topObject && topObject.stroke) {
-          console.log("Found color:", topObject.stroke);
-          dispatch(setDrawColor(topObject.stroke.toString()));
-        } else {
-          const context = canvas.getContext();
-          const pixel = context.getImageData(pointer.x, pointer.y, 1, 1).data;
-          const color = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
-          console.log("Picked pixel color:", color);
-          dispatch(setDrawColor(color));
+        if (topObject) {
+          // Проверяем различные свойства цвета объекта
+          const objectColor = topObject.stroke || topObject.fill || null;
+          if (objectColor) {
+            console.log("Found object color:", objectColor);
+            dispatch(setDrawColor(objectColor.toString()));
+            return;
+          }
         }
+
+        // Если не нашли цвет в объектах и есть цвет фона
+        if (backgroundColor && backgroundColor !== "transparent") {
+          console.log("Using background color:", backgroundColor);
+          dispatch(setDrawColor(backgroundColor.toString()));
+          return;
+        }
+
+        // В последнюю очередь берем цвет пикселя
+        const context = canvas.getContext();
+        const pixel = context.getImageData(
+          Math.round(pointer.x),
+          Math.round(pointer.y),
+          1,
+          1
+        ).data;
+        const color = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+        console.log("Picked pixel color:", color);
+        dispatch(setDrawColor(color));
+        return;
       }
 
       if (activeTool === "bucket") {
@@ -77,9 +95,12 @@ export const useMouseEvents = (
           roomId,
           drawingColor: drawColor,
         });
+        return;
       }
 
       if (activeTool === "pen" || activeTool === "eraser") {
+        canvas.isDrawingMode = true;
+        isDrawing.current = true;
         setIsMouseDown(true);
         dispatch(setIsUserDraw(true));
         socket.emit("drawing", {
@@ -111,7 +132,14 @@ export const useMouseEvents = (
       if (!canvas) return;
 
       const { x, y } = canvas.getPointer(options.e);
-      socket.emit("drawing", { type: "draw", x, y, roomId });
+      socket.emit("drawing", {
+        type: "draw",
+        x,
+        y,
+        roomId,
+        drawingColor: canvas.freeDrawingBrush.color,
+        lineWidth: canvas.freeDrawingBrush.width,
+      });
     },
     [isMouseDown, roomId, drawRef, activeTool]
   );

@@ -7,11 +7,13 @@ import { Dispatch, SetStateAction } from "react";
 type GameRoomHeaderProps = {
   setShowShareModal: Dispatch<SetStateAction<boolean>>;
   setShowRulesModal: Dispatch<SetStateAction<boolean>>;
+  setShowLeaveConfirmation: Dispatch<SetStateAction<boolean>>;
   handleLeaveClick: () => void;
 };
 const GameRoomHeader: React.FC<GameRoomHeaderProps> = ({
   setShowShareModal,
   setShowRulesModal,
+  setShowLeaveConfirmation,
 }) => {
   return (
     <header>
@@ -30,15 +32,18 @@ const GameRoomHeader: React.FC<GameRoomHeaderProps> = ({
             <FaShareAlt fontSize={25} />
           </button>
         </div>
-        <div
-          onClick={() => setShowRulesModal(true)}
-          className={styles.game_room_button_container}
-        >
-          <button className={styles.game_room_sound_button}>
+        <div className={styles.game_room_button_container}>
+          <button
+            onClick={() => setShowRulesModal(true)}
+            className={styles.game_room_sound_button}
+          >
             <MdInfoOutline fontSize={50} />
           </button>
           <button className={styles.game_room_share_button}>
-            <FaXmark fontSize={32} />
+            <FaXmark
+              onClick={() => setShowLeaveConfirmation(true)}
+              fontSize={32}
+            />
           </button>
         </div>
       </div>

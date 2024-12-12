@@ -163,6 +163,7 @@ const GameRoom = () => {
         <GameRoomHeader
           setShowShareModal={setShowShareModal}
           setShowRulesModal={setShowRulesModal}
+          setShowLeaveConfirmation={setShowLeaveConfirmation}
           handleLeaveClick={handleLeaveClick}
         />
 

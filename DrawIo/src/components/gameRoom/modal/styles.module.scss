@@ -1,0 +1,176 @@
+.leave_warning_modal_content {
+  z-index: 999;
+  transform: scale(1);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 3rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  max-width: 600px;
+  width: 95%;
+
+  height: 360px;
+  overflow: none;
+  border-radius: 22px;
+  background-color: #fff;
+  border: 1px solid #979797;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  animation: slideInContent 0.5s forwards, centerContent 0.3s forwards;
+  .leave_modal_text {
+    display: flex;
+    justify-content: center;
+    background-image: url(https://gartic.io/static/images/new/title.png);
+    background-repeat: no-repeat;
+    max-width: 330px;
+    background-size: cover;
+    user-select: none;
+    background-position: 50%;
+    align-items: center;
+    width: 100%;
+    height: 80px;
+    margin: -57px 0 0;
+    h3 {
+      user-select: none;
+      max-width: 250px;
+      padding: 0 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: "Nunito";
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 26px;
+      line-height: 2;
+      color: #ffbf00;
+      letter-spacing: 0;
+      margin: -8px 0 0;
+      text-shadow: 0 -1px 0 #fffa6d, #001b51 3px 0 0,
+        #001b51 2.83487px 0.981584px 0, #001b51 2.35766px 1.85511px 0,
+        #001b51 1.62091px 2.52441px 0, #001b51 0.705713px 2.91581px 0,
+        #001b51 -0.287171px 2.98622px 0, #001b51 -1.24844px 2.72789px 0,
+        #001b51 -2.07227px 2.16926px 0, #001b51 -2.66798px 1.37182px 0,
+        #001b51 -2.96998px 0.42336px 0, #001b51 -2.94502px -0.571704px 0,
+        #001b51 -2.59586px -1.50383px 0, #001b51 -1.96093px -2.27041px 0,
+        #001b51 -1.11013px -2.78704px 0, #001b51 -0.137119px -2.99686px 0,
+        #001b51 0.850987px -2.87677px 0, #001b51 1.74541px -2.43999px 0,
+        #001b51 2.44769px -1.73459px 0;
+    }
+  }
+  .leave_modal_description {
+    max-width: 476px;
+    margin-top: 1rem;
+    text-align: center;
+    font-family: "Nunito";
+    color: #797979;
+    font-size: 18px;
+  }
+  .buttons_container {
+    display: flex;
+    align-items: center;
+    margin-top: 1.5rem;
+    gap: 1rem;
+    .leave_modal_submit_button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 186px;
+      height: 40px;
+      background-color: #ffbf00;
+      border-top-color: #ffe100;
+      border-bottom-color: #f88700;
+      border-radius: 34px;
+      border-top: 2px solid transparent;
+      border-bottom: 2px solid transparent;
+      box-shadow: 0 0 0 5px #002043, 0 0 0 6px #7c92b0;
+      text-align: center;
+
+      cursor: pointer;
+      transition-duration: 0.4s;
+      div {
+        background-repeat: no-repeat;
+        background-position: 50%;
+        background-size: contain;
+        width: 26px;
+        height: 23px;
+        background-image: url("https://gartic.io/static/images/new/ic_Yes.svg");
+      }
+      &:hover {
+        background-color: #f4c949;
+      }
+      &:active {
+        background-color: orange;
+      }
+
+      strong {
+        font-size: 18px;
+        font-family: "Nunito";
+        color: #001b4d;
+        letter-spacing: 0;
+        margin: 0 15px 0 0;
+        text-transform: uppercase;
+        word-break: break-word;
+        padding-left: 0.6rem;
+      }
+    }
+    .leave_modal_cancel_button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 186px;
+      height: 40px;
+      background-color: #13bafe;
+      border-top-color: #66cfff;
+      border-bottom-color: #248aed;
+
+      border-radius: 34px;
+      border-top: 2px solid transparent;
+      border-bottom: 2px solid transparent;
+      box-shadow: 0 0 0 5px #002043, 0 0 0 6px #7c92b0;
+      text-align: center;
+
+      cursor: pointer;
+      transition-duration: 0.4s; /* Длительность анимации */
+      strong {
+        font-size: 18px;
+        font-family: "Nunito";
+        color: #001b4d;
+        letter-spacing: 0;
+        margin: 0 15px 0 0;
+        text-transform: uppercase;
+        word-break: break-word;
+        padding-left: 0.6rem;
+      }
+
+      div {
+        background-repeat: no-repeat;
+        background-position: 50%;
+        background-size: contain;
+        width: 26px;
+        height: 23px;
+        background-image: url("https://gartic.io/static/images/new/ic_Cancel.svg");
+      }
+      &:hover {
+        background-color: #00aeff;
+      }
+      &:active {
+        background-color: #00aeff;
+      }
+    }
+  }
+}
+.modal_overlay {
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}

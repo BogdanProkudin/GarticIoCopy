@@ -34,7 +34,7 @@ const PrepareGameRoom = () => {
           return;
         }
 
-        const roomDataFromResponse = response.payload[0];
+        const roomDataFromResponse = response.payload;
 
         if (!roomDataFromResponse || roomDataFromResponse.length === 0) {
           console.log("No room data found");
