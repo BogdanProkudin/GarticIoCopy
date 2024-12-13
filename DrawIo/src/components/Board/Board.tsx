@@ -12,7 +12,11 @@ import { useDrawing } from "../../hooks/useDrawing";
 import axios from "axios";
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import { useSocket } from "../../hooks/useSocket";
-import { setHost, setRoomUsers } from "../../store/slices/roomInfo";
+import {
+  setHost,
+  setIsDeletingRoom,
+  setRoomUsers,
+} from "../../store/slices/roomInfo";
 
 type BoardProps = {
   roomId: string;
@@ -57,11 +61,16 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
         setHost({ hostName: data.host.userName, hostId: data.host.userId })
       );
     };
+    const handleOneUserRemaining = (data: any) => {
+      console.log("вы остались один", data.message);
+      dispatch(setIsDeletingRoom(true));
+    };
 
     socket.on("getUserLeft", handleUserLeft);
-
+    socket.on("getRoomDeletedWarning", handleOneUserRemaining);
     return () => {
       socket.off("getUserLeft", handleUserLeft);
+      socket.off("getRoomDeletedWarning", handleOneUserRemaining);
     };
   }, []);
   const isAllUsersGuessed = useAppSelector(

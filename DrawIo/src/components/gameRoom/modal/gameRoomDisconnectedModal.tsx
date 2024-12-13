@@ -5,6 +5,7 @@ import styles from "../../welcomePage/styles.module.scss";
 
 import { useAppDispatch, useAppSelector } from "../../../store/hook";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const DisconnectedModal = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +19,7 @@ const DisconnectedModal = () => {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
+
   const closeModal = () => {
     navigate("/");
   };

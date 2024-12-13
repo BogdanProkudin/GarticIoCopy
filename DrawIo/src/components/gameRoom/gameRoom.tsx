@@ -24,6 +24,7 @@ import useLeaveRoomOnUnload from "../../hooks/LeaveRoom";
 import { MESSAGES as MESSAGES_CONSTANT } from "../../constants/messages";
 import { useBeforeUnload } from "../../hooks/useBeforeUnload";
 import { LeaveRoomService } from "../../services/leaveRoomService";
+import DeleteModal from "./modal/gameRoomDeletingModal";
 
 const GameRoom = () => {
   const dispatch = useAppDispatch();
@@ -50,7 +51,10 @@ const GameRoom = () => {
   const userName = useAppSelector((state) => state.userAuth.userNameInputValue);
   const userAvatar = localStorage.getItem("userAvatar");
   const activeAvatar = useAppSelector((state) => state.userAuth.activeAvatar);
-
+  const isDeletingRoom = useAppSelector(
+    (state) => state.drawThema.isDeletingRoom
+  );
+  // Custom hooks
   const {
     isActive,
     isLeaving,
@@ -82,10 +86,8 @@ const GameRoom = () => {
     }
   }, [roomId, userNameStorage]);
 
-  // Используем обновленный хук
   const { confirmLeave } = useBeforeUnload(handleBeforeUnload);
 
-  // Обработчик для кнопки выхода
   const handleLeaveClick = () => {
     confirmLeave(); // Устанавливаем флаг, что пользователь подтвердил выход
     setShowLeaveConfirmation(true);
@@ -134,7 +136,7 @@ const GameRoom = () => {
   }, [roomUsers, userId, roomId, dispatch]);
 
   useEffect(() => {
-    if (host.hostName === userNameStorage) {
+    if (host.hostName === userNameStorage && !isDeletingRoom) {
       setShowShareModal(true);
     } else if (
       host.hostName.length > 1 &&
@@ -173,7 +175,7 @@ const GameRoom = () => {
           setShowShareModal={setShowShareModal}
           setShowRulesModal={setShowRulesModal}
         />
-
+        {isDeletingRoom && <DeleteModal />}
         <LeaveRoomConfirmation
           isOpen={showLeaveConfirmation}
           isLoading={isLeaving}

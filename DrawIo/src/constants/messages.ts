@@ -1,5 +1,7 @@
 export const MESSAGES = {
   LEAVE_CONFIRMATION: "Are you sure you want to leave the room?",
+  ONE_PLAYER_LEFT:
+    "Game ended. Only one user remaining. Room will be deleted in 15 seconds.",
   INACTIVITY_WARNING:
     "You will be disconnected in {time} seconds due to inactivity",
   RECONNECTING: "Reconnecting...",

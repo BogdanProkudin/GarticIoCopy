@@ -68,6 +68,7 @@ export interface initialStateProps {
   isIntervalOver: boolean;
   isRoundTimerOver: boolean;
   isUserInLobbdy: boolean;
+  isDeletingRoom: boolean;
 }
 
 const initialState: initialStateProps = {
@@ -112,7 +113,7 @@ const initialState: initialStateProps = {
   choosedWordsList: [],
   isGameRoomLoading: false,
   isRoundEnd: false,
-
+  isDeletingRoom: false,
   chosenWords: [],
   usersGuessed: [],
   winners: [
@@ -289,6 +290,9 @@ const drawThemaSlice = createSlice({
     setIsGameRoomLoading: (state, action) => {
       state.isGameRoomLoading = action.payload;
     },
+    setIsDeletingRoom: (state, action) => {
+      state.isDeletingRoom = action.payload;
+    },
   },
 });
 export const selectActiveUser = (state: { drawThema: { activeUser: any } }) =>
@@ -317,6 +321,7 @@ export const {
   setIsRoundEnd,
   setChosenWords,
   setWinners,
+  setIsDeletingRoom,
   resetGameState,
   setRoundCount,
   setMaxRoomPoints,

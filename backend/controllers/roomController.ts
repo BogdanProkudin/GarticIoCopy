@@ -723,10 +723,25 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
       });
 
       const updatedRoomData = await RoomModel.findOne({ roomId });
-      const usersLeftCount = updatedRoomData?.usersLeftCount;
-      const roomUsers = updatedRoomData?.usersInfo;
 
-      if (usersLeftCount === roomUsers?.length) {
+      const roomUsers = await updatedRoomData?.usersInfo;
+      const remainUsers = await roomUsers?.filter((user) => !user.isUserLeave);
+      if (
+        updatedRoomData?.isGameStarted === true &&
+        remainUsers?.length === 1
+      ) {
+        io.to(roomId).emit("getRoomDeletedWarning", {
+          roomId,
+          message:
+            "Game ended. Only one user remaining. Room will be deleted in 15 seconds.",
+        });
+
+        return { message: "Game ended. Only one user remaining." };
+      }
+      if (
+        roomUsers?.filter((user) => user.isUserLeave).length ===
+        roomUsers?.length
+      ) {
         // Очистка всех таймеров и прекращение выполнения функций
         if (timers[roomId]) {
           clearTimeout(timers[roomId].wordTimer);
@@ -795,84 +810,8 @@ export const updateUserState = async (req: Request, res: Response) => {
     });
   }
 };
-// export async function startTimer(req: Request, res: Response) {
-//   try {
-//     const userId = req.body.userId;
-//     const roomId = req.body.roomId;
-//     console.log("body", req.body);
 
-//     await RoomModel.updateOne(
-//       { roomId: roomId, "usersInfo.userId": userId },
-//       {
-//         $set: {
-//           "usersInfo.$.startTime": new Date(), // Сохраняем время начала
-//           "usersInfo.$.elapsedTime": 0, // Инициализируем elapsedTime
-//         },
-//       }
-//     );
-
-//     console.log(
-//       `Таймер для пользователя ${userId} в комнате ${roomId} запущен.`
-//     );
-
-//     const intervalId = setInterval(async () => {
-//       const resp = await checkTimers(roomId, userId);
-
-//       if (resp) {
-//         clearInterval(intervalId);
-//       }
-//     }, 10000);
-//   } catch (err) {
-//     console.error("Ошибка при запуске таймера:", err);
-//   } finally {
-//   }
-// }
-
-async function checkTimers(roomId: string, userId: string) {
-  try {
-    const now = new Date();
-    const nowInMs = now.getTime(); // Текущее время в миллисекундах
-
-    // Получаем текущее состояние таймера пользователя
-    const updatedDoc = await RoomModel.findOne(
-      { roomId: roomId, "usersInfo.userId": userId },
-      { "usersInfo.$": 1 } // Получаем только информацию о конкретном пользователе
-    );
-
-    if (
-      !updatedDoc ||
-      !updatedDoc.usersInfo ||
-      updatedDoc.usersInfo.length === 0
-    ) {
-      console.log("Пользователь не найден в комнате.");
-      return false;
-    }
-
-    const user = updatedDoc.usersInfo.find((user) => user.userId === userId);
-
-    const startTime = new Date(user.startTime).getTime(); // Время начала таймера в миллисекундах
-    const elapsedTimeInMs = nowInMs - startTime; // Прошедшее время в миллисекундах
-    const elapsedTimeInSeconds = Math.floor(elapsedTimeInMs / 1000); // Прошедшее время в секундах
-
-    if (elapsedTimeInSeconds === 30) {
-      io.to(roomId).emit("getInactiveUsers1", { userId });
-    }
-    // Проверяем, если прошло больше 60 секунд
-    if (elapsedTimeInSeconds >= 60) {
-      return true;
-    } else {
-      // console.log("Таймер меньше 60 секунд");
-      return false;
-    }
-  } catch (err) {
-    console.error("Ошибка при работе с MongoDB:", err);
-    return false;
-  }
-}
 const userTimeouts = new Map(); // Хранит таймеры для каждого пользователя
-
-// Обработчик для POST-запросов, сигнализирующих об активности клиента
-// Хранилище для таймеров
 
 export const Ping = async (req: Request, res: Response) => {
   const { userId, roomId } = req.body;
@@ -880,13 +819,13 @@ export const Ping = async (req: Request, res: Response) => {
   if (!userId || !roomId) {
     return res.status(400).send("userId and roomId are required");
   }
-  const rooomData = await RoomModel.findOne({ roomId });
-  const currentUser = await rooomData?.usersInfo.find((user) => {
+  const roomData = await RoomModel.findOne({ roomId });
+  const currentUser = await roomData?.usersInfo.find((user) => {
     return user.userId === userId;
   });
 
   const userRoomKey = `${roomId}-${userId}`; // Создаем уникальный ключ для пользователя в комнат
-  if (!rooomData || currentUser.isUserLeave) {
+  if (!roomData || currentUser.isUserLeave) {
     if (timers[roomId]) {
       clearTimeout(timers[roomId].wordTimer);
       clearTimeout(timers[roomId].roundTimer);
@@ -902,16 +841,14 @@ export const Ping = async (req: Request, res: Response) => {
     clearTimeout(userTimeouts.get(userRoomKey));
   }
 
-  // Устанавливаем новый таймер для пользователя в комнате
-  const timeoutId = setTimeout(() => {
+  const timeoutId = setTimeout(async () => {
     console.log(
       `User ${userId} is inactive for too long. Taking action in ROOM ${roomId}`
     );
-    // Действия при отсутствии ping, например, удаление пользователя из комнаты
-    userLeavesRoom(roomId, userId);
-  }, 20000); // Установите тайм-аут на 20 секунд или другой период времени
 
-  // Сохраняем таймер по уникальному ключу
+    await userLeavesRoom(roomId, userId);
+  }, 20000);
+
   userTimeouts.set(userRoomKey, timeoutId);
 
   res.send("Ping received");
