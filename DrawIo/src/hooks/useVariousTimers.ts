@@ -77,7 +77,9 @@ const useVariousTimers = ({
       return;
     }
 
-    if (userName === activeUser && isUsersNotGuessed) {
+    if (isUsersNotGuessed) {
+      console.log("here iser");
+
       const func = getFunction();
       func({ roomId });
       return;

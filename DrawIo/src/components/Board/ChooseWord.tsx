@@ -33,6 +33,7 @@ const ChooseWord = memo(function ChooseWord() {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
+  console.log("ACTIOVE USER", activeUser);
 
   return (
     <div className={styles.container}>
