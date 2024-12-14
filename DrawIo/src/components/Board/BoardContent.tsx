@@ -11,6 +11,7 @@ import LottieSettings from "../../tools/Animation - 1712170538790.json";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useAppSelector } from "../../store/hook";
 import UsersNotGuessed from "./roundResult/UsersNotGuessed";
+import ActiveUserLeaved from "./roundResult/ActiveUserLeaved";
 
 const BoardContent: React.FC<Props> = ({
   isGuessedAnimationFinished,
@@ -21,12 +22,14 @@ const BoardContent: React.FC<Props> = ({
     isOneUserGuessed,
     isUsersNotGuessed,
     isGameStarted,
+    isActiveUserLeaved,
     isAllUsersGuessed,
   } = useAppSelector((state) => ({
     choosedWord: state.drawThema.choosedWord,
     isOneUserGuessed: state.userInfo.isOneUserGuessed,
     isUsersNotGuessed: state.userInfo.isUsersNotGuessed,
     isGameStarted: state.drawThema.isGameStarted,
+    isActiveUserLeaved: state.drawThema.isActiveUserLeaved,
     isAllUsersGuessed: state.userInfo.isAllUsersGuessed,
   }));
   const defaultLottieOptions = {
@@ -51,6 +54,9 @@ const BoardContent: React.FC<Props> = ({
     return <ChooseWord />;
   }
 
+  if (isActiveUserLeaved) {
+    return <ActiveUserLeaved />;
+  }
   if (isUsersNotGuessed) {
     return <UsersNotGuessed />;
   }

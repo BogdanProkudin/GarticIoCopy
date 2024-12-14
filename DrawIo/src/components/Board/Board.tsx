@@ -14,9 +14,16 @@ import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import { useSocket } from "../../hooks/useSocket";
 import {
   setHost,
+  setISActiveUserLeaved,
   setIsDeletingRoom,
+  setIsRoundTimerOver,
   setRoomUsers,
 } from "../../store/slices/roomInfo";
+import { setToolsPanel } from "../../store/slices/drawInfo";
+import {
+  setIsUserDraw,
+  setIsOneUserGuessed,
+} from "../../store/slices/userInfo";
 
 type BoardProps = {
   roomId: string;
@@ -73,6 +80,19 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
       socket.off("getRoomDeletedWarning", handleOneUserRemaining);
     };
   }, []);
+  useEffect(() => {
+    const handleActiveUserLeaved = (data: any) => {
+      dispatch(setISActiveUserLeaved(true));
+      dispatch(setToolsPanel(false));
+      dispatch(setIsUserDraw(false));
+      dispatch(setIsRoundTimerOver(false));
+      dispatch(setIsOneUserGuessed(false));
+    };
+    socket.on("getActiveUserLeaved", handleActiveUserLeaved);
+    return () => {
+      socket.off("getActiveUserLeaved", handleActiveUserLeaved);
+    };
+  }, []);
   const isAllUsersGuessed = useAppSelector(
     (state) => state.userInfo.isAllUsersGuessed
   );
@@ -86,13 +106,15 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
 
   useEffect(() => {
     socket.on("getNextUserCall", (data) => {
+      console.log("data", data);
+
       handleNextUserCall({
         dispatch,
         roundCount,
         setIsGuessedAnimationFinished,
         roomUsers,
         maxGamePoints,
-        data,
+        activeUser: data.activeUser,
       });
     });
 

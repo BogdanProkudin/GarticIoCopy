@@ -69,6 +69,7 @@ export interface initialStateProps {
   isRoundTimerOver: boolean;
   isUserInLobbdy: boolean;
   isDeletingRoom: boolean;
+  isActiveUserLeaved: boolean;
 }
 
 const initialState: initialStateProps = {
@@ -116,6 +117,7 @@ const initialState: initialStateProps = {
   isDeletingRoom: false,
   chosenWords: [],
   usersGuessed: [],
+  isActiveUserLeaved: false,
   winners: [
     {
       isActive: false,
@@ -293,6 +295,9 @@ const drawThemaSlice = createSlice({
     setIsDeletingRoom: (state, action) => {
       state.isDeletingRoom = action.payload;
     },
+    setISActiveUserLeaved: (state, action) => {
+      state.isActiveUserLeaved = action.payload;
+    },
   },
 });
 export const selectActiveUser = (state: { drawThema: { activeUser: any } }) =>
@@ -327,6 +332,7 @@ export const {
   setMaxRoomPoints,
   setChoosedWordsList,
   setIsPointAnimation,
+  setISActiveUserLeaved,
   setUsersGuessed,
   setIsUserInLobbdy,
   setIsIntervalOver,

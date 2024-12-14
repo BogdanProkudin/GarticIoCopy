@@ -4,21 +4,31 @@ import { io } from "../server";
 const roomStates: any = {};
 const timers: any = {};
 const getNextActiveUser = (users: any) => {
-  const activeUser = users.find((user: any) => user.isActive);
-  if (!activeUser) {
-    return users[0];
-  }
-  const activeIndex = users.findIndex((user: any) => user.isActive);
-  const nextIndex = activeIndex === users.length - 1 ? 0 : activeIndex + 1;
+  // Фильтруем пользователей с минимальным activeCount
+  const minActiveCount = Math.min(
+    ...users.map((user: any) => user.activeCount || 0)
+  );
+  const nextActiveUsers = users.filter(
+    (user: any) => (user.activeCount || 0) === minActiveCount
+  );
 
-  return users[nextIndex];
+  // Если есть несколько, выбираем первого
+  return nextActiveUsers[0];
 };
 
 const updateUserActivity = (users: any, nextActiveUser: any) => {
-  return users.map((user: any) => ({
-    ...user,
-    isActive: user.userName === nextActiveUser.userName,
-  }));
+  return users.map((user: any) => {
+    console.log(user, "next", nextActiveUser);
+
+    return {
+      ...user,
+      isActive: user.userName === nextActiveUser.userName,
+      activeCount:
+        user.userName === nextActiveUser.userName
+          ? (user.activeCount || 0) + 1 // Увеличиваем счётчик активности
+          : user.activeCount || 0,
+    };
+  });
 };
 
 const isGameWon = (roomUsers: any, maxGamePoints: number) => {
@@ -61,6 +71,7 @@ export const handleNextUserCall = async (
     if (!roomData) {
       return { message: "Room data not found. ERROR" };
     }
+
     if (roomData.isGameStarted === false) {
       await RoomModel.findOneAndUpdate(
         { roomId: roomFirstId ? roomFirstId : roomId },
@@ -71,27 +82,21 @@ export const handleNextUserCall = async (
 
     const users = roomData?.usersInfo.filter((user: any) => !user.isUserLeave);
     const maxGamePoints = roomData?.points;
+
     if (!users || !maxGamePoints) {
       return;
     }
 
+    // Выбираем следующего активного пользователя
     const nextActiveUser = await getNextActiveUser(users);
-    const updatedUsers = await updateUserActivity(users, nextActiveUser);
-    await RoomModel.findOneAndUpdate(
-      {
-        roomId: roomFirstId ? roomFirstId : roomId,
-      },
-      { $set: { activeUser: nextActiveUser } },
-      { new: true }
-    );
-    const roomInfo = await RoomModel.findOne({ roomId });
-    const activeUser = await roomInfo?.activeUser;
 
-    const updatedUsersInfo = await RoomModel.findOneAndUpdate(
-      {
-        roomId: roomFirstId ? roomFirstId : roomId,
-      },
-      { usersInfo: updatedUsers },
+    // Обновляем активность и счётчики
+    const updatedUsers = await updateUserActivity(users, nextActiveUser);
+    console.log("zxc", nextActiveUser, "z", updatedUsers);
+
+    await RoomModel.findOneAndUpdate(
+      { roomId: roomFirstId ? roomFirstId : roomId },
+      { $set: { activeUser: nextActiveUser, usersInfo: updatedUsers } },
       { new: true }
     );
 
@@ -104,27 +109,30 @@ export const handleNextUserCall = async (
         maxGamePoints
       );
 
-      const roomInfo = await RoomModel.findOne({ roomId });
-
       io.to(roomId.length !== 6 ? roomFirstId : roomId).emit("gameWon", {
         winners: gameWinners,
       });
     } else {
+      const updatedRoom = await RoomModel.findOne({ roomId });
+      const remainingUsers = await updatedRoom?.usersInfo.filter(
+        (user: any) => !user.isUserLeave
+      );
+
       io.to(roomId.length !== 6 ? roomFirstId : roomId).emit(
         "getNextUserCall",
         {
           activeUser: nextActiveUser,
-          users: updatedUsersInfo?.usersInfo.filter(
-            (user: any) => !user.isUserLeave
-          ),
+          users: remainingUsers,
         }
       );
     }
+
     return res ? res?.status(200).json("alles goed") : "";
   } catch (err) {
     console.log("ERROR WHEN UPDATING NEXT ACTIVE USER", err);
   }
 };
+
 export const isUserInGame = async (req: Request, res: Response) => {
   try {
     const { userId } = req.body;
@@ -622,7 +630,9 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     }
 
     const maxPoints = 30;
-    const guessedUsersLength = userGuessedList.length;
+    const guessedUsersLength = userGuessedList.filter(
+      (user) => !user.isUserLeave
+    ).length;
     const points = Math.round(
       guessedUsersLength > 1 ? maxPoints / guessedUsersLength : 13
     );
@@ -666,7 +676,10 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     // Сразу после выполнения bulkWrite, проверяем обновленные данные
     const updatedRoomData = await RoomModel.findOne({ roomId });
 
-    if (guessedUsersLength === roomUsers.length - 1) {
+    if (
+      guessedUsersLength ===
+      roomUsers.filter((user) => !user.isUserLeave).length - 1
+    ) {
       io.to(roomId).emit("getAnswer", {
         userName: "",
         message: "Everybody guessed correctly!",
@@ -725,7 +738,9 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
       const updatedRoomData = await RoomModel.findOne({ roomId });
 
       const roomUsers = await updatedRoomData?.usersInfo;
+
       const remainUsers = await roomUsers?.filter((user) => !user.isUserLeave);
+
       if (
         updatedRoomData?.isGameStarted === true &&
         remainUsers?.length === 1
@@ -737,6 +752,34 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
         });
 
         return { message: "Game ended. Only one user remaining." };
+      }
+      if (
+        updatedRoomData?.activeUser &&
+        updatedRoomData.activeUser.userId === userId
+      ) {
+        console.log("вышел актив юзер");
+        await handleNextUserCall(null, null, roomId);
+        await RoomModel.findOneAndUpdate(
+          { roomId },
+          { isRoundOver: true }, // Обновление состояния, если слово выбрано
+          { new: true }
+        );
+        await RoomModel.findOneAndUpdate(
+          { roomId },
+          { usersGuessedList: [] }, // Обновление состояния, если слово выбрано
+          { new: true }
+        );
+        await RoomModel.findOneAndUpdate(
+          { roomId },
+          { isWordChosen: false }, // Обновление состояния, если слово выбрано
+          { new: true }
+        );
+        io.to(roomId).emit("getActiveUserLeaved");
+        setTimeout(async () => {
+          console.log("5 секунд прошло");
+          io.to(roomId).emit("getActiveUserLeavedTimer");
+        }, 5000);
+        intervalTimer({ body: { roomId } }, null);
       }
       if (
         roomUsers?.filter((user) => user.isUserLeave).length ===
