@@ -64,13 +64,28 @@ export const useJoinGameRoom = ({
         });
         console.log("REPSSS", response);
 
+        // if (
+
+        // ) {
+        //   setIsUserNameTook(true);
+        //   console.log("error your id  already in the game");
+        //   return;
+        // }
         localStorage.setItem("userName", userName);
 
         navigate(`/game/${roomId}`, { replace: true });
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
+        dispatch(setIsGameRoomLoading(false));
         console.error("Error response:", error.response?.data); // Логируем ответ с ошибкой
+        if (
+          error.response?.data.message ===
+          "You are already in the room or userName taken"
+        ) {
+          setIsUserNameTook(true);
+          return;
+        }
         if (error.response?.status === 400) {
           console.log("REquest returns code 400");
           navigate("/LobbyNotFound", { replace: true });

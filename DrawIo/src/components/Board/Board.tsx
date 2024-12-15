@@ -114,6 +114,7 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
         setIsGuessedAnimationFinished,
         roomUsers,
         maxGamePoints,
+        users: data.users,
         activeUser: data.activeUser,
       });
     });

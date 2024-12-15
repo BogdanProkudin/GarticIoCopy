@@ -14,6 +14,7 @@ interface IhandleNextUserCall {
   setIsGuessedAnimationFinished: any;
   dispatch: any;
 
+  users: any;
   roundCount: number;
   roomUsers: IRoomUsers[];
   maxGamePoints: number;
@@ -22,15 +23,17 @@ interface IhandleNextUserCall {
 export const handleNextUserCall = ({
   activeUser,
   dispatch,
+  users,
   roomUsers,
   setIsGuessedAnimationFinished,
 }: IhandleNextUserCall) => {
   if (!activeUser) throw new Error(`Invalid user data `);
+  console.log("в смене активного юзера");
 
   dispatch(setUsersGuessed([]));
   dispatch(setActiveTool("pen"));
   dispatch(setDrawColor("black"));
   dispatch(setActiveUser(activeUser));
-  dispatch(setRoomUsers(roomUsers));
+  dispatch(setRoomUsers(users));
   setIsGuessedAnimationFinished(false);
 };

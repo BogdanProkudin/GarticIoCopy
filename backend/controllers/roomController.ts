@@ -92,7 +92,7 @@ export const handleNextUserCall = async (
 
     // Обновляем активность и счётчики
     const updatedUsers = await updateUserActivity(users, nextActiveUser);
-    console.log("zxc", nextActiveUser, "z", updatedUsers);
+    console.log(updatedUsers);
 
     await RoomModel.findOneAndUpdate(
       { roomId: roomFirstId ? roomFirstId : roomId },
@@ -117,12 +117,16 @@ export const handleNextUserCall = async (
       const remainingUsers = await updatedRoom?.usersInfo.filter(
         (user: any) => !user.isUserLeave
       );
+      console.log(remainingUsers?.length, "LENGTH REMAIN Users");
 
       io.to(roomId.length !== 6 ? roomFirstId : roomId).emit(
         "getNextUserCall",
         {
           activeUser: nextActiveUser,
-          users: remainingUsers,
+          users: remainingUsers
+            ? remainingUsers
+            : updatedUsers.filter((user: any) => !user.isUserLeave),
+          test: "test",
         }
       );
     }
@@ -275,7 +279,20 @@ export const joinRoom = async (req: Request, res: Response) => {
       console.log("User is already in the room:", userInfo.userId);
       return res.status(409).json({ message: "You are already in the room" });
     }
-
+    const roomData = await RoomModel.findOne({ roomId });
+    if (!roomData) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+    if (
+      roomData.usersInfo.some(
+        (user: any) => user.userName === userInfo.userName
+      )
+    ) {
+      console.log("User name is already in the room:", userInfo.userName);
+      return res
+        .status(409)
+        .json({ message: "You are already in the room or userName taken" });
+    }
     // Обновляем данные пользователя
     userInfo.isInGame = true;
 
@@ -710,121 +727,122 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
 };
 
 export const userLeavesRoom = async (roomId: string, userId: string) => {
-  if (userId) {
-    try {
-      const bulkOperations = [
-        {
-          updateOne: {
-            filter: { roomId, "usersInfo.userId": userId },
-            update: {
-              $set: { "usersInfo.$.isUserLeave": true },
-            },
-          },
-        },
-        {
-          updateOne: {
-            filter: { roomId },
-            update: {
-              $inc: { usersLeftCount: 1 },
-            },
-          },
-        },
-      ];
-
-      const bulkWriteResult = await RoomModel.bulkWrite(bulkOperations, {
-        ordered: true,
-      });
-
-      const updatedRoomData = await RoomModel.findOne({ roomId });
-
-      const roomUsers = await updatedRoomData?.usersInfo;
-
-      const remainUsers = await roomUsers?.filter((user) => !user.isUserLeave);
-
-      if (
-        updatedRoomData?.isGameStarted === true &&
-        remainUsers?.length === 1
-      ) {
-        io.to(roomId).emit("getRoomDeletedWarning", {
-          roomId,
-          message:
-            "Game ended. Only one user remaining. Room will be deleted in 15 seconds.",
-        });
-
-        return { message: "Game ended. Only one user remaining." };
-      }
-      if (
-        updatedRoomData?.activeUser &&
-        updatedRoomData.activeUser.userId === userId
-      ) {
-        console.log("вышел актив юзер");
-        await handleNextUserCall(null, null, roomId);
-        await RoomModel.findOneAndUpdate(
-          { roomId },
-          { isRoundOver: true }, // Обновление состояния, если слово выбрано
-          { new: true }
-        );
-        await RoomModel.findOneAndUpdate(
-          { roomId },
-          { usersGuessedList: [] }, // Обновление состояния, если слово выбрано
-          { new: true }
-        );
-        await RoomModel.findOneAndUpdate(
-          { roomId },
-          { isWordChosen: false }, // Обновление состояния, если слово выбрано
-          { new: true }
-        );
-        io.to(roomId).emit("getActiveUserLeaved");
-        setTimeout(async () => {
-          console.log("5 секунд прошло");
-          io.to(roomId).emit("getActiveUserLeavedTimer");
-        }, 5000);
-        intervalTimer({ body: { roomId } }, null);
-      }
-      if (
-        roomUsers?.filter((user) => user.isUserLeave).length ===
-        roomUsers?.length
-      ) {
-        // Очистка всех таймеров и прекращение выполнения функций
-        if (timers[roomId]) {
-          clearTimeout(timers[roomId].wordTimer);
-          clearTimeout(timers[roomId].roundTimer);
-          clearTimeout(timers[roomId].inactiveTimeout);
-          delete timers[roomId];
-        }
-        // Удаление комнаты
-        await RoomModel.deleteOne({ roomId });
-        console.log("ROOM DELETED when all users left room ");
-
-        return { message: "All users left, room deleted" };
-      }
-      if (updatedRoomData?.host.hostId === userId) {
-        console.log("ХОСТ ВЫШЕЛ");
-        const nextHost = await roomUsers?.find((user) => !user.isUserLeave);
-        if (nextHost) {
-          await updatedRoomData.updateOne({
-            host: {
-              hostName: nextHost.userName,
-              hostId: nextHost.userId,
-            },
-          });
-        }
-      }
-      io.to(roomId).emit("getUserLeft", {
-        roomId,
-        userName: userId,
-        roomUsers: roomUsers?.filter((user) => !user.isUserLeave),
-        host: roomUsers?.find((user) => !user.isUserLeave),
-      });
-
-      return { message: "User left the room" };
-    } catch (error) {
-      console.error("Error in bulkWrite operation", error);
-      return { message: "Error in bulkWrite operation" };
-    }
+  if (!userId) {
+    return { message: "Invalid request" };
   }
 
-  return { message: "Invalid request" };
+  try {
+    const bulkOperations = [
+      {
+        updateOne: {
+          filter: { roomId, "usersInfo.userId": userId },
+          update: {
+            $set: { "usersInfo.$.isUserLeave": true },
+          },
+        },
+      },
+      {
+        updateOne: {
+          filter: { roomId },
+          update: {
+            $inc: { usersLeftCount: 1 },
+          },
+        },
+      },
+    ];
+
+    await RoomModel.bulkWrite(bulkOperations, { ordered: true });
+
+    const updatedRoomData = await RoomModel.findOne({ roomId });
+    if (!updatedRoomData) {
+      return { message: "Room not found" };
+    }
+
+    const roomUsers = updatedRoomData.usersInfo || [];
+    const remainUsers = roomUsers.filter((user) => !user.isUserLeave);
+
+    // Сценарий: если остался один пользователь
+    if (updatedRoomData.isGameStarted && remainUsers.length === 1) {
+      io.to(roomId).emit("getRoomDeletedWarning", {
+        roomId,
+        message:
+          "Game ended. Only one user remaining. Room will be deleted in 15 seconds.",
+      });
+      return { message: "Game ended. Only one user remaining." };
+    }
+
+    // Сценарий: если активный пользователь покинул комнату
+    if (
+      updatedRoomData.activeUser &&
+      updatedRoomData.activeUser.userId === userId
+    ) {
+      console.log("Active user left the room");
+      await handleNextUserCall(null, null, roomId);
+
+      const resetFields = {
+        isRoundOver: true,
+        usersGuessedList: [],
+        isWordChosen: false,
+      };
+
+      await RoomModel.findOneAndUpdate({ roomId }, { $set: resetFields });
+
+      io.to(roomId).emit("getActiveUserLeaved");
+      setTimeout(() => {
+        console.log("5 seconds passed");
+        io.to(roomId).emit("getActiveUserLeavedTimer");
+      }, 5000);
+
+      intervalTimer({ body: { roomId } }, null);
+    }
+
+    // Сценарий: если все пользователи покинули комнату
+    if (roomUsers.every((user) => user.isUserLeave)) {
+      if (timers[roomId]) {
+        clearTimeout(timers[roomId].wordTimer);
+        clearTimeout(timers[roomId].roundTimer);
+        clearTimeout(timers[roomId].inactiveTimeout);
+        delete timers[roomId];
+      }
+
+      await RoomModel.deleteOne({ roomId });
+      console.log("Room deleted because all users left");
+
+      return { message: "All users left, room deleted" };
+    }
+
+    // Сценарий: если хост покинул комнату
+    if (updatedRoomData.host.hostId === userId) {
+      console.log("Host left the room");
+      const nextHost = remainUsers[0];
+      if (nextHost) {
+        await RoomModel.findOneAndUpdate(
+          { roomId },
+          {
+            $set: {
+              host: {
+                hostName: nextHost.userName,
+                hostId: nextHost.userId,
+              },
+            },
+          }
+        );
+      }
+    }
+
+    // Уведомление о выходе пользователя
+    io.to(roomId).emit("getUserLeft", {
+      roomId,
+      userName: userId,
+      roomUsers: remainUsers,
+      host: remainUsers[0],
+    });
+
+    return { message: "User left the room" };
+  } catch (error) {
+    console.error("Error in userLeavesRoom:", error);
+    return { message: "Error in userLeavesRoom operation" };
+  }
 };
 
 export const updateUserState = async (req: Request, res: Response) => {

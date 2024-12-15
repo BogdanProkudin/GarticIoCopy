@@ -133,7 +133,7 @@ const GameRoom = () => {
       };
       handleUpdateUserState();
     }
-  }, [roomUsers, userId, roomId, dispatch]);
+  }, []);
 
   useEffect(() => {
     if (host.hostName === userNameStorage && !isDeletingRoom) {
