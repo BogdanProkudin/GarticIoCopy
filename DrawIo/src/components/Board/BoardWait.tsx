@@ -8,7 +8,6 @@ import { handleGameStartButton } from "../../utils/handleStartGame";
 
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import { useGameStarted } from "../../hooks/useGameStarted";
-import Loading from "../LoadingGame/Loading";
 
 export const useGameSelectors = () => {
   return {
