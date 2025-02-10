@@ -7,7 +7,6 @@ import {
   IActiveUser,
   IRoomUsers,
   setRoomUsers,
-
 } from "../store/slices/roomInfo";
 import { setToolsPanel } from "../store/slices/drawInfo";
 
@@ -55,7 +54,7 @@ export const useNotifyOneUserGuessed = ({
         (el) => el.userName === usersGuessed[usersGuessed.length - 1]
       );
       if (guessedUser && guessedUser.userName === userNameStorage) {
-        const url = "http://localhost:3000/userGuessed";
+        const url = "https://bottg-63go.onrender.com/userGuessed";
 
         socket.emit("oneUserGuessed", { roomId });
 
@@ -84,7 +83,7 @@ export const useNotifyOneUserGuessed = ({
                 console.error("Error:", error);
               }
             };
-            const url = "http://localhost:3000/allUsersGuessed";
+            const url = "https://bottg-63go.onrender.com/allUsersGuessed";
 
             sendaAllUserGuessed(url);
             socket.emit("allUsersGuessed2", {

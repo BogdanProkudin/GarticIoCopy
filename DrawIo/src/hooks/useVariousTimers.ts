@@ -43,7 +43,7 @@ const functionMap: any = {
         console.error("Error:", error);
       }
     };
-    const url = "http://localhost:3000/roundTimer";
+    const url = "https://bottg-63go.onrender.com/roundTimer";
 
     sendRoundTimer(url);
   },

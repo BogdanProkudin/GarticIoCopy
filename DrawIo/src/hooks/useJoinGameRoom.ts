@@ -18,7 +18,7 @@ interface IuseJoinGameRoom {
 }
 
 // API Endpoint & Messages Constants
-const API_ENDPOINT = "http://localhost:3000/joinRoom";
+const API_ENDPOINT = "https://bottg-63go.onrender.com/joinRoom";
 const ERROR_MESSAGES = {
   NAME_TAKEN: "You are already in the room or userName taken",
   REQUEST_FAILED: "Request returned status 400",

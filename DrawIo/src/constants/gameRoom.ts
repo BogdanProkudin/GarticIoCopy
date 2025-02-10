@@ -1,10 +1,10 @@
 export const PING_INTERVAL = 17000;
 
 export const API_ENDPOINTS = {
-  PING: "http://localhost:3000/ping",
-  UPDATE_USER_STATE: "http://localhost:3000/updateUserState",
-  USER_LEAVE_ROOM: "http://localhost:3000/userLeaveRoom",
-  GET_ROOM_DATA: "http://localhost:3000/getRoomData",
+  PING: "https://bottg-63go.onrender.com/ping",
+  UPDATE_USER_STATE: "https://bottg-63go.onrender.com/updateUserState",
+  USER_LEAVE_ROOM: "https://bottg-63go.onrender.com/userLeaveRoom",
+  GET_ROOM_DATA: "https://bottg-63go.onrender.com/getRoomData",
 } as const;
 
 export const STYLES = {

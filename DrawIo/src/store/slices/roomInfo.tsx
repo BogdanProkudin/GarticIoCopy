@@ -154,7 +154,7 @@ export const createRoom = createAsyncThunk(
         thema: thema,
       };
       const response = await axios.post(
-        "http://localhost:3000/createRoom",
+        "https://bottg-63go.onrender.com/createRoom",
         roomData
       );
 
@@ -178,12 +178,15 @@ export const getRoomData = createAsyncThunk(
     try {
       console.log("пытаюсь гет рум дата");
 
-      const response = await axios.get(`http://localhost:3000/getRoomData`, {
-        params: { roomId, userId },
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      });
+      const response = await axios.get(
+        `https://bottg-63go.onrender.com/getRoomData`,
+        {
+          params: { roomId, userId },
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        }
+      );
       return response.data;
     } catch (err) {
       console.log("ERROR WHEN getting Room data :", err);
@@ -200,10 +203,13 @@ export const handleleaveRoom = createAsyncThunk(
     userName: string | null;
   }) {
     try {
-      const response = await axios.post(`http://localhost:3000/leaveRoom`, {
-        roomId,
-        userName,
-      });
+      const response = await axios.post(
+        "https://bottg-63go.onrender.com/leaveRoom",
+        {
+          roomId,
+          userName,
+        }
+      );
       console.log(response.data);
       socket.emit("leaveRoom", { roomId, userName });
       return response.data.roomData.usersInfo;
