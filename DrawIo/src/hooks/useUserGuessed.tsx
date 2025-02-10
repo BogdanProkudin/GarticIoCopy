@@ -50,13 +50,13 @@ export const useNotifyOneUserGuessed = ({
 }: IuseNotifyOneUserGuessed) => {
   useEffect(() => {
     const handleOneUserGuessed = async () => {
-      const guessedUser = roomUsers.find(
+      const guessedUser = await roomUsers.find(
         (el) => el.userName === usersGuessed[usersGuessed.length - 1]
       );
       if (guessedUser && guessedUser.userName === userNameStorage) {
         const url = "https://bottg-63go.onrender.com/userGuessed";
 
-        socket.emit("oneUserGuessed", { roomId });
+        await socket.emit("oneUserGuessed", { roomId });
 
         const response = await axios.post(url, {
           headers: { "Content-Type": "application/json" },

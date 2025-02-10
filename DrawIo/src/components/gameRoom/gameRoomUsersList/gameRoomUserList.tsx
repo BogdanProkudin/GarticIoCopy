@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hook";
 import styles from "../styles.module.scss";
 import GameRoomUserItem from "./gameRoomUserItem";
 import { setIsPointAnimation } from "../../../store/slices/roomInfo";
-import Loading from "../../LoadingGame/Loading";
+
 type GameRoomUserListProps = {
   setShowUserActionModal: Dispatch<SetStateAction<boolean>>;
 };
@@ -50,10 +50,6 @@ const GameRoomUserList: React.FC<GameRoomUserListProps> = ({
       return () => clearTimeout(timer);
     }
   }, [isPointsAnimation.userName]);
-
-  if (!roomUsers || roomUsers.length === 0) {
-    return <Loading />;
-  }
 
   return (
     <div
