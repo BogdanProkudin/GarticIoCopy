@@ -1,15 +1,7 @@
-import { fabric } from "fabric";
-import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  MutableRefObject,
-  memo,
-} from "react";
-import { socket } from "../../socket";
-import { useAppDispatch, useAppSelector } from "../../store/hook";
-import { setDrawColor } from "../../store/slices/drawInfo";
+import { useRef, useEffect, MutableRefObject, memo } from "react";
+
+import { useAppSelector } from "../../store/hook";
+
 import styles from "./styles.module.scss";
 import { useInitializeCanvas } from "../../hooks/useInitializeCanvas";
 import { useMouseEvents } from "../../hooks/useMouseEvents";

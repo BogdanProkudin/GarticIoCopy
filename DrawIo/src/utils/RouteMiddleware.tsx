@@ -40,7 +40,6 @@ const RouteMiddleware = ({ children }: any) => {
   };
 
   const roomId = useGetRoomIdFromUrl();
-  const userNameStorage = localStorage.getItem("userName");
 
   const getUserLeave = async () => {
     try {

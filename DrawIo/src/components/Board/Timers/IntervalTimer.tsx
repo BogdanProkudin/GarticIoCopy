@@ -1,22 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useSpring, animated } from "react-spring";
 import { useAppDispatch, useAppSelector } from "../../../store/hook";
 import { socket } from "../../../socket";
-import {
-  setIsIntervalOver,
-  setIsRoundEnd,
-} from "../../../store/slices/roomInfo";
+import { setIsRoundEnd } from "../../../store/slices/roomInfo";
 import styles from "../styles.module.scss";
-import axios from "axios";
+
 import useVariousTimers from "../../../hooks/useVariousTimers";
 import { useGetRoomIdFromUrl } from "../../../hooks/useGetRoomIdFromUrl";
 
 const IntervalTimer = () => {
   const targetRef = useRef(null);
   const activeUser = useAppSelector((state) => state.drawThema.activeUser);
-  const isIntervalOver = useAppSelector(
-    (state) => state.drawThema.isIntervalOver
-  );
+
   const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
   const roomId = useGetRoomIdFromUrl();
 

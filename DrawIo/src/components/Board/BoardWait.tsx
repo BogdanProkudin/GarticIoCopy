@@ -2,11 +2,10 @@ import Lottie from "react-lottie";
 import { useAppDispatch, useAppSelector } from "../../store/hook";
 import styles from "./styles.module.scss";
 import LottieSettings from "../../tools/Animation - 1711477541401.json";
-import { socket } from "../../socket";
-import { setIsGameStarted, setIsRoundEnd } from "../../store/slices/roomInfo";
-import { memo, useEffect } from "react";
+
+import { memo } from "react";
 import { handleGameStartButton } from "../../utils/handleStartGame";
-import { setIsUserDraw } from "../../store/slices/userInfo";
+
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import { useGameStarted } from "../../hooks/useGameStarted";
 import Loading from "../LoadingGame/Loading";

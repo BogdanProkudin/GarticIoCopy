@@ -8,7 +8,7 @@ interface Props {
   setIsGuessedAnimationFinished: Dispatch<SetStateAction<boolean>>;
 }
 import LottieSettings from "../../tools/Animation - 1712170538790.json";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useAppSelector } from "../../store/hook";
 import UsersNotGuessed from "./roundResult/UsersNotGuessed";
 import ActiveUserLeaved from "./roundResult/ActiveUserLeaved";

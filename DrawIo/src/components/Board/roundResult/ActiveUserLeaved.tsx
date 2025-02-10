@@ -4,21 +4,16 @@ import LottieSettings from "../../../tools/Animation - 1721731239797.json";
 import InactiveTimer from "../Timers/InactiveTimer";
 import { useEffect } from "react";
 import { socket } from "../../../socket";
-import { useAppDispatch, useAppSelector } from "../../../store/hook";
-import axios from "axios";
+import { useAppDispatch } from "../../../store/hook";
+
 import {
   setChoosedWord,
   setISActiveUserLeaved,
-  setIsIntervalOver,
-  setIsRoundTimerOver,
-  setRoundCount,
 } from "../../../store/slices/roomInfo";
 import {
   setIsUsersNotGuessedStarted,
   setIsUsersNotGuessed,
 } from "../../../store/slices/userInfo";
-import useVariousTimers from "../../../hooks/useVariousTimers";
-import { useGetRoomIdFromUrl } from "../../../hooks/useGetRoomIdFromUrl";
 
 const ActiveUserLeaved = () => {
   const defaultOptions = {
@@ -31,13 +26,6 @@ const ActiveUserLeaved = () => {
     },
   };
 
-  const roomId = useGetRoomIdFromUrl();
-  const userNameStorage = localStorage.getItem("userName");
-
-  const activeUser = useAppSelector((state) => state.drawThema.activeUser);
-  const isUsersNotGuessed = useAppSelector(
-    (state) => state.userInfo.isUsersNotGuessed
-  );
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(setIsUsersNotGuessedStarted(true));

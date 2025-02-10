@@ -1,17 +1,15 @@
-import React, { useEffect, useState, useCallback, memo } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { socket } from "../../socket";
 import styles from "./styles.module.scss";
 import { useAppDispatch, useAppSelector } from "../../store/hook";
-import { useNavigate } from "react-router-dom";
+
 import BoardContent from "./BoardContent";
 import useMousePosition from "./DrawSettings/ToolsPicker/EraserPosition";
 import { handleNextUserCall } from "../../hooks/getActiveUser";
 import RoundTimer from "./Timers/RoundTimer";
-import { logDOM } from "@testing-library/react";
+
 import { useDrawing } from "../../hooks/useDrawing";
-import axios from "axios";
-import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
-import { useSocket } from "../../hooks/useSocket";
+
 import {
   setHost,
   setISActiveUserLeaved,
@@ -81,7 +79,7 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
     };
   }, []);
   useEffect(() => {
-    const handleActiveUserLeaved = (data: any) => {
+    const handleActiveUserLeaved = () => {
       dispatch(setISActiveUserLeaved(true));
       dispatch(setToolsPanel(false));
       dispatch(setIsUserDraw(false));

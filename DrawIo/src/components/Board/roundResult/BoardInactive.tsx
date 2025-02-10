@@ -3,17 +3,15 @@ import Lottie from "react-lottie";
 import LottieSettings from "../../../tools/Animation - 1712053642285.json";
 
 import InactiveTimer from "../Timers/InactiveTimer";
-import { useAppDispatch, useAppSelector } from "../../../store/hook";
+import { useAppDispatch } from "../../../store/hook";
 import { useEffect } from "react";
 import { socket } from "../../../socket";
-import axios from "axios";
+
 import {
   setIsIntervalOver,
   setIsRoundEnd,
-  setIsRoundTimerOver,
 } from "../../../store/slices/roomInfo";
 import { setIsUsersNotGuessed } from "../../../store/slices/userInfo";
-import { useGetRoomIdFromUrl } from "../../../hooks/useGetRoomIdFromUrl";
 
 const BoardInactive = () => {
   const defaultOptions = {

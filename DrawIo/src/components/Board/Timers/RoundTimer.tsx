@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { animated, useSpring } from "react-spring";
 import { useGetRoomIdFromUrl } from "../../../hooks/useGetRoomIdFromUrl";
 import useVariousTimers from "../../../hooks/useVariousTimers";

@@ -5,13 +5,8 @@ import InactiveTimer from "../Timers/InactiveTimer";
 import { useEffect } from "react";
 import { socket } from "../../../socket";
 import { useAppDispatch, useAppSelector } from "../../../store/hook";
-import axios from "axios";
-import {
-  setChoosedWord,
-  setIsIntervalOver,
-  setIsRoundTimerOver,
-  setRoundCount,
-} from "../../../store/slices/roomInfo";
+
+import { setChoosedWord } from "../../../store/slices/roomInfo";
 import {
   setIsUsersNotGuessedStarted,
   setIsUsersNotGuessed,

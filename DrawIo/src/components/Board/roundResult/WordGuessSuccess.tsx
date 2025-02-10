@@ -1,19 +1,13 @@
 import styles from "../styles.module.scss";
 import Lottie from "react-lottie";
 import LottieSettings from "../../../tools/Animation - 1712255326889.json";
-import InactiveTimer from "../Timers/InactiveTimer";
+
 import AllUserGuessed from "../Timers/AllUsersGuessedTimer";
-import axios from "axios";
+
 import { useEffect } from "react";
 import { socket } from "../../../socket";
 import { useAppDispatch, useAppSelector } from "../../../store/hook";
-import {
-  setChoosedWord,
-  setIsIntervalOver,
-  setIsRoundEnd,
-  setIsRoundTimerOver,
-  setRoundCount,
-} from "../../../store/slices/roomInfo";
+import { setChoosedWord, setIsRoundEnd } from "../../../store/slices/roomInfo";
 import {
   setIsAllUsersGuessed,
   setIsUserDraw,
