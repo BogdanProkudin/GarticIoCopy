@@ -37,11 +37,7 @@ const BoardWait = () => {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-  if (!roomUsers || roomUsers.length === 0) {
-    console.log("NO ROOM USERS в board wait");
 
-    return <Loading />;
-  }
   useGameStarted();
 
   const waitingTextStyles = {
