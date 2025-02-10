@@ -1,7 +1,6 @@
 // hooks/useUpdateDrawingParams.ts
 import { useEffect } from "react";
 import { IActiveUser } from "../store/slices/roomInfo";
-import { fabric } from "fabric";
 
 export const useUpdateDrawingParams = (
   drawRef: any,
@@ -57,7 +56,7 @@ export const useUpdateDrawingParams = (
         case "getColor":
           // Для пипетки режим рисования должен быть выключен
           canvas.isDrawingMode = false;
-          canvas.selection = true;  // Разрешаем выбор объектов
+          canvas.selection = true; // Разрешаем выбор объектов
           canvas.skipTargetFind = false;
           canvas.interactive = true;
           break;

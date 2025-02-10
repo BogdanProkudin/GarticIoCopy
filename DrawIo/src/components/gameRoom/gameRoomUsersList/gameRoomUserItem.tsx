@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { FaCrown } from "react-icons/fa";
 import { useAppSelector } from "../../../store/hook";
 import { FaPencil } from "react-icons/fa6";
@@ -24,9 +24,6 @@ const GameRoomUserItem: React.FC<GameRoomUserItemProps> = ({
   const userNameStorage = localStorage.getItem("userName") || "";
   const choosedWord = useAppSelector((state) => state.drawThema.choosedWord);
   const isToolsPanel = useAppSelector((state) => state.drawInfo.toolsPanel);
-  const isPointsAnimation = useAppSelector(
-    (state) => state.drawThema.isPointsAnimation
-  );
 
   const isActiveUser = useMemo(
     () => userName === activeUser.userName && userName.length > 1,

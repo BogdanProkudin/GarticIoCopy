@@ -3,12 +3,9 @@ import animationData from "../../../tools/Animation - 1709999171287 (1).json";
 import ReactModal from "react-modal";
 import styles from "../../welcomePage/styles.module.scss";
 
-import { useAppDispatch, useAppSelector } from "../../../store/hook";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 const DisconnectedModal = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const defaultOptions = {

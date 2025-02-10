@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import stylesFromSetUp from "../setUpPage/styles.module.scss";
 import styles from "./styles.module.scss";
 import { useMediaQuery } from "react-responsive";
 const LobbyNotFoundHeader = () => {

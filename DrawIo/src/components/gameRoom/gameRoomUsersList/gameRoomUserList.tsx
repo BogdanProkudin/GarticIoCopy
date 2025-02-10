@@ -22,7 +22,7 @@ const GameRoomUserList: React.FC<GameRoomUserListProps> = ({
   );
   const isToolsPanel = useAppSelector((state) => state.drawInfo.toolsPanel);
   const activeUser = useAppSelector((state) => state.drawThema.activeUser);
-  const choosedWord = useAppSelector((state) => state.drawThema.choosedWord);
+
   const userNameStorage = localStorage.getItem("userName");
   const isGameStarted = useAppSelector(
     (state) => state.drawThema.isGameStarted

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+
 import axios from "axios";
 import { socket } from "../socket";
 import { setIsUserDraw, setIsAllUsersGuessed } from "../store/slices/userInfo";
@@ -7,7 +7,7 @@ import {
   IActiveUser,
   IRoomUsers,
   setRoomUsers,
-  setUsersGuessed,
+
 } from "../store/slices/roomInfo";
 import { setToolsPanel } from "../store/slices/drawInfo";
 

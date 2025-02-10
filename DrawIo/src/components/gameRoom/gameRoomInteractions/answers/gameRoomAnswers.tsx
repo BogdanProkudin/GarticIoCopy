@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../../styles.module.scss";
 
 import { socket } from "../../../../socket";
 
 import { useAppDispatch, useAppSelector } from "../../../../store/hook";
 
-import Answer from "./Answer";
 import AnswerInput from "./AnsweInput";
 
 import {
@@ -39,9 +38,7 @@ const GameRoomAnswers = () => {
   const isOneUserGuessed = useAppSelector(
     (state) => state.userInfo.isOneUserGuessed
   );
-  const isUsersNotGuessed = useAppSelector(
-    (state) => state.userInfo.isUsersNotGuessed
-  );
+
   const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
 
   const handleAnswerReceived = useHandleAnswerReceived({

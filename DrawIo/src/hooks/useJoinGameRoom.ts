@@ -1,6 +1,6 @@
 import axios from "axios";
-import { IRoomData, setIsGameRoomLoading } from "../store/slices/roomInfo";
-import { useAppDispatch } from "../store/hook";
+import { IRoomData } from "../store/slices/roomInfo";
+
 import { useNavigate } from "react-router-dom";
 import { Dispatch, SetStateAction } from "react";
 
@@ -8,12 +8,12 @@ import { Dispatch, SetStateAction } from "react";
 interface IuseJoinGameRoom {
   userName: string;
   roomData: IRoomData;
-  roomId: string;
-  userId: string;
+  roomId: string | null;
+  userId: string | null;
   setIsGameStartedError: Dispatch<SetStateAction<boolean>>;
   activeAvatar: string;
-  userAvatar: string;
-  userNameStorage: string;
+  userAvatar: string | null;
+  userNameStorage: string | null;
   setIsUserNameTook: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -38,7 +38,6 @@ export const useJoinGameRoom = ({
   userNameStorage,
   setIsUserNameTook,
 }: IuseJoinGameRoom) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   // Helper: Check if User Exists in Room
@@ -67,7 +66,7 @@ export const useJoinGameRoom = ({
 
   // Main Handler
   const handleJoinRoom = async () => {
-    if (userName.length < 3 || userName.length > 24) return;
+    if (userName.length < 3 || userName.length > 24 || !userId) return;
 
     try {
       const { userIdExists, userNameExists } = doesUserExist(

@@ -4,11 +4,9 @@ import {
   IRoomUsers,
   setActiveUser,
   setRoomUsers,
-  setRoundCount,
   setUsersGuessed,
-  setWinners,
 } from "../store/slices/roomInfo";
-import { setIsUserWonGame } from "../store/slices/userInfo";
+
 interface IhandleNextUserCall {
   activeUser: any;
   setIsGuessedAnimationFinished: any;
@@ -24,7 +22,7 @@ export const handleNextUserCall = ({
   activeUser,
   dispatch,
   users,
-  roomUsers,
+
   setIsGuessedAnimationFinished,
 }: IhandleNextUserCall) => {
   if (!activeUser) throw new Error(`Invalid user data `);

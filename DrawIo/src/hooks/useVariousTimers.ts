@@ -1,11 +1,7 @@
 import axios from "axios";
 import { useCallback, useEffect } from "react";
-import {
-  IRoomUsers,
-  setIsIntervalOver,
-  setIsRoundTimerOver,
-} from "../store/slices/roomInfo";
-import { socket } from "../socket";
+import { IRoomUsers, setIsRoundTimerOver } from "../store/slices/roomInfo";
+
 type UseVariousTimersProps = {
   functionName: string;
   dispatch?: unknown;
@@ -28,7 +24,7 @@ type TimersProps = {
 };
 // Определяем функции, которые могут быть возвращены хуком
 const functionMap: any = {
-  AllUsersGuessed: ({ roomId }: { roomId: string }) => {},
+  AllUsersGuessed: () => {},
 
   RoundTimer: ({ roomId, activeIndex, roomUsers, dispatch }: TimersProps) => {
     const sendRoundTimer = async (url: string) => {

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useDispatch } from "react-redux";
+
 import { setIsOneUserGuessed } from "../store/slices/userInfo"; // Импортируйте нужный экшен
 import { socket } from "../socket"; // Импортируйте ваш сокет
 import { Dispatch } from "@reduxjs/toolkit";

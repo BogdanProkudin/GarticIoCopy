@@ -4,7 +4,7 @@ import ReactModal from "react-modal";
 import styles from "../../styles.module.scss";
 
 import { useAppDispatch, useAppSelector } from "../../../../store/hook";
-import { setIsUserNameError } from "../../../../store/slices/userAuth";
+
 import { setIsUserOnline } from "../../../../store/slices/userInfo";
 
 const UserOfflineModal: React.FC = () => {

@@ -6,25 +6,22 @@ import { getRoomData, setRoomData } from "../../store/slices/roomInfo";
 import PrepareGameRoomInfo from "./prepareGameRoomInfo";
 import PrepareGameUserInfo from "./prepareGameUserInfo";
 import styles from "./styles.module.scss";
-import { useNavigate } from "react-router-dom";
+
 import { useMediaQuery } from "react-responsive";
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import LobbyNotFound from "../lobbyNotFound/lobbyNotFound";
 const PrepareGameRoom = () => {
   const roomId = useGetRoomIdFromUrl();
   const dispatch = useAppDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Состояние загрузки данных
-  const navigate = useNavigate();
+
   const userId = localStorage.getItem("userId");
   const [isError, setIsError] = useState<boolean>(false);
-  const userNameStorage = localStorage.getItem("userName");
+
   const isBigScreen = useMediaQuery({ query: "(max-width: 640px)" });
   useEffect(() => {
     localStorage.setItem("pageAccessedByReload", `false`);
     const fetchRoomData = async () => {
       try {
-        setIsLoading(true); // Установка состояния загрузки перед запросом данных
-
         const response = await dispatch(getRoomData({ roomId, userId }));
 
         if (!response.payload) {
@@ -46,7 +43,6 @@ const PrepareGameRoom = () => {
         console.error("Error fetching room data:", error);
         setIsError(true);
       } finally {
-        setIsLoading(false);
       }
     };
 

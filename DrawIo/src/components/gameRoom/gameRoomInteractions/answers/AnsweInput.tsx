@@ -2,7 +2,7 @@ import { FaPen } from "react-icons/fa";
 import styles from "../../styles.module.scss";
 import Lottie from "react-lottie";
 import LottieSettings from "../../../../tools/Animation - 1712178550440.json";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useAppSelector } from "../../../../store/hook";
 interface AnswerInputProps {
   isShowGuessedAnimation: boolean;
@@ -34,9 +34,7 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
   const choosedWord = useAppSelector((state) => state.drawThema.choosedWord);
   const userNameStorage = localStorage.getItem("userName");
   const activeUser = useAppSelector((state) => state.drawThema.activeUser);
-  const IsRoundTimerOver = useAppSelector(
-    (state) => state.drawThema.isRoundTimerOver
-  );
+
   const isRoundEnd = useAppSelector((state) => state.drawThema.isRoundEnd);
   const isUserNotGuessedStarted = useAppSelector(
     (state) => state.userInfo.isUserNotGuessedStarted

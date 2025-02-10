@@ -4,9 +4,9 @@ import { AnswerTypes } from "./gameRoomAnswers";
 import { FaPencilAlt } from "react-icons/fa";
 import { IoWarning } from "react-icons/io5";
 import { LuAlarmClock } from "react-icons/lu";
-import { useAppDispatch, useAppSelector } from "../../../../store/hook";
+import { useAppSelector } from "../../../../store/hook";
 import { useEffect, useState } from "react";
-import { setRoundCount } from "../../../../store/slices/roomInfo";
+
 enum MessageType {
   Interval,
   Correct,
@@ -21,13 +21,12 @@ type AnswerProps = {
 };
 const Answer: React.FC<AnswerProps> = ({ answer, scrollToBottom }) => {
   const userNameStorage = localStorage.getItem("userName");
-  const choosedWord = useAppSelector((state) => state.drawThema.choosedWord);
 
   const roundCount = useAppSelector((state) => state.drawThema.roundCount);
   const choosedWordsList = useAppSelector(
     (state) => state.drawThema.choosedWordsList
   );
-  const dispatch = useAppDispatch();
+
   const [messagesHistory, setMessageHistory] = useState<any[]>([]);
   useEffect(() => {
     scrollToBottom();

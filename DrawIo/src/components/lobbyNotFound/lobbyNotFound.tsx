@@ -1,7 +1,5 @@
-import { useMediaQuery } from "react-responsive";
 import styles from "./styles.module.scss";
-import stylesFromSetUp from "../setUpPage/styles.module.scss";
-import { useNavigate } from "react-router-dom";
+
 import LobbyNotFoundHeader from "./lobbyNotFoundHeader";
 import LobbyNotFoundContent from "./lobbyNotFoundContent";
 const LobbyNotFound = () => {

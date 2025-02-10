@@ -273,7 +273,7 @@ const drawThemaSlice = createSlice({
     setIsPointAnimation: (state, action) => {
       state.isPointsAnimation = action.payload;
     },
-    resetGameState(state) {
+    resetGameState() {
       return initialState;
     },
 

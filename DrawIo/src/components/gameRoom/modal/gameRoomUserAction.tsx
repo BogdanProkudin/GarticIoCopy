@@ -1,11 +1,10 @@
 import Lottie from "react-lottie";
 import animationData from "../../../tools/Animation - 1721314176921.json";
 import ReactModal from "react-modal";
-import { FaRegCopy } from "react-icons/fa";
 
 import styles from "../../welcomePage/styles.module.scss";
 import { IoClose } from "react-icons/io5";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useAppSelector } from "../../../store/hook";
 type ShareShowModalProps = {
   setShowUserActionModal: Dispatch<SetStateAction<boolean>>;

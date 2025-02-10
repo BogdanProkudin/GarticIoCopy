@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface IUserInfo {
   isAllUsersGuessed: boolean; // user
@@ -51,7 +51,7 @@ const userInfoSlice = createSlice({
     setIsUserJustLeftGame: (state, action) => {
       state.isUserJustLeftGame = action.payload;
     },
-    resetUserInfoState(state) {
+    resetUserInfoState() {
       return initialState;
     },
   },

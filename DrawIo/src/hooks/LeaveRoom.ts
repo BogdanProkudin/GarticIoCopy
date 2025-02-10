@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { useAppDispatch } from "../store/hook";
-import { handleleaveRoom } from "../store/slices/roomInfo";
+
 import { TIMEOUTS } from "../constants/timeouts";
-import { MESSAGES } from "../constants/messages";
+
 import { LeaveRoomService } from "../services/leaveRoomService";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +13,6 @@ interface UseLeaveRoomState {
 }
 
 const useLeaveRoomOnUnload = (roomId: string, userName: string | null) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [state, setState] = useState<UseLeaveRoomState>({
     isActive: true,
@@ -29,7 +27,7 @@ const useLeaveRoomOnUnload = (roomId: string, userName: string | null) => {
       if (e.key === "roomActivity") {
         const activity = JSON.parse(e.newValue || "{}");
         if (activity.roomId === roomId) {
-          setState(prev => ({ ...prev, isActive: activity.isActive }));
+          setState((prev) => ({ ...prev, isActive: activity.isActive }));
         }
       }
     };
@@ -40,7 +38,7 @@ const useLeaveRoomOnUnload = (roomId: string, userName: string | null) => {
 
   const updateActivity = useCallback(
     (isActive: boolean) => {
-      setState(prev => ({ ...prev, isActive }));
+      setState((prev) => ({ ...prev, isActive }));
       localStorage.setItem(
         "roomActivity",
         JSON.stringify({ roomId, isActive })
@@ -51,7 +49,7 @@ const useLeaveRoomOnUnload = (roomId: string, userName: string | null) => {
 
   const handleLeaveRoom = useCallback(async () => {
     try {
-      setState(prev => ({ ...prev, isLeaving: true }));
+      setState((prev) => ({ ...prev, isLeaving: true }));
       await LeaveRoomService.leaveRoom(roomId, userName!);
       navigate("/");
     } catch (error) {
@@ -60,7 +58,7 @@ const useLeaveRoomOnUnload = (roomId: string, userName: string | null) => {
         navigate("/");
       }
     } finally {
-      setState(prev => ({ ...prev, isLeaving: false }));
+      setState((prev) => ({ ...prev, isLeaving: false }));
     }
   }, [roomId, userName, navigate]);
 
@@ -75,7 +73,7 @@ const useLeaveRoomOnUnload = (roomId: string, userName: string | null) => {
       };
 
       const showInactivityWarning = () => {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           showWarning: true,
           timeToDisconnect: Math.floor(
@@ -97,7 +95,7 @@ const useLeaveRoomOnUnload = (roomId: string, userName: string | null) => {
 
       const handleUserActivity = () => {
         updateActivity(true);
-        setState(prev => ({ ...prev, showWarning: false }));
+        setState((prev) => ({ ...prev, showWarning: false }));
         resetTimers();
       };
 

@@ -3,7 +3,7 @@ import SetUpGameSettings from "./setUpGameSettings/setUpGameSettings";
 import SetUpGameThema from "./setUpGameThema/setUpGameThema";
 import SetUpGameThemaStartButton from "./setUpGameThema/setUpGameThemaStartButton";
 import styles from "./styles.module.scss";
-import { useState } from "react";
+
 const SetUpInfo = ({ setIsLoading }: any) => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 580px)" });
 

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import { useJoinGameRoom } from "../../hooks/useJoinGameRoom";
-import { useAppDispatch, useAppSelector } from "../../store/hook";
+import { useAppSelector } from "../../store/hook";
 import styles from "./styles.module.scss";
 interface PrepareGameButtonProps {
   setIsGameStartedError: React.Dispatch<React.SetStateAction<boolean>>;

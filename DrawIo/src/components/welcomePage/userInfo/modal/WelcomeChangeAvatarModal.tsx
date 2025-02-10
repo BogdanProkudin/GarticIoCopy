@@ -7,11 +7,6 @@ import { useMediaQuery } from "react-responsive";
 import { useAppDispatch } from "../../../../store/hook";
 import { setActiveAvatar } from "../../../../store/slices/userAuth";
 
-type ChangeAvatarModalProps = {
-  isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
-};
-
 const WelcomeChangeAvatarModal = ({
   isOpen,
   setIsOpen,

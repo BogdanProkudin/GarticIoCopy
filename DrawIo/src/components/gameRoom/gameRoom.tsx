@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./styles.module.scss";
 import GameRoomHeader from "./gameRoomHeader";
 import GameRoomUserList from "./gameRoomUsersList/gameRoomUserList";
-import { setHost, setRoomUsers } from "../..//store/slices/roomInfo";
+import {  setRoomUsers } from "../..//store/slices/roomInfo";
 import Board from "../Board/Board";
 import GameRoomInteractions from "./gameRoomInteractions/gameRoomInteraction";
 import DrawSettings from "../Board/DrawSettings/DrawSettings";
@@ -21,7 +21,7 @@ import { SideContentProps } from "../../types/gameRoom";
 import { LeaveRoomConfirmation } from "./modal/LeaveRoomConfirmation";
 import { InactivityWarning } from "./modal/InactivityWarning";
 import useLeaveRoomOnUnload from "../../hooks/LeaveRoom";
-import { MESSAGES as MESSAGES_CONSTANT } from "../../constants/messages";
+
 import { useBeforeUnload } from "../../hooks/useBeforeUnload";
 import { LeaveRoomService } from "../../services/leaveRoomService";
 import DeleteModal from "./modal/gameRoomDeletingModal";
@@ -48,15 +48,13 @@ const GameRoom = () => {
   const isToolsPanel = useAppSelector((state) => state.drawInfo.toolsPanel);
   const host = useAppSelector((state) => state.drawThema.host);
   const isUserWonGame = useAppSelector((state) => state.userInfo.isUserWonGame);
-  const userName = useAppSelector((state) => state.userAuth.userNameInputValue);
-  const userAvatar = localStorage.getItem("userAvatar");
-  const activeAvatar = useAppSelector((state) => state.userAuth.activeAvatar);
+  
   const isDeletingRoom = useAppSelector(
     (state) => state.drawThema.isDeletingRoom
   );
   // Custom hooks
   const {
-    isActive,
+    
     isLeaving,
     showWarning,
     timeToDisconnect,

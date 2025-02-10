@@ -61,13 +61,12 @@ export const useDrawing = ({
   const fillBucket = useCallback(
     (drawingColor: string) => {
       if (!drawRef.current) return;
-      
+
       // Сохраняем существующие объекты
-      const currentObjects = drawRef.current.getObjects();
-      
+
       // Устанавливаем новый цвет фона
       drawRef.current.backgroundColor = drawingColor;
-      
+
       // Отрисовываем все
       drawRef.current.renderAll();
     },
