@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./styles.module.scss";
 import GameRoomHeader from "./gameRoomHeader";
 import GameRoomUserList from "./gameRoomUsersList/gameRoomUserList";
-import {  setRoomUsers } from "../..//store/slices/roomInfo";
+import { setRoomUsers } from "../..//store/slices/roomInfo";
 import Board from "../Board/Board";
 import GameRoomInteractions from "./gameRoomInteractions/gameRoomInteraction";
 import DrawSettings from "../Board/DrawSettings/DrawSettings";
@@ -48,18 +48,13 @@ const GameRoom = () => {
   const isToolsPanel = useAppSelector((state) => state.drawInfo.toolsPanel);
   const host = useAppSelector((state) => state.drawThema.host);
   const isUserWonGame = useAppSelector((state) => state.userInfo.isUserWonGame);
-  
+
   const isDeletingRoom = useAppSelector(
     (state) => state.drawThema.isDeletingRoom
   );
   // Custom hooks
-  const {
-    
-    isLeaving,
-    showWarning,
-    timeToDisconnect,
-    handleLeaveRoom,
-  } = useLeaveRoomOnUnload(roomId, userNameStorage);
+  const { isLeaving, showWarning, timeToDisconnect, handleLeaveRoom } =
+    useLeaveRoomOnUnload(roomId, userNameStorage);
 
   // Обработчики для модальных окон
   const handleConfirmLeave = async () => {
@@ -114,23 +109,28 @@ const GameRoom = () => {
   }, []);
 
   useEffect(() => {
-    const currentUser = roomUsers.find((user) => user.userId === userId);
+    const waitFunc = async () => {
+      const currentUser = await roomUsers.find(
+        (user) => user.userId === userId
+      );
 
-    if (roomUsers.length > 0 && !currentUser?.isUserInLobby) {
-      const handleUpdateUserState = async () => {
-        try {
-          const response = await axios.post(API_ENDPOINTS.UPDATE_USER_STATE, {
-            headers: { "Content-Type": "application/json" },
-            roomId,
-            userId,
-          });
-          dispatch(setRoomUsers(response.data.roomUsers));
-        } catch (error) {
-          console.error("Failed to update user state:", error);
-        }
-      };
-      handleUpdateUserState();
-    }
+      if (roomUsers.length > 0 && !currentUser?.isUserInLobby) {
+        const handleUpdateUserState = async () => {
+          try {
+            const response = await axios.post(API_ENDPOINTS.UPDATE_USER_STATE, {
+              headers: { "Content-Type": "application/json" },
+              roomId,
+              userId,
+            });
+            await dispatch(setRoomUsers(response.data.roomUsers));
+          } catch (error) {
+            console.error("Failed to update user state:", error);
+          }
+        };
+        handleUpdateUserState();
+      }
+    };
+    waitFunc();
   }, []);
 
   useEffect(() => {

@@ -75,20 +75,20 @@ io.on("connection", (socket) => {
   socket.on("123", (data) => {
     io.to(data.roomId).emit("321", data);
   });
-  socket.on("startGame", (data) => {
-    const getRandomWords = (count: any) => {
+  socket.on("startGame", async (data) => {
+    const getRandomWords = async (count: any) => {
       const randomWords: any = [];
-      const words = data.words;
+      const words = await data.words;
       while (randomWords.length < count) {
-        const randomIndex = Math.floor(Math.random() * words.length);
-        const randomWord = words[randomIndex];
+        const randomIndex = await Math.floor(Math.random() * words.length);
+        const randomWord = await words[randomIndex];
         if (!randomWords.includes(randomWord)) {
           randomWords.push(randomWord);
         }
       }
       return randomWords;
     };
-    const chosenWords = getRandomWords(2);
+    const chosenWords = await getRandomWords(2);
     io.to(data.roomId).emit("gameStarted");
     io.to(data.roomId).emit("gameWords", chosenWords);
   });

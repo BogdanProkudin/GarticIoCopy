@@ -103,8 +103,8 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   );
 
   useEffect(() => {
-    socket.on("getNextUserCall", (data) => {
-      console.log("data", data);
+    socket.on("getNextUserCall", async (data) => {
+      const awaitedData = await data;
 
       handleNextUserCall({
         dispatch,
@@ -112,8 +112,8 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
         setIsGuessedAnimationFinished,
         roomUsers,
         maxGamePoints,
-        users: data.users,
-        activeUser: data.activeUser,
+        users: awaitedData.users,
+        activeUser: awaitedData.activeUser,
       });
     });
 

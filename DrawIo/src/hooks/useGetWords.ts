@@ -11,21 +11,26 @@ import {
 import { setToolsPanel } from "../store/slices/drawInfo";
 import { setIsUserDraw } from "../store/slices/userInfo";
 
-export const useGetWords = (roomId: string, choosedWordsList: string[]) => {
+export const useGetWords = async (
+  roomId: string,
+  choosedWordsList: string[]
+) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    socket.on("getWordChoosed", (data) => {
-      dispatch(setChoosedWord(data));
+    socket.on("getWordChoosed", async (data) => {
+      const awaitedData = await data;
+      dispatch(setChoosedWord(awaitedData));
       dispatch(setToolsPanel(true));
       dispatch(setRoundCount());
-      dispatch(setChoosedWordsList([...choosedWordsList, data]));
+      dispatch(setChoosedWordsList([...choosedWordsList, awaitedData]));
       dispatch(setIsUserDraw(false));
       dispatch(setIsGameStarted(true));
     });
 
     socket.on("gameWords", async (words) => {
-      dispatch(setChosenWords(words));
+      const resWords = await words;
+      dispatch(setChosenWords(resWords));
     });
 
     return () => {

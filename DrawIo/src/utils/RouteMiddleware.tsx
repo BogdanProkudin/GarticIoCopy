@@ -112,9 +112,10 @@ const RouteMiddleware = ({ children }: any) => {
   };
 
   useEffect(() => {
-    const handleUserJoined = (data: IRoomData) => {
-      dispatch(setRoomUsers(data.usersInfo));
-      console.log("User joined", data);
+    const handleUserJoined = async (data: IRoomData) => {
+      const awaitData = await data;
+      dispatch(setRoomUsers(awaitData.usersInfo));
+      console.log("User joined", awaitData);
     };
 
     socket.on("userJoined", handleUserJoined);
@@ -140,15 +141,7 @@ const RouteMiddleware = ({ children }: any) => {
 
   // Если проверка еще выполняется, ничего не рендерим
   if (isChecking || isGameRoomLoading) {
-    return (
-      <div className={styles.set_up_loading}>
-        <Lottie
-          isClickToPauseDisabled
-          style={{ height: "300px", width: "300px" }}
-          options={defaultOptions}
-        />
-      </div>
-    );
+    return <div className={styles.set_up_loading}></div>;
   }
 
   // Обработка ошибок

@@ -537,11 +537,11 @@ export const usersNotGuessedTimer = async (
 ) => {
   try {
     const roomId = req.body;
-    io.to(roomId).emit("getAnswer", {
+    await io.to(roomId).emit("getAnswer", {
       message: `the answer was`,
       roomId: roomId,
     });
-    io.to(roomId).emit("getAnswer", {
+    await io.to(roomId).emit("getAnswer", {
       message: "interval@@",
       roomId: roomId,
     });
@@ -561,10 +561,10 @@ export const usersNotGuessedTimer = async (
       { usersGuessedList: [] }, // Обновление состояния, если слово выбрано
       { new: true }
     );
-    io.to(roomId).emit("getUsersNotGuessedTimer");
+    await io.to(roomId).emit("getUsersNotGuessedTimer");
     console.log("в юзеры не угадали ");
 
-    intervalTimer(roomId, null);
+    await intervalTimer(roomId, null);
     return { message: "users didnt guessed timer over", status: 200 };
   } catch (error) {
     console.error("Error Time users not guessed", error);

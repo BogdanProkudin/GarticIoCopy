@@ -7,7 +7,7 @@ import { Winner } from "../types/gameRoom";
 
 export const useGameEvents = (dispatch: AppDispatch) => {
   useEffect(() => {
-    const handleGameWon = (data: { winners: Winner[] }) => {
+    const handleGameWon = async (data: { winners: Winner[] }) => {
       const sortedWinners = [...data.winners].sort(
         (a, b) => b.userPoints - a.userPoints
       );
