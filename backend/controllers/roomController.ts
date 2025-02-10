@@ -151,7 +151,7 @@ export const isUserInGame = async (req: Request, res: Response) => {
       { maxTimeMS: 10000 }
     );
     console.log("IS PLAYER FOUND", isPlayerFound.length, userId);
-    if (isPlayerFound.length >= 1) {
+    if (isPlayerFound.length >= 1 && userId !== null) {
       console.log("REDIRECT TO MAIN PAGE SECOND ACTIVE GAME", userId);
       return res.status(200).json({ message: "You are already in the room" });
     }
@@ -175,7 +175,7 @@ export const createRoom = async (req: Request, res: Response) => {
       },
     });
     console.log("IS PLAYER FOUND", isPlayerFound.length, host.hostId);
-    if (isPlayerFound.length >= 1) {
+    if (isPlayerFound.length >= 1 && host.hostId !== null) {
       console.log("REDIRECT TO MAIN PAGE SECOND ACTIVE GAME", host.hostId);
       return res.status(200).json({ message: "You are already in the room" });
     }
