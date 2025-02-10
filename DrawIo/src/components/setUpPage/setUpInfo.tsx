@@ -4,7 +4,7 @@ import SetUpGameThema from "./setUpGameThema/setUpGameThema";
 import SetUpGameThemaStartButton from "./setUpGameThema/setUpGameThemaStartButton";
 import styles from "./styles.module.scss";
 
-const SetUpInfo = ({ setIsLoading }: any) => {
+const SetUpInfo = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 580px)" });
 
   return !isSmallScreen ? (
@@ -24,7 +24,7 @@ const SetUpInfo = ({ setIsLoading }: any) => {
         <SetUpGameThema />
       </div>
 
-      <SetUpGameThemaStartButton isLoading setIsLoading={setIsLoading} />
+      <SetUpGameThemaStartButton />
     </div>
   ) : (
     <div className={styles.set_up_info_small_screen_container}>

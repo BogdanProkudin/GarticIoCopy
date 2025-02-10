@@ -6,9 +6,8 @@ import {
   createRoom,
   resetGameState,
   setIsGameRoomLoading,
-  setIsUserInLobbdy,
 } from "../../../store/slices/roomInfo";
-import axios from "axios";
+
 import {
   resetUserInfoState,
   setIsUserJustLeftGame,
@@ -38,7 +37,7 @@ export interface roomDataProps {
     }
   ];
 }
-const SetUpGameThemaStartButton = ({ setIsLoading }: any) => {
+const SetUpGameThemaStartButton = () => {
   const hostUserName = localStorage.getItem("userName");
   const userAvatar = localStorage.getItem("userAvatar");
   const [isLoadingRoom, setIsLoadingRoom] = useState(false);
