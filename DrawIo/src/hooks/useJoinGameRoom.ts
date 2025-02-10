@@ -3,6 +3,8 @@ import { IRoomData, setIsGameRoomLoading } from "../store/slices/roomInfo";
 import { useAppDispatch } from "../store/hook";
 import { useNavigate } from "react-router-dom";
 import { Dispatch, SetStateAction } from "react";
+
+// Interface for Props
 interface IuseJoinGameRoom {
   userName: string;
   roomData: IRoomData;
@@ -14,6 +16,17 @@ interface IuseJoinGameRoom {
   userNameStorage: string;
   setIsUserNameTook: Dispatch<SetStateAction<boolean>>;
 }
+
+// API Endpoint & Messages Constants
+const API_ENDPOINT = "http://localhost:3000/joinRoom";
+const ERROR_MESSAGES = {
+  NAME_TAKEN: "You are already in the room or userName taken",
+  REQUEST_FAILED: "Request returned status 400",
+  LOBBY_NOT_FOUND: "/LobbyNotFound",
+  UNKNOWN_ERROR: "An unknown error occurred.",
+};
+
+// Main Hook
 export const useJoinGameRoom = ({
   userName,
   roomData,
@@ -27,78 +40,82 @@ export const useJoinGameRoom = ({
 }: IuseJoinGameRoom) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  // Helper: Check if User Exists in Room
+  const doesUserExist = (
+    roomData: IRoomData,
+    userId: string,
+    userName: string
+  ) => {
+    const userIdExists = roomData.usersInfo.some(
+      (user) => user.userId === userId
+    );
+    const userNameExists = roomData.usersInfo.some(
+      (user) => user.userName === userName
+    );
+    return { userIdExists, userNameExists };
+  };
+
+  // Helper: Construct User Info Object
+  const getUserInfo = () => ({
+    userId,
+    userAvatar: activeAvatar || userAvatar,
+    userName: userName || userNameStorage,
+    userPoints: 0,
+    isActive: false,
+  });
+
+  // Main Handler
   const handleJoinRoom = async () => {
+    if (userName.length < 3 || userName.length > 24) return;
+
     try {
-      if (userName.length >= 3 && userName.length <= 24) {
-        // const generatedUserId = generateUserId();
+      const { userIdExists, userNameExists } = doesUserExist(
+        roomData,
+        userId,
+        userName
+      );
 
-        const userIdExists = roomData.usersInfo.some((user: any) => {
-          return user.userId === userId;
-        });
-        const userExists = roomData.usersInfo.some((user: any) => {
-          return user.userName === userName;
-        });
-
-        setIsGameStartedError(false);
-        if (roomData.isGameStarted) {
-          setIsGameStartedError(true);
-          return;
-        }
-        setIsUserNameTook(false);
-        if (userExists || userIdExists) {
-          setIsUserNameTook(true);
-          console.log("error your id  already in the game");
-          return;
-        }
-        dispatch(setIsGameRoomLoading(true));
-        const response = await axios.post("http://localhost:3000/joinRoom", {
-          roomId,
-
-          userInfo: {
-            userId: userId,
-            userAvatar: activeAvatar ? activeAvatar : userAvatar && userAvatar,
-            userName: userName.length > 1 ? userName : userNameStorage,
-            userPoints: 0,
-            isActive: false,
-          },
-        });
-        console.log("REPSSS", response);
-
-        // if (
-
-        // ) {
-        //   setIsUserNameTook(true);
-        //   console.log("error your id  already in the game");
-        //   return;
-        // }
-        localStorage.setItem("userName", userName);
-
-        navigate(`/game/${roomId}`, { replace: true });
+      // Check if Game Has Started
+      if (roomData.isGameStarted) {
+        setIsGameStartedError(true);
+        return;
       }
+
+      // Optional: Handle Username Already Exists Logic (if uncommented)
+      if (userIdExists || userNameExists) {
+        setIsUserNameTook(true);
+        return;
+      }
+
+      // API Request
+      const response = await axios.post(API_ENDPOINT, {
+        roomId,
+        userInfo: getUserInfo(),
+      });
+
+      // Handle Specific Error Response
+      if (response.data.message === ERROR_MESSAGES.NAME_TAKEN) {
+        setIsUserNameTook(true);
+        return;
+      }
+
+      // Success: Store Name and Navigate
+      localStorage.setItem("userName", userName);
+      navigate(`/game/${roomId}`, { replace: true });
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        dispatch(setIsGameRoomLoading(false));
-        console.error("Error response:", error.response?.data); // Логируем ответ с ошибкой
-        if (
-          error.response?.data.message ===
-          "You are already in the room or userName taken"
-        ) {
-          setIsUserNameTook(true);
-          return;
-        }
+        console.error("Error response:", error.response?.data);
         if (error.response?.status === 400) {
-          console.log("REquest returns code 400");
-          navigate("/LobbyNotFound", { replace: true });
+          navigate(ERROR_MESSAGES.LOBBY_NOT_FOUND, { replace: true });
           return;
-          // Выполнить действия, если ошибка 404
-        } else {
-          console.log("An error occurred.");
-          // Выполнить другие действия
         }
-      } else {
-        console.error("An unknown error occurred:", error);
       }
+
+      console.error(ERROR_MESSAGES.UNKNOWN_ERROR, error);
+    } finally {
     }
   };
+
   return handleJoinRoom;
 };

@@ -8,6 +8,8 @@ import styles from "./styles.module.scss";
 const PrepareGameRoomInfo = () => {
   const [isUserNameTook, setIsUserNameTook] = useState(false);
   const [isGameStartedError, setIsGameStartedError] = useState(false);
+  console.log("ISUSERNAMETOOK", isUserNameTook);
+
   return (
     <div className={styles.prepare_room_info_container}>
       <link
@@ -26,8 +28,6 @@ const PrepareGameRoomInfo = () => {
       <PrepareGameButton
         setIsGameStartedError={setIsGameStartedError}
         setIsUserNameTook={setIsUserNameTook}
-        isGameStartedError={isGameStartedError}
-        isUserNameTook={isUserNameTook}
       />
 
       <UserNameTookModal

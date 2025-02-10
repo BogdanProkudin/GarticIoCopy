@@ -26,7 +26,6 @@ const PrepareGameRoom = () => {
         setIsLoading(true); // Установка состояния загрузки перед запросом данных
 
         const response = await dispatch(getRoomData({ roomId, userId }));
-        console.log("11");
 
         if (!response.payload) {
           console.error("Error fetching room data:");
@@ -47,15 +46,13 @@ const PrepareGameRoom = () => {
         console.error("Error fetching room data:", error);
         setIsError(true);
       } finally {
-        setIsLoading(false); // Установка состояния загрузки после завершения запроса данных
+        setIsLoading(false);
       }
     };
 
     fetchRoomData();
   }, [roomId, dispatch]);
   useEffect(() => {
-    console.log("render ");
-
     function generateUserId() {
       if (!userId) {
         const characters =
@@ -81,6 +78,7 @@ const PrepareGameRoom = () => {
   if (isError) {
     return <LobbyNotFound />;
   }
+
   return (
     <div className={styles.prepare_room_container}>
       <>

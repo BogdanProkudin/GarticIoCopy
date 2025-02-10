@@ -283,14 +283,13 @@ export const joinRoom = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
-    if (
-      roomData.usersInfo.some(
-        (user: any) => user.userName === userInfo.userName
-      )
-    ) {
+    const isUserNameTaken = await roomData.usersInfo.some(
+      (user: any) => user.userName === userInfo.userName
+    );
+    if (isUserNameTaken) {
       console.log("User name is already in the room:", userInfo.userName);
       return res
-        .status(409)
+        .status(200)
         .json({ message: "You are already in the room or userName taken" });
     }
     // Обновляем данные пользователя
