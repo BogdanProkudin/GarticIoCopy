@@ -48,11 +48,11 @@ export const handleGameStartButton = async ({
     }
   };
 
-  const url = "http://localhost:3000/startNewGame";
+  const url = "https://bottg-63go.onrender.com/startNewGame";
 
   await sendGameStart(url);
 
   socket.emit("startGame", { words: words, roomId });
-  const url2 = "http://localhost:3000/yourTurn";
+  const url2 = "https://bottg-63go.onrender.com/yourTurn";
   await sendYourTurn(url2);
 };

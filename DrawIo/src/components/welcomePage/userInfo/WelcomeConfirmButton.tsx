@@ -20,9 +20,12 @@ const WelcomeConfirmButton = () => {
       // socket.emit("joinRoom", roomId);
       console.log("USSSSS", userId);
       setIsLoading(true);
-      const response = await axios.post("http://localhost:3000/isUserInLobby", {
-        userId,
-      });
+      const response = await axios.post(
+        "https://bottg-63go.onrender.com/isUserInLobby",
+        {
+          userId,
+        }
+      );
       if (response.data.message === "You are already in the room") {
         dispatch(setIsUserJustLeftGame(true));
         setIsLoading(false);
