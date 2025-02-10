@@ -545,12 +545,13 @@ export const usersNotGuessedTimer = async (
       message: "interval@@",
       roomId: roomId,
     });
+    await handleNextUserCall(null, null, roomId);
     const timeOutOver = await new Promise<boolean>((resolve) => {
       setTimeout(() => {
         resolve(true);
       }, 5000);
     });
-    await handleNextUserCall(null, null, roomId);
+
     await RoomModel.findOneAndUpdate(
       { roomId },
       { isWordChosen: false },

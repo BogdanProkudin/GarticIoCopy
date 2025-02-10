@@ -1,10 +1,6 @@
 import axios from "axios";
 import { useCallback, useEffect } from "react";
-import {
-  IRoomUsers,
-  setIsRoundTimerOver,
-  setRoomUsers,
-} from "../store/slices/roomInfo";
+import { IRoomUsers, setIsRoundTimerOver } from "../store/slices/roomInfo";
 
 type UseVariousTimersProps = {
   functionName: string;
@@ -82,7 +78,6 @@ const useVariousTimers = ({
 
       const func = getFunction();
 
-      dispatch(setRoomUsers(roomUsers));
       func({ roomId });
       return;
     }
