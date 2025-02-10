@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useGetRoomIdFromUrl } from "../hooks/useGetRoomIdFromUrl";
 import { socket } from "../socket";
-import LottieSettings from "../tools/Animation - 1725791635271.json";
-import Lottie from "react-lottie";
+
 import styles from "../components/setUpPage/styles.module.scss";
 import { useAppDispatch, useAppSelector } from "../store/hook";
 import {
@@ -30,14 +29,14 @@ const RouteMiddleware = ({ children }: any) => {
   const [isError, setIsError] = useState(false);
 
   const dispatch = useAppDispatch();
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: LottieSettings,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
+  // const defaultOptions = {
+  //   loop: true,
+  //   autoplay: true,
+  //   animationData: LottieSettings,
+  //   rendererSettings: {
+  //     preserveAspectRatio: "xMidYMid slice",
+  //   },
+  // };
 
   const roomId = useGetRoomIdFromUrl();
 
