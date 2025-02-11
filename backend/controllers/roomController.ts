@@ -67,7 +67,7 @@ export const handleNextUserCall = async (
     const roomData = await RoomModel.findOne({
       roomId: roomFirstId ? roomFirstId : roomId,
     });
-    console.log("roomddata found 22 ", roomData);
+    console.log("roomddata found 20002 ", roomData);
 
     if (!roomData) {
       return { message: "Room data not found. ERROR" };
@@ -515,10 +515,11 @@ export const roundTimer = async (req: Request, res: Response) => {
       const updatedRoomData = await RoomModel.findOne({ roomId });
 
       if (!updatedRoomData?.isRoundOver) {
+        await handleNextUserCall(null, null, roomId);
         console.log(`Timer ended for room ${roomId}, no one guessed.`);
         io.to(roomId).emit("getSkipRound");
         io.to(roomId).emit("getNextUserCall", data);
-        await handleNextUserCall(null, null, roomId);
+
         await usersNotGuessedTimer({ body: roomId }, null);
         return res
           .status(200)

@@ -47,7 +47,7 @@ const handleNextUserCall = (req, res, roomId) => __awaiter(void 0, void 0, void 
         const roomData = yield roomModel_1.RoomModel.findOne({
             roomId: roomFirstId ? roomFirstId : roomId,
         });
-        console.log("roomddata found 22 ", roomData);
+        console.log("roomddata found 20002 ", roomData);
         if (!roomData) {
             return { message: "Room data not found. ERROR" };
         }
@@ -401,10 +401,10 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         timers[roomId].roundTimer = setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
             const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
             if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver)) {
+                yield (0, exports.handleNextUserCall)(null, null, roomId);
                 console.log(`Timer ended for room ${roomId}, no one guessed.`);
                 server_1.io.to(roomId).emit("getSkipRound");
                 server_1.io.to(roomId).emit("getNextUserCall", data);
-                yield (0, exports.handleNextUserCall)(null, null, roomId);
                 yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
                 return res
                     .status(200)
