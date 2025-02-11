@@ -397,12 +397,12 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const data = {
             roomId,
             activeUser: roomData === null || roomData === void 0 ? void 0 : roomData.activeUser,
+            users: roomData === null || roomData === void 0 ? void 0 : roomData.usersInfo,
         };
         timers[roomId].roundTimer = setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
             const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
             if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver)) {
-                yield (0, exports.handleNextUserCall)(null, null, roomId);
-                console.log(`Timer ended for room ${roomId}, no one guessed.`);
+                console.log(`Timer ended for room game ${roomId}, no one guessed.`);
                 server_1.io.to(roomId).emit("getSkipRound");
                 server_1.io.to(roomId).emit("getNextUserCall", data);
                 yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
@@ -422,6 +422,7 @@ exports.roundTimer = roundTimer;
 const usersNotGuessedTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const roomId = yield req.body;
+        yield (0, exports.handleNextUserCall)(null, null, roomId);
         server_1.io.to(roomId).emit("getAnswer", {
             message: `the answer was`,
             roomId: roomId,

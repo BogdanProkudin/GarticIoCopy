@@ -509,14 +509,14 @@ export const roundTimer = async (req: Request, res: Response) => {
     const data = {
       roomId,
       activeUser: roomData?.activeUser,
+      users: roomData?.usersInfo,
     };
 
     timers[roomId].roundTimer = setTimeout(async () => {
       const updatedRoomData = await RoomModel.findOne({ roomId });
 
       if (!updatedRoomData?.isRoundOver) {
-        await handleNextUserCall(null, null, roomId);
-        console.log(`Timer ended for room ${roomId}, no one guessed.`);
+        console.log(`Timer ended for room game ${roomId}, no one guessed.`);
         io.to(roomId).emit("getSkipRound");
         io.to(roomId).emit("getNextUserCall", data);
 
@@ -540,6 +540,7 @@ export const usersNotGuessedTimer = async (
 ) => {
   try {
     const roomId = await req.body;
+    await handleNextUserCall(null, null, roomId);
     io.to(roomId).emit("getAnswer", {
       message: `the answer was`,
       roomId: roomId,
