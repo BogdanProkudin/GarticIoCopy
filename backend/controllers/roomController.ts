@@ -67,7 +67,7 @@ export const handleNextUserCall = async (
     const roomData = await RoomModel.findOne({
       roomId: roomFirstId ? roomFirstId : roomId,
     });
-    console.log("roomddata found ", roomData);
+    console.log("roomddata found 22 ", roomData);
 
     if (!roomData) {
       return { message: "Room data not found. ERROR" };
