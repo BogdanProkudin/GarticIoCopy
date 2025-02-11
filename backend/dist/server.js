@@ -115,23 +115,23 @@ exports.io.on("connection", (socket) => {
     socket.on("123", (data) => {
         exports.io.to(data.roomId).emit("321", data);
     });
-    socket.on("startGame", (data) => {
-        const getRandomWords = (count) => {
+    socket.on("startGame", (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const getRandomWords = (count) => __awaiter(void 0, void 0, void 0, function* () {
             const randomWords = [];
-            const words = data.words;
+            const words = yield data.words;
             while (randomWords.length < count) {
-                const randomIndex = Math.floor(Math.random() * words.length);
-                const randomWord = words[randomIndex];
+                const randomIndex = yield Math.floor(Math.random() * words.length);
+                const randomWord = yield words[randomIndex];
                 if (!randomWords.includes(randomWord)) {
                     randomWords.push(randomWord);
                 }
             }
             return randomWords;
-        };
-        const chosenWords = getRandomWords(2);
+        });
+        const chosenWords = yield getRandomWords(2);
         exports.io.to(data.roomId).emit("gameStarted");
         exports.io.to(data.roomId).emit("gameWords", chosenWords);
-    });
+    }));
     socket.on("sentWord", (data) => __awaiter(void 0, void 0, void 0, function* () {
         console.log("In");
         const getRandomWords = (count) => __awaiter(void 0, void 0, void 0, function* () {

@@ -43,18 +43,19 @@ const handleGameWin = (roomId, roomUsers, maxGamePoints) => __awaiter(void 0, vo
 });
 const handleNextUserCall = (req, res, roomId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const roomFirstId = req === null || req === void 0 ? void 0 : req.body.roomId;
+        const roomFirstId = yield (req === null || req === void 0 ? void 0 : req.body.roomId);
         const roomData = yield roomModel_1.RoomModel.findOne({
             roomId: roomFirstId ? roomFirstId : roomId,
         });
+        console.log("roomddata found 22 ", roomData);
         if (!roomData) {
             return { message: "Room data not found. ERROR" };
         }
         if (roomData.isGameStarted === false) {
             yield roomModel_1.RoomModel.findOneAndUpdate({ roomId: roomFirstId ? roomFirstId : roomId }, { isGameStarted: true }, { new: true });
         }
-        const users = roomData === null || roomData === void 0 ? void 0 : roomData.usersInfo.filter((user) => !user.isUserLeave);
-        const maxGamePoints = roomData === null || roomData === void 0 ? void 0 : roomData.points;
+        const users = yield (roomData === null || roomData === void 0 ? void 0 : roomData.usersInfo.filter((user) => !user.isUserLeave));
+        const maxGamePoints = yield (roomData === null || roomData === void 0 ? void 0 : roomData.points);
         if (!users || !maxGamePoints) {
             return;
         }
@@ -74,8 +75,10 @@ const handleNextUserCall = (req, res, roomId) => __awaiter(void 0, void 0, void 
         else {
             const updatedRoom = yield roomModel_1.RoomModel.findOne({ roomId });
             const remainingUsers = yield (updatedRoom === null || updatedRoom === void 0 ? void 0 : updatedRoom.usersInfo.filter((user) => !user.isUserLeave));
-            console.log(remainingUsers === null || remainingUsers === void 0 ? void 0 : remainingUsers.length, "LENGTH REMAIN Users");
-            server_1.io.to(roomId.length !== 6 ? roomFirstId : roomId).emit("getNextUserCall", {
+            console.log(remainingUsers === null || remainingUsers === void 0 ? void 0 : remainingUsers.length, "LENGTH REMAIN Users1", updatedRoom);
+            yield server_1.io
+                .to(roomId.length !== 6 ? roomFirstId : roomId)
+                .emit("getNextUserCall", {
                 activeUser: nextActiveUser,
                 users: remainingUsers
                     ? remainingUsers
@@ -417,7 +420,7 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.roundTimer = roundTimer;
 const usersNotGuessedTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const roomId = req.body;
+        const roomId = yield req.body;
         server_1.io.to(roomId).emit("getAnswer", {
             message: `the answer was`,
             roomId: roomId,
@@ -426,12 +429,12 @@ const usersNotGuessedTimer = (req, res) => __awaiter(void 0, void 0, void 0, fun
             message: "interval@@",
             roomId: roomId,
         });
+        yield (0, exports.handleNextUserCall)(null, null, roomId);
         const timeOutOver = yield new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);
             }, 5000);
         });
-        yield (0, exports.handleNextUserCall)(null, null, roomId);
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isWordChosen: false }, { new: true });
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { usersGuessedList: [] }, // Обновление состояния, если слово выбрано
         { new: true });
