@@ -63,7 +63,7 @@ export const handleNextUserCall = async (
   roomId: any
 ) => {
   try {
-    const roomFirstId = req?.body.roomId;
+    const roomFirstId = await req?.body.roomId;
     const roomData = await RoomModel.findOne({
       roomId: roomFirstId ? roomFirstId : roomId,
     });
@@ -81,8 +81,10 @@ export const handleNextUserCall = async (
       );
     }
 
-    const users = roomData?.usersInfo.filter((user: any) => !user.isUserLeave);
-    const maxGamePoints = roomData?.points;
+    const users = await roomData?.usersInfo.filter(
+      (user: any) => !user.isUserLeave
+    );
+    const maxGamePoints = await roomData?.points;
 
     if (!users || !maxGamePoints) {
       return;
@@ -120,16 +122,15 @@ export const handleNextUserCall = async (
       );
       console.log(remainingUsers?.length, "LENGTH REMAIN Users");
 
-      io.to(roomId.length !== 6 ? roomFirstId : roomId).emit(
-        "getNextUserCall",
-        {
+      await io
+        .to(roomId.length !== 6 ? roomFirstId : roomId)
+        .emit("getNextUserCall", {
           activeUser: nextActiveUser,
           users: remainingUsers
             ? remainingUsers
             : updatedUsers.filter((user: any) => !user.isUserLeave),
           test: "test",
-        }
-      );
+        });
     }
 
     return res ? res?.status(200).json("alles goed") : "";
@@ -537,7 +538,7 @@ export const usersNotGuessedTimer = async (
   res: Response | null
 ) => {
   try {
-    const roomId = req.body;
+    const roomId = await req.body;
     io.to(roomId).emit("getAnswer", {
       message: `the answer was`,
       roomId: roomId,
