@@ -380,8 +380,8 @@ export const inactiveTimer = async (
       }, 6100);
     });
 
-    io.to(roomId).emit("getInactiveOver");
-    intervalTimer({ body: { roomId } }, null); // Запуск нового таймера раунда
+    await io.to(roomId).emit("getInactiveOver");
+    await intervalTimer({ body: { roomId } }, null); // Запуск нового таймера раунда
 
     return res?.status(200).json({ timeOutOver });
   } catch (error) {
@@ -391,7 +391,7 @@ export const inactiveTimer = async (
 };
 
 export const wordChoosed = async (req: Request, res: Response) => {
-  const roomId = req.body.roomId;
+  const roomId = await req.body.roomId;
 
   if (!roomId) {
     return res.status(400).json({ message: "roomId is required" });
@@ -449,7 +449,7 @@ export const intervalTimer = async (
 
       return;
     }
-    io.to(roomId).emit("getAnswer", {
+    await io.to(roomId).emit("getAnswer", {
       userName: activeUser.userName,
       message: `${activeUser.userName} has next turn`,
       roomId: roomId,
@@ -466,15 +466,15 @@ export const intervalTimer = async (
         console.log(
           `Timer ended for room ${roomId}, time to choose word end .`
         );
-        io.to(roomId).emit("getAnswer", {
+        await io.to(roomId).emit("getAnswer", {
           userName: activeUser.userName,
           message: `${activeUser.userName} lost turn :()`,
           roomId,
         });
         handleNextUserCall(null, null, roomId);
 
-        io.to(roomId).emit("getSkipRound");
-        inactiveTimer({ body: { roomId } }, null);
+        await io.to(roomId).emit("getSkipRound");
+        await inactiveTimer({ body: { roomId } }, null);
         return res
           ? res.status(200).json({
               timer: true,
@@ -493,7 +493,7 @@ export const intervalTimer = async (
 
 export const roundTimer = async (req: Request, res: Response) => {
   try {
-    const roomId = req.body.roomId;
+    const roomId = await req.body.roomId;
     const roomData = await RoomModel.findOne({ roomId });
     await RoomModel.findOneAndUpdate(
       { roomId },
@@ -517,8 +517,8 @@ export const roundTimer = async (req: Request, res: Response) => {
 
       if (!updatedRoomData?.isRoundOver) {
         console.log(`Timer ended for room game ${roomId}, no one guessed.`);
-        io.to(roomId).emit("getSkipRound");
-        io.to(roomId).emit("getNextUserCall", data);
+        await io.to(roomId).emit("getSkipRound");
+        await io.to(roomId).emit("getNextUserCall", data);
 
         await usersNotGuessedTimer({ body: roomId }, null);
         return res
@@ -566,10 +566,10 @@ export const usersNotGuessedTimer = async (
       { usersGuessedList: [] }, // Обновление состояния, если слово выбрано
       { new: true }
     );
-    io.to(roomId).emit("getUsersNotGuessedTimer");
+    await io.to(roomId).emit("getUsersNotGuessedTimer");
     console.log("в юзеры не угадали ");
 
-    intervalTimer(roomId, null);
+    await intervalTimer(roomId, null);
     return { message: "users didnt guessed timer over", status: 200 };
   } catch (error) {
     console.error("Error Time users not guessed", error);
@@ -614,11 +614,11 @@ export const allUsersGuessed = async (req: Request, res: Response) => {
           { isWordChosen: false }, // Обновление состояния, если слово выбрано
           { new: true }
         );
-        io.to(roomId).emit("getAllUsersGuessed");
+        await io.to(roomId).emit("getAllUsersGuessed");
         resolve(true);
       }, 4800);
     });
-    intervalTimer({ body: { roomId } }, null); // Запуск нового таймера раунда
+    await intervalTimer({ body: { roomId } }, null); // Запуск нового таймера раунда
 
     return res.status(200).json({ timeOutOver });
   } catch (error) {
@@ -701,13 +701,13 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
       guessedUsersLength ===
       roomUsers.filter((user) => !user.isUserLeave).length - 1
     ) {
-      io.to(roomId).emit("getAnswer", {
+      await io.to(roomId).emit("getAnswer", {
         userName: "",
         message: "Everybody guessed correctly!",
         roomId,
         isAllGuessed: true,
       });
-      io.to(roomId).emit("getAnswer", {
+      await io.to(roomId).emit("getAnswer", {
         userName: "",
         message: "Interval...",
         roomId,
@@ -850,8 +850,8 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
 };
 
 export const updateUserState = async (req: Request, res: Response) => {
-  const roomId = req.body.roomId;
-  const userId = req.body.userId;
+  const roomId = await req.body.roomId;
+  const userId = await req.body.userId;
   if (roomId && userId) {
     const bulkOperations = [
       {

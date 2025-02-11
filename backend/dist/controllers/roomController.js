@@ -293,8 +293,8 @@ const inactiveTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 resolve(true);
             }, 6100);
         });
-        server_1.io.to(roomId).emit("getInactiveOver");
-        (0, exports.intervalTimer)({ body: { roomId } }, null); // Запуск нового таймера раунда
+        yield server_1.io.to(roomId).emit("getInactiveOver");
+        yield (0, exports.intervalTimer)({ body: { roomId } }, null); // Запуск нового таймера раунда
         return res === null || res === void 0 ? void 0 : res.status(200).json({ timeOutOver });
     }
     catch (error) {
@@ -304,7 +304,7 @@ const inactiveTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.inactiveTimer = inactiveTimer;
 const wordChoosed = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const roomId = req.body.roomId;
+    const roomId = yield req.body.roomId;
     if (!roomId) {
         return res.status(400).json({ message: "roomId is required" });
     }
@@ -344,7 +344,7 @@ const intervalTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             console.log("в интервале юзера активного нет  ");
             return;
         }
-        server_1.io.to(roomId).emit("getAnswer", {
+        yield server_1.io.to(roomId).emit("getAnswer", {
             userName: activeUser.userName,
             message: `${activeUser.userName} has next turn`,
             roomId: roomId,
@@ -358,14 +358,14 @@ const intervalTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             }
             if (timers[roomId].isFinish === true) {
                 console.log(`Timer ended for room ${roomId}, time to choose word end .`);
-                server_1.io.to(roomId).emit("getAnswer", {
+                yield server_1.io.to(roomId).emit("getAnswer", {
                     userName: activeUser.userName,
                     message: `${activeUser.userName} lost turn :()`,
                     roomId,
                 });
                 (0, exports.handleNextUserCall)(null, null, roomId);
-                server_1.io.to(roomId).emit("getSkipRound");
-                (0, exports.inactiveTimer)({ body: { roomId } }, null);
+                yield server_1.io.to(roomId).emit("getSkipRound");
+                yield (0, exports.inactiveTimer)({ body: { roomId } }, null);
                 return res
                     ? res.status(200).json({
                         timer: true,
@@ -386,7 +386,7 @@ exports.intervalTimer = intervalTimer;
 const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const roomId = req.body.roomId;
+        const roomId = yield req.body.roomId;
         const roomData = yield roomModel_1.RoomModel.findOne({ roomId });
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { skippedRoundsinLine: 0, isRoundOver: false }, // Сброс состояния
         { new: true });
@@ -403,8 +403,8 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
             if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver)) {
                 console.log(`Timer ended for room game ${roomId}, no one guessed.`);
-                server_1.io.to(roomId).emit("getSkipRound");
-                server_1.io.to(roomId).emit("getNextUserCall", data);
+                yield server_1.io.to(roomId).emit("getSkipRound");
+                yield server_1.io.to(roomId).emit("getNextUserCall", data);
                 yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
                 return res
                     .status(200)
@@ -439,9 +439,9 @@ const usersNotGuessedTimer = (req, res) => __awaiter(void 0, void 0, void 0, fun
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isWordChosen: false }, { new: true });
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { usersGuessedList: [] }, // Обновление состояния, если слово выбрано
         { new: true });
-        server_1.io.to(roomId).emit("getUsersNotGuessedTimer");
+        yield server_1.io.to(roomId).emit("getUsersNotGuessedTimer");
         console.log("в юзеры не угадали ");
-        (0, exports.intervalTimer)(roomId, null);
+        yield (0, exports.intervalTimer)(roomId, null);
         return { message: "users didnt guessed timer over", status: 200 };
     }
     catch (error) {
@@ -473,11 +473,11 @@ const allUsersGuessed = (req, res) => __awaiter(void 0, void 0, void 0, function
                 { new: true });
                 yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isWordChosen: false }, // Обновление состояния, если слово выбрано
                 { new: true });
-                server_1.io.to(roomId).emit("getAllUsersGuessed");
+                yield server_1.io.to(roomId).emit("getAllUsersGuessed");
                 resolve(true);
             }), 4800);
         });
-        (0, exports.intervalTimer)({ body: { roomId } }, null); // Запуск нового таймера раунда
+        yield (0, exports.intervalTimer)({ body: { roomId } }, null); // Запуск нового таймера раунда
         return res.status(200).json({ timeOutOver });
     }
     catch (error) {
@@ -545,13 +545,13 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
         if (guessedUsersLength ===
             roomUsers.filter((user) => !user.isUserLeave).length - 1) {
-            server_1.io.to(roomId).emit("getAnswer", {
+            yield server_1.io.to(roomId).emit("getAnswer", {
                 userName: "",
                 message: "Everybody guessed correctly!",
                 roomId,
                 isAllGuessed: true,
             });
-            server_1.io.to(roomId).emit("getAnswer", {
+            yield server_1.io.to(roomId).emit("getAnswer", {
                 userName: "",
                 message: "Interval...",
                 roomId,
@@ -672,8 +672,8 @@ const userLeavesRoom = (roomId, userId) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.userLeavesRoom = userLeavesRoom;
 const updateUserState = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const roomId = req.body.roomId;
-    const userId = req.body.userId;
+    const roomId = yield req.body.roomId;
+    const userId = yield req.body.userId;
     if (roomId && userId) {
         const bulkOperations = [
             {
