@@ -75,7 +75,7 @@ const handleNextUserCall = (req, res, roomId) => __awaiter(void 0, void 0, void 
         else {
             const updatedRoom = yield roomModel_1.RoomModel.findOne({ roomId });
             const remainingUsers = yield (updatedRoom === null || updatedRoom === void 0 ? void 0 : updatedRoom.usersInfo.filter((user) => !user.isUserLeave));
-            console.log(remainingUsers === null || remainingUsers === void 0 ? void 0 : remainingUsers.length, "LENGTH REMAIN Users1", updatedRoom);
+            console.log(remainingUsers === null || remainingUsers === void 0 ? void 0 : remainingUsers.length, "LENGTH REMAIN Users12", updatedRoom);
             yield server_1.io
                 .to(roomId.length !== 6 ? roomFirstId : roomId)
                 .emit("getNextUserCall", {
@@ -404,7 +404,8 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 console.log(`Timer ended for room ${roomId}, no one guessed.`);
                 server_1.io.to(roomId).emit("getSkipRound");
                 server_1.io.to(roomId).emit("getNextUserCall", data);
-                (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
+                yield (0, exports.handleNextUserCall)(null, null, roomId);
+                yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
                 return res
                     .status(200)
                     .json({ timer: true, message: "round timer is over" });
@@ -429,7 +430,6 @@ const usersNotGuessedTimer = (req, res) => __awaiter(void 0, void 0, void 0, fun
             message: "interval@@",
             roomId: roomId,
         });
-        yield (0, exports.handleNextUserCall)(null, null, roomId);
         const timeOutOver = yield new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);

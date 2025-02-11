@@ -518,8 +518,8 @@ export const roundTimer = async (req: Request, res: Response) => {
         console.log(`Timer ended for room ${roomId}, no one guessed.`);
         io.to(roomId).emit("getSkipRound");
         io.to(roomId).emit("getNextUserCall", data);
-
-        usersNotGuessedTimer({ body: roomId }, null);
+        await handleNextUserCall(null, null, roomId);
+        await usersNotGuessedTimer({ body: roomId }, null);
         return res
           .status(200)
           .json({ timer: true, message: "round timer is over" });
@@ -547,7 +547,7 @@ export const usersNotGuessedTimer = async (
       message: "interval@@",
       roomId: roomId,
     });
-    await handleNextUserCall(null, null, roomId);
+
     const timeOutOver = await new Promise<boolean>((resolve) => {
       setTimeout(() => {
         resolve(true);
