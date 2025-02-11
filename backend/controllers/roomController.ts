@@ -67,6 +67,7 @@ export const handleNextUserCall = async (
     const roomData = await RoomModel.findOne({
       roomId: roomFirstId ? roomFirstId : roomId,
     });
+    console.log("roomddata found ", roomData);
 
     if (!roomData) {
       return { message: "Room data not found. ERROR" };
@@ -537,11 +538,11 @@ export const usersNotGuessedTimer = async (
 ) => {
   try {
     const roomId = req.body;
-    await io.to(roomId).emit("getAnswer", {
+    io.to(roomId).emit("getAnswer", {
       message: `the answer was`,
       roomId: roomId,
     });
-    await io.to(roomId).emit("getAnswer", {
+    io.to(roomId).emit("getAnswer", {
       message: "interval@@",
       roomId: roomId,
     });
@@ -562,10 +563,10 @@ export const usersNotGuessedTimer = async (
       { usersGuessedList: [] }, // Обновление состояния, если слово выбрано
       { new: true }
     );
-    await io.to(roomId).emit("getUsersNotGuessedTimer");
+    io.to(roomId).emit("getUsersNotGuessedTimer");
     console.log("в юзеры не угадали ");
 
-    await intervalTimer(roomId, null);
+    intervalTimer(roomId, null);
     return { message: "users didnt guessed timer over", status: 200 };
   } catch (error) {
     console.error("Error Time users not guessed", error);
