@@ -120,7 +120,7 @@ export const handleNextUserCall = async (
       const remainingUsers = await updatedRoom?.usersInfo.filter(
         (user: any) => !user.isUserLeave
       );
-      console.log(remainingUsers?.length, "LENGTH REMAIN Users");
+      console.log(remainingUsers?.length, "LENGTH REMAIN Users", updatedRoom);
 
       await io
         .to(roomId.length !== 6 ? roomFirstId : roomId)
