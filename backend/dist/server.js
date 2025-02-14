@@ -58,7 +58,7 @@ exports.io = new socket_io_1.Server(server, {
     cors: { origin: "*" },
 });
 app.use((0, cors_1.default)({
-    origin: "https://gartic-io-copy-bwic.vercel.app",
+    origin: "*",
 }));
 app.use(express_1.default.json());
 const PORT = 3000;

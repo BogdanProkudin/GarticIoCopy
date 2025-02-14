@@ -12,7 +12,7 @@ export const io = new Server(server, {
 
 app.use(
   cors({
-    origin: "https://gartic-io-copy-bwic.vercel.app",
+    origin: "*",
   })
 );
 
