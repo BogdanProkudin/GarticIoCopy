@@ -1,6 +1,7 @@
-import { lazy } from "react";
+import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import RouteMiddleware from "./utils/RouteMiddleware";
+import Loading from "./components/LoadingGame/Loading";
 import GameRoom from "./components/gameRoom/gameRoom";
 import ErrorBoundary from "./utils/ErrorBoundary";
 import "./globalStyles.css";
@@ -34,8 +35,12 @@ function App() {
     <ErrorBoundary>
       <Router>
         <RouteMiddleware>
+          <Suspense fallback={<Loading />}>
+            <Routes>
+              <Route path="/" element={<WelcomePage />} />
+            </Routes>
+          </Suspense>
           <Routes>
-            <Route path="/" element={<WelcomePage />} />
             <Route path="game/:id" element={<GameRoom />} />
             <Route path="create" element={<SetUpPage />} />
             <Route path="123" element={<GameRoom123 />} />
