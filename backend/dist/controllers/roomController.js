@@ -175,7 +175,7 @@ const getRoomInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return res.status(404).json({ message: "Room does not exist" });
         }
         // Фильтруем только активных пользователей (не покинули комнату)
-        const filteredUsers = roomData.usersInfo.filter((user) => !user.isUserLeave);
+        const filteredUsers = yield roomData.usersInfo.filter((user) => !user.isUserLeave);
         // Формируем ответ без изменения базы данных
         const responseData = {
             roomId: roomData.roomId,
@@ -236,9 +236,11 @@ const joinRoom = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.status(404).json({ message: "Room not found" });
         }
         // Фильтруем список пользователей, исключая тех, кто покинул комнату
-        const filteredUsers = updatedRoom.usersInfo.filter((user) => !user.isUserLeave);
+        const filteredUsers = yield updatedRoom.usersInfo.filter((user) => !user.isUserLeave);
         // Уведомляем всех участников комнаты о новом пользователе
-        server_1.io.to(roomId).emit("userJoined", { roomId, usersInfo: filteredUsers });
+        yield server_1.io
+            .to(roomId)
+            .emit("userJoined", { roomId, usersInfo: filteredUsers });
         return res.status(200).json({
             message: "Successfully joined the room",
             roomId,
@@ -262,7 +264,7 @@ const leaveRoom = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             },
         }, { new: true });
         console.log("user Leaved");
-        server_1.io.to(roomId).emit("userLeaved", roomData);
+        yield server_1.io.to(roomId).emit("userLeaved", roomData);
         return res
             .status(200)
             .json({ message: "Successfully left the room", roomData });
@@ -317,7 +319,7 @@ const wordChoosed = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
     if (timers[roomId].wordTimer) {
         console.log("остановка таймера при выборе слова");
-        clearTimeout(timers[roomId].wordTimer); // Остановка таймера выбора слова
+        yield clearTimeout(timers[roomId].wordTimer); // Остановка таймера выбора слова
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { $set: { isWordChosen: true } }, // Обновление состояния, если слово выбрано
         { new: true });
         return res.status(200).json("alles goed");
@@ -363,7 +365,7 @@ const intervalTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                     message: `${activeUser.userName} lost turn :()`,
                     roomId,
                 });
-                (0, exports.handleNextUserCall)(null, null, roomId);
+                yield (0, exports.handleNextUserCall)(null, null, roomId);
                 yield server_1.io.to(roomId).emit("getSkipRound");
                 yield (0, exports.inactiveTimer)({ body: { roomId } }, null);
                 return res
@@ -391,7 +393,7 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { skippedRoundsinLine: 0, isRoundOver: false }, // Сброс состояния
         { new: true });
         if ((_a = timers[roomId]) === null || _a === void 0 ? void 0 : _a.roundTimer) {
-            clearTimeout(timers[roomId].roundTimer);
+            yield clearTimeout(timers[roomId].roundTimer);
             delete timers[roomId].roundTimer;
         }
         const data = {
@@ -423,11 +425,11 @@ const usersNotGuessedTimer = (req, res) => __awaiter(void 0, void 0, void 0, fun
     try {
         const roomId = yield req.body;
         yield (0, exports.handleNextUserCall)(null, null, roomId);
-        server_1.io.to(roomId).emit("getAnswer", {
+        yield server_1.io.to(roomId).emit("getAnswer", {
             message: `the answer was`,
             roomId: roomId,
         });
-        server_1.io.to(roomId).emit("getAnswer", {
+        yield server_1.io.to(roomId).emit("getAnswer", {
             message: "interval@@",
             roomId: roomId,
         });
@@ -466,7 +468,7 @@ const allUsersGuessed = (req, res) => __awaiter(void 0, void 0, void 0, function
                 .json({ message: "User guessed correctly!" });
             delete timers[roomId].response;
         }
-        (0, exports.handleNextUserCall)(null, null, roomId);
+        yield (0, exports.handleNextUserCall)(null, null, roomId);
         const timeOutOver = yield new Promise((resolve) => {
             setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
                 yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { usersGuessedList: [] }, // Обновление состояния, если слово выбрано
@@ -498,8 +500,8 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!roomData) {
             return res.status(404).json({ message: "Room not found" });
         }
-        const userGuessedList = roomData.usersGuessedList || [];
-        const roomUsers = roomData.usersInfo || [];
+        const userGuessedList = (yield roomData.usersGuessedList) || [];
+        const roomUsers = (yield roomData.usersInfo) || [];
         // Добавляем пользователя в список угаданных
         if (!userGuessedList.includes(whoGuessed.userName)) {
             userGuessedList.push(whoGuessed.userName);
@@ -601,11 +603,11 @@ const userLeavesRoom = (roomId, userId) => __awaiter(void 0, void 0, void 0, fun
         if (!updatedRoomData) {
             return { message: "Room not found" };
         }
-        const roomUsers = updatedRoomData.usersInfo || [];
+        const roomUsers = (yield updatedRoomData.usersInfo) || [];
         const remainUsers = roomUsers.filter((user) => !user.isUserLeave);
         // Сценарий: если остался один пользователь
         if (updatedRoomData.isGameStarted && remainUsers.length === 1) {
-            server_1.io.to(roomId).emit("getRoomDeletedWarning", {
+            yield server_1.io.to(roomId).emit("getRoomDeletedWarning", {
                 roomId,
                 message: "Game ended. Only one user remaining. Room will be deleted in 15 seconds.",
             });
@@ -622,7 +624,7 @@ const userLeavesRoom = (roomId, userId) => __awaiter(void 0, void 0, void 0, fun
                 isWordChosen: false,
             };
             yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { $set: resetFields });
-            server_1.io.to(roomId).emit("getActiveUserLeaved");
+            yield server_1.io.to(roomId).emit("getActiveUserLeaved");
             setTimeout(() => {
                 console.log("5 seconds passed");
                 server_1.io.to(roomId).emit("getActiveUserLeavedTimer");
@@ -657,7 +659,7 @@ const userLeavesRoom = (roomId, userId) => __awaiter(void 0, void 0, void 0, fun
             }
         }
         // Уведомление о выходе пользователя
-        server_1.io.to(roomId).emit("getUserLeft", {
+        yield server_1.io.to(roomId).emit("getUserLeft", {
             roomId,
             userName: userId,
             roomUsers: remainUsers,

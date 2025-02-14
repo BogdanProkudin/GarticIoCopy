@@ -57,7 +57,9 @@ const server = http_1.default.createServer(app);
 exports.io = new socket_io_1.Server(server, {
     cors: { origin: "*" },
 });
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: "https://gartic-io-copy-bwic.vercel.app",
+}));
 app.use(express_1.default.json());
 const PORT = 3000;
 mongoose_1.default

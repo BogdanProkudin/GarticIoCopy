@@ -9,7 +9,13 @@ const server = http.createServer(app);
 export const io = new Server(server, {
   cors: { origin: "*" },
 });
-app.use(cors());
+
+app.use(
+  cors({
+    origin: "https://gartic-io-copy-bwic.vercel.app",
+  })
+);
+
 app.use(express.json());
 const PORT = 3000;
 mongoose
