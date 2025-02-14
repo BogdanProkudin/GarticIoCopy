@@ -38,11 +38,12 @@ function App() {
           <Suspense fallback={<Loading />}>
             <Routes>
               <Route path="/" element={<WelcomePage />} />
+              <Route path="create" element={<SetUpPage />} />
             </Routes>
           </Suspense>
           <Routes>
             <Route path="game/:id" element={<GameRoom />} />
-            <Route path="create" element={<SetUpPage />} />
+
             <Route path="123" element={<GameRoom123 />} />
             <Route path="lobbyNotFound" element={<LobbyNotFound />} />
             <Route path="prepareRoom/:id" element={<PrepareGameRoom />} />
