@@ -26,7 +26,6 @@ const RouteMiddleware = ({ children }: any) => {
   const location = useLocation();
   const userId = localStorage.getItem("userId");
 
-  const [isChecking, setIsChecking] = useState(true); // Флаг проверки
   const [isError, setIsError] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -50,13 +49,13 @@ const RouteMiddleware = ({ children }: any) => {
         const response = await dispatch(getRoomData({ roomId, userId }));
 
         if (response?.payload.message === "Room does not exist") {
-          setIsChecking(false); // Завершаем проверку
+          // setIsChecking(false); // Завершаем проверку
           return "lobbyNotFound";
         }
 
         const roomDataFromResponse = await response?.payload;
         if (!roomDataFromResponse) {
-          setIsChecking(false); // Завершаем проверку
+          // setIsChecking(false); // Завершаем проверку
           return "lobbyNotFound";
         }
 
@@ -72,7 +71,7 @@ const RouteMiddleware = ({ children }: any) => {
           userId !== roomDataFromResponse.host.hostId
         ) {
           dispatch(setRoomData(roomDataFromResponse));
-          setIsChecking(false);
+          // setIsChecking(false);
           return "prepare";
         }
         // Обновляем данные комнаты
@@ -84,19 +83,19 @@ const RouteMiddleware = ({ children }: any) => {
         dispatch(setMaxRoomPoints(roomDataFromResponse.points));
 
         if (currentUser?.isUserInLobby) {
-          setIsChecking(false); // Завершаем проверку
+          // setIsChecking(false); // Завершаем проверку
           return "prepare";
         }
 
         if (currentUser?.isUserLeave) {
-          setIsChecking(false); // Завершаем проверку
+          // setIsChecking(false); // Завершаем проверку
           return "main";
         }
 
         localStorage.setItem("pageAccessedByReload", "true");
       } else {
         if (location.pathname === `/prepareRoom/${roomId}`) {
-          setIsChecking(false); // Завершаем проверку
+          // setIsChecking(false); // Завершаем проверку
         }
         return "game";
       }
@@ -106,7 +105,7 @@ const RouteMiddleware = ({ children }: any) => {
       return "lobbyNotFound";
     } finally {
       // Завершаем проверку
-      setIsChecking(false);
+      // setIsChecking(false);
       dispatch(setIsGameRoomLoading(false));
     }
   };
@@ -138,7 +137,7 @@ const RouteMiddleware = ({ children }: any) => {
     };
   }, [location, navigate]);
 
-  if (isGameRoomLoading && !isChecking) {
+  if (isGameRoomLoading) {
     return (
       <div className={styles.set_up_loading}>
         <Lottie
