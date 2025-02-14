@@ -11,15 +11,7 @@ const defaultOptions = {
   },
 };
 const Loading = () => {
-  return (
-    <div className={styles.set_up_loading}>
-      <Lottie
-        isClickToPauseDisabled
-        style={{ height: "300px", width: "300px" }}
-        options={defaultOptions}
-      />
-    </div>
-  );
+  return <div className={styles.set_up_loading}>loading</div>;
 };
 
 export default Loading;
