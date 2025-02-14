@@ -54,13 +54,13 @@ const RouteMiddleware = ({ children }: any) => {
           return "lobbyNotFound";
         }
 
-        const roomDataFromResponse = response?.payload;
+        const roomDataFromResponse = await response?.payload;
         if (!roomDataFromResponse) {
           setIsChecking(false); // Завершаем проверку
           return "lobbyNotFound";
         }
 
-        const currentUser = roomDataFromResponse.usersInfo.find(
+        const currentUser = await roomDataFromResponse.usersInfo.find(
           (user: any) => user.userId === userId
         );
 
@@ -72,7 +72,7 @@ const RouteMiddleware = ({ children }: any) => {
           userId !== roomDataFromResponse.host.hostId
         ) {
           dispatch(setRoomData(roomDataFromResponse));
-          setIsChecking(false); // Завершаем проверку
+          setIsChecking(false);
           return "prepare";
         }
         // Обновляем данные комнаты
@@ -112,10 +112,9 @@ const RouteMiddleware = ({ children }: any) => {
   };
 
   useEffect(() => {
-    const handleUserJoined = async (data: IRoomData) => {
-      const awaitData = await data;
-      dispatch(setRoomUsers(awaitData.usersInfo));
-      console.log("User joined", awaitData);
+    const handleUserJoined = (data: IRoomData) => {
+      dispatch(setRoomUsers(data.usersInfo));
+      console.log("User joined", data);
     };
 
     socket.on("userJoined", handleUserJoined);
@@ -140,7 +139,7 @@ const RouteMiddleware = ({ children }: any) => {
   }, [location, navigate]);
 
   // Если проверка еще выполняется, ничего не рендерим
-  if (isChecking || isGameRoomLoading) {
+  if (isGameRoomLoading) {
     return (
       <div className={styles.set_up_loading}>
         <Lottie

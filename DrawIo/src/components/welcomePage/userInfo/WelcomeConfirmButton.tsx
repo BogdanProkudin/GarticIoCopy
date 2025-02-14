@@ -32,7 +32,9 @@ const WelcomeConfirmButton = () => {
         return;
       }
       setIsLoading(false);
+
       navigate(`/create`);
+      localStorage.setItem("firstStart", "true");
       localStorage.setItem("userName", userName);
       localStorage.setItem("userAvatar", userAvatar);
     } else {

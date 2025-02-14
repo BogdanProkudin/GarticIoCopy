@@ -233,7 +233,7 @@ export const getRoomInfo = async (req: Request, res: Response) => {
     }
 
     // Фильтруем только активных пользователей (не покинули комнату)
-    const filteredUsers = roomData.usersInfo.filter(
+    const filteredUsers = await roomData.usersInfo.filter(
       (user: any) => !user.isUserLeave
     );
 
@@ -309,12 +309,14 @@ export const joinRoom = async (req: Request, res: Response) => {
     }
 
     // Фильтруем список пользователей, исключая тех, кто покинул комнату
-    const filteredUsers = updatedRoom.usersInfo.filter(
+    const filteredUsers = await updatedRoom.usersInfo.filter(
       (user) => !user.isUserLeave
     );
 
     // Уведомляем всех участников комнаты о новом пользователе
-    io.to(roomId).emit("userJoined", { roomId, usersInfo: filteredUsers });
+    await io
+      .to(roomId)
+      .emit("userJoined", { roomId, usersInfo: filteredUsers });
 
     return res.status(200).json({
       message: "Successfully joined the room",
@@ -343,7 +345,7 @@ export const leaveRoom = async (req: Request, res: Response) => {
     );
     console.log("user Leaved");
 
-    io.to(roomId).emit("userLeaved", roomData);
+    await io.to(roomId).emit("userLeaved", roomData);
     return res
       .status(200)
       .json({ message: "Successfully left the room", roomData });
@@ -408,7 +410,7 @@ export const wordChoosed = async (req: Request, res: Response) => {
   if (timers[roomId].wordTimer) {
     console.log("остановка таймера при выборе слова");
 
-    clearTimeout(timers[roomId].wordTimer); // Остановка таймера выбора слова
+    await clearTimeout(timers[roomId].wordTimer); // Остановка таймера выбора слова
 
     await RoomModel.findOneAndUpdate(
       { roomId },
@@ -471,7 +473,7 @@ export const intervalTimer = async (
           message: `${activeUser.userName} lost turn :()`,
           roomId,
         });
-        handleNextUserCall(null, null, roomId);
+        await handleNextUserCall(null, null, roomId);
 
         await io.to(roomId).emit("getSkipRound");
         await inactiveTimer({ body: { roomId } }, null);
@@ -502,7 +504,7 @@ export const roundTimer = async (req: Request, res: Response) => {
     );
 
     if (timers[roomId]?.roundTimer) {
-      clearTimeout(timers[roomId].roundTimer);
+      await clearTimeout(timers[roomId].roundTimer);
       delete timers[roomId].roundTimer;
     }
 
@@ -541,11 +543,11 @@ export const usersNotGuessedTimer = async (
   try {
     const roomId = await req.body;
     await handleNextUserCall(null, null, roomId);
-    io.to(roomId).emit("getAnswer", {
+    await io.to(roomId).emit("getAnswer", {
       message: `the answer was`,
       roomId: roomId,
     });
-    io.to(roomId).emit("getAnswer", {
+    await io.to(roomId).emit("getAnswer", {
       message: "interval@@",
       roomId: roomId,
     });
@@ -601,7 +603,7 @@ export const allUsersGuessed = async (req: Request, res: Response) => {
       delete timers[roomId].response;
     }
 
-    handleNextUserCall(null, null, roomId);
+    await handleNextUserCall(null, null, roomId);
     const timeOutOver = await new Promise<boolean>((resolve) => {
       setTimeout(async () => {
         await RoomModel.findOneAndUpdate(
@@ -642,8 +644,8 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Room not found" });
     }
 
-    const userGuessedList = roomData.usersGuessedList || [];
-    const roomUsers = roomData.usersInfo || [];
+    const userGuessedList = (await roomData.usersGuessedList) || [];
+    const roomUsers = (await roomData.usersInfo) || [];
 
     // Добавляем пользователя в список угаданных
     if (!userGuessedList.includes(whoGuessed.userName)) {
@@ -762,12 +764,12 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
       return { message: "Room not found" };
     }
 
-    const roomUsers = updatedRoomData.usersInfo || [];
+    const roomUsers = (await updatedRoomData.usersInfo) || [];
     const remainUsers = roomUsers.filter((user) => !user.isUserLeave);
 
     // Сценарий: если остался один пользователь
     if (updatedRoomData.isGameStarted && remainUsers.length === 1) {
-      io.to(roomId).emit("getRoomDeletedWarning", {
+      await io.to(roomId).emit("getRoomDeletedWarning", {
         roomId,
         message:
           "Game ended. Only one user remaining. Room will be deleted in 15 seconds.",
@@ -791,7 +793,7 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
 
       await RoomModel.findOneAndUpdate({ roomId }, { $set: resetFields });
 
-      io.to(roomId).emit("getActiveUserLeaved");
+      await io.to(roomId).emit("getActiveUserLeaved");
       setTimeout(() => {
         console.log("5 seconds passed");
         io.to(roomId).emit("getActiveUserLeavedTimer");
@@ -835,7 +837,7 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
     }
 
     // Уведомление о выходе пользователя
-    io.to(roomId).emit("getUserLeft", {
+    await io.to(roomId).emit("getUserLeft", {
       roomId,
       userName: userId,
       roomUsers: remainUsers,
