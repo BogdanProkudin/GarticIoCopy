@@ -138,8 +138,7 @@ const RouteMiddleware = ({ children }: any) => {
     };
   }, [location, navigate]);
 
-  // Если проверка еще выполняется, ничего не рендерим
-  if (isGameRoomLoading) {
+  if (isGameRoomLoading && !isChecking) {
     return (
       <div className={styles.set_up_loading}>
         <Lottie
@@ -150,6 +149,18 @@ const RouteMiddleware = ({ children }: any) => {
       </div>
     );
   }
+  if (isChecking && !isGameRoomLoading) {
+    return (
+      <div className={styles.set_up_loading}>
+        <Lottie
+          isClickToPauseDisabled
+          style={{ height: "300px", width: "300px" }}
+          options={defaultOptions}
+        />
+      </div>
+    );
+  }
+  // Если проверка еще выполняется, ничего не рендерим
 
   // Обработка ошибок
   if (isError) {
