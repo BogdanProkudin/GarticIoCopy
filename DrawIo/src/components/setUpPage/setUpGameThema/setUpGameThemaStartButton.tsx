@@ -81,8 +81,8 @@ const SetUpGameThemaStartButton = () => {
   }
   const handleCreateNewRoom = async () => {
     if (selectedThema.name.length !== 0) {
-      const roomId = generateRoomId();
-      const generatedUserId = generateUserId();
+      const roomId = await generateRoomId();
+      const generatedUserId = await generateUserId();
       setIsLoadingRoom(true);
       const roomData: roomDataProps = {
         usersInfo: [
@@ -94,7 +94,7 @@ const SetUpGameThemaStartButton = () => {
             isActive: false,
           },
         ],
-        host: { hostName: hostUserName, hostId: userId },
+        host: { hostName: hostUserName, hostId: generatedUserId },
         points: selectedPoints,
         players: selectedPlayers,
         thema: selectedThema,
