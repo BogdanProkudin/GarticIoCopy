@@ -1,12 +1,12 @@
 import { lazy } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import RouteMiddleware from "./utils/RouteMiddleware";
-
+import GameRoom from "./components/gameRoom/gameRoom";
 import ErrorBoundary from "./utils/ErrorBoundary";
 import "./globalStyles.css";
 // Lazy load components
 const WelcomePage = lazy(() => import("./components/welcomePage/WelcomePage"));
-const GameRoom = lazy(() => import("./components/gameRoom/gameRoom"));
+
 const SetUpPage = lazy(() => import("./components/setUpPage/setUpPage"));
 const GameRoom123 = lazy(() => import("./components/Board/ChooseWord"));
 const LobbyNotFound = lazy(
