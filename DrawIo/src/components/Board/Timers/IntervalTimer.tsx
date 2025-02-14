@@ -1,15 +1,12 @@
 import { useEffect, useRef } from "react";
-import { useSpring, animated } from "react-spring";
-import { useAppDispatch, useAppSelector } from "../../../store/hook";
+import styles from "../styles.module.scss";
+import useVariousTimers from "../../../hooks/useVariousTimers";
 import { socket } from "../../../socket";
 import { setIsRoundEnd } from "../../../store/slices/roomInfo";
-import styles from "../styles.module.scss";
-
-import useVariousTimers from "../../../hooks/useVariousTimers";
 import { useGetRoomIdFromUrl } from "../../../hooks/useGetRoomIdFromUrl";
-
+import { useAppSelector, useAppDispatch } from "../../../store/hook";
 const IntervalTimer = () => {
-  const targetRef = useRef(null);
+  const boxRef = useRef<any>(null);
   const activeUser = useAppSelector((state) => state.drawThema.activeUser);
 
   const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
@@ -18,32 +15,28 @@ const IntervalTimer = () => {
   const activeIndex = useAppSelector((state) => state.drawThema.activeIndex);
   const userName = localStorage.getItem("userName");
   const dispatch = useAppDispatch();
-  const { x } = useSpring({
-    from: { x: 100 },
-    to: { x: 0 },
-    config: { duration: 10100 },
-  });
   const isRoundEnd = useAppSelector((state) => state.drawThema.isRoundEnd);
-  const animate = () => {
-    const start = performance.now();
+  useEffect(() => {
+    const box = boxRef.current;
+    let startTime: any = null;
 
-    const update = () => {
-      const now = performance.now();
-      const progress = (now - start) / 10100; // Calculate progress
+    const animate = (timestamp: any) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const duration = 10000; // 7 секунд
 
-      if (progress <= 1) {
-        x.set(100 - 100 * progress); // Update progress from 100 to 0
-        requestAnimationFrame(update);
+      if (progress < duration) {
+        const scale = 1 - progress / duration; // Уменьшаем масштаб по X
+        box.style.transform = `scaleX(${scale})`;
+        requestAnimationFrame(animate);
       } else {
-        if (activeUser.userName === userName) {
-        }
+        console.log("закончилось анимация");
+
+        box.style.transform = "scaleX(0)"; // Завершаем анимацию
       }
     };
-    requestAnimationFrame(update);
-  };
 
-  useEffect(() => {
-    animate();
+    requestAnimationFrame(animate);
   }, []);
   useVariousTimers({
     functionName: "IntervalTimer",
@@ -66,17 +59,20 @@ const IntervalTimer = () => {
       socket.off("getSkipRound", handleSkipRound);
     };
   }, [socket]);
+
   return (
     <div className={styles.progressBarContainer}>
-      <animated.div
-        className={styles.progress_bar_lines}
-        ref={targetRef}
+      <div
+        ref={boxRef}
         style={{
-          width: x.to((val) => `${val}%`),
-
+          width: "100%",
+          borderBottomLeftRadius: "10px",
+          borderTopLeftRadius: "10px",
           height: "10px",
+          backgroundColor: "goldenrod",
+          transformOrigin: "left", // Точка отсчета для трансформации
         }}
-      />
+      ></div>
     </div>
   );
 };
