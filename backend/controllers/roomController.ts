@@ -892,7 +892,10 @@ export const Ping = async (req: Request, res: Response) => {
   });
 
   const userRoomKey = `${roomId}-${userId}`; // Создаем уникальный ключ для пользователя в комнат
-  if (!roomData || currentUser.isUserLeave) {
+  if (
+    (currentUser && !roomData) ||
+    (!roomData && currentUser && currentUser.isUserLeave)
+  ) {
     if (timers[roomId]) {
       clearTimeout(timers[roomId].wordTimer);
       clearTimeout(timers[roomId].roundTimer);

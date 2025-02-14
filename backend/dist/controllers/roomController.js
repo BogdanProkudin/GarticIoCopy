@@ -709,7 +709,8 @@ const Ping = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return user.userId === userId;
     }));
     const userRoomKey = `${roomId}-${userId}`; // Создаем уникальный ключ для пользователя в комнат
-    if (!roomData || currentUser.isUserLeave) {
+    if ((currentUser && !roomData) ||
+        (!roomData && currentUser && currentUser.isUserLeave)) {
         if (timers[roomId]) {
             clearTimeout(timers[roomId].wordTimer);
             clearTimeout(timers[roomId].roundTimer);
