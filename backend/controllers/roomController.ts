@@ -531,14 +531,14 @@ export const roundTimer = async (req: Request, res: Response) => {
 
           if (!updatedRoomData?.isRoundOver) {
             console.log(`Timer ended for room game ${roomId}, no one guessed.`);
-            io.to(roomId).emit("getSkipRound");
-            io.to(roomId).emit("getNextUserCall", data);
+            await io.to(roomId).emit("getSkipRound");
+            await io.to(roomId).emit("getNextUserCall", data);
             await usersNotGuessedTimer({ body: roomId }, null);
           }
         } catch (error) {
           console.error(`Error in round timer for room ${roomId}:`, error);
         }
-      }, 7000), // Заменил 50 сек на 7, как ты просил
+      }, 50000), // Заменил 50 сек на 7, как ты просил
     };
 
     return res.status(200).json({ message: "Timer started" });
