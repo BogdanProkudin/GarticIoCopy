@@ -399,7 +399,6 @@ export const wordChoosed = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "roomId is required" });
   }
   timers[roomId].isFinish = false;
-  const roomData = await RoomModel.findOne({ roomId });
 
   if (!timers[roomId]) {
     timers[roomId] = {
