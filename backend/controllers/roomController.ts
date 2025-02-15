@@ -496,43 +496,57 @@ export const intervalTimer = async (
 export const roundTimer = async (req: Request, res: Response) => {
   try {
     const roomId = await req.body.roomId;
+    if (!roomId) {
+      return res.status(400).json({ message: "roomId is required" });
+    }
+
     const roomData = await RoomModel.findOne({ roomId });
+    if (!roomData) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
     await RoomModel.findOneAndUpdate(
       { roomId },
       { skippedRoundsinLine: 0, isRoundOver: false }, // Сброс состояния
       { new: true }
     );
 
+    // Очистка предыдущего таймера, если он был запущен
     if (timers[roomId]?.roundTimer) {
-      await clearTimeout(timers[roomId].roundTimer);
+      clearTimeout(timers[roomId].roundTimer);
       delete timers[roomId].roundTimer;
     }
 
     const data = {
       roomId,
-      activeUser: roomData?.activeUser,
-      users: roomData?.usersInfo,
+      activeUser: roomData.activeUser,
+      users: roomData.usersInfo,
     };
 
-    timers[roomId].roundTimer = setTimeout(async () => {
-      const updatedRoomData = await RoomModel.findOne({ roomId });
+    // Запуск нового таймера
+    timers[roomId] = {
+      roundTimer: setTimeout(async () => {
+        try {
+          const updatedRoomData = await RoomModel.findOne({ roomId });
 
-      if (!updatedRoomData?.isRoundOver) {
-        console.log(`Timer ended for room game ${roomId}, no one guessed.`);
-        await io.to(roomId).emit("getSkipRound");
-        await io.to(roomId).emit("getNextUserCall", data);
+          if (!updatedRoomData?.isRoundOver) {
+            console.log(`Timer ended for room game ${roomId}, no one guessed.`);
+            io.to(roomId).emit("getSkipRound");
+            io.to(roomId).emit("getNextUserCall", data);
+            await usersNotGuessedTimer({ body: roomId }, null);
+          }
+        } catch (error) {
+          console.error(`Error in round timer for room ${roomId}:`, error);
+        }
+      }, 7000), // Заменил 50 сек на 7, как ты просил
+    };
 
-        await usersNotGuessedTimer({ body: roomId }, null);
-        return res
-          .status(200)
-          .json({ timer: true, message: "round timer is over" });
-      }
-    }, 50000);
-
-    timers[roomId].response = res;
+    return res.status(200).json({ message: "Timer started" });
   } catch (error) {
     console.error("Error Time Round", error);
-    res.status(500).json({ message: "Error Time Round" });
+    if (!res.headersSent) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   }
 };
 

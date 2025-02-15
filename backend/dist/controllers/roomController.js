@@ -389,35 +389,49 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     var _a;
     try {
         const roomId = yield req.body.roomId;
+        if (!roomId) {
+            return res.status(400).json({ message: "roomId is required" });
+        }
         const roomData = yield roomModel_1.RoomModel.findOne({ roomId });
+        if (!roomData) {
+            return res.status(404).json({ message: "Room not found" });
+        }
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { skippedRoundsinLine: 0, isRoundOver: false }, // Сброс состояния
         { new: true });
+        // Очистка предыдущего таймера, если он был запущен
         if ((_a = timers[roomId]) === null || _a === void 0 ? void 0 : _a.roundTimer) {
-            yield clearTimeout(timers[roomId].roundTimer);
+            clearTimeout(timers[roomId].roundTimer);
             delete timers[roomId].roundTimer;
         }
         const data = {
             roomId,
-            activeUser: roomData === null || roomData === void 0 ? void 0 : roomData.activeUser,
-            users: roomData === null || roomData === void 0 ? void 0 : roomData.usersInfo,
+            activeUser: roomData.activeUser,
+            users: roomData.usersInfo,
         };
-        timers[roomId].roundTimer = setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
-            const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
-            if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver)) {
-                console.log(`Timer ended for room game ${roomId}, no one guessed.`);
-                yield server_1.io.to(roomId).emit("getSkipRound");
-                yield server_1.io.to(roomId).emit("getNextUserCall", data);
-                yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
-                return res
-                    .status(200)
-                    .json({ timer: true, message: "round timer is over" });
-            }
-        }), 50000);
-        timers[roomId].response = res;
+        // Запуск нового таймера
+        timers[roomId] = {
+            roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+                try {
+                    const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
+                    if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver)) {
+                        console.log(`Timer ended for room game ${roomId}, no one guessed.`);
+                        server_1.io.to(roomId).emit("getSkipRound");
+                        server_1.io.to(roomId).emit("getNextUserCall", data);
+                        yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
+                    }
+                }
+                catch (error) {
+                    console.error(`Error in round timer for room ${roomId}:`, error);
+                }
+            }), 7000), // Заменил 50 сек на 7, как ты просил
+        };
+        return res.status(200).json({ message: "Timer started" });
     }
     catch (error) {
         console.error("Error Time Round", error);
-        res.status(500).json({ message: "Error Time Round" });
+        if (!res.headersSent) {
+            res.status(500).json({ message: "Internal Server Error" });
+        }
     }
 });
 exports.roundTimer = roundTimer;
