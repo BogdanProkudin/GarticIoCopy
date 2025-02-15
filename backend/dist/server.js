@@ -55,10 +55,16 @@ const socket_io_1 = require("socket.io");
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
 exports.io = new socket_io_1.Server(server, {
-    cors: { origin: "*" },
+    cors: {
+        origin: "*",
+        credentials: true,
+    },
+    transports: ["websocket", "polling"], // 👈 Добавь polling fallback
 });
 app.use((0, cors_1.default)({
     origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true,
 }));
 app.use(express_1.default.json());
 const PORT = 3000;

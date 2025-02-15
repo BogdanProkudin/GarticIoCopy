@@ -7,12 +7,18 @@ import { Server } from "socket.io";
 const app = express();
 const server = http.createServer(app);
 export const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: {
+    origin: "*",
+    credentials: true,
+  },
+  transports: ["websocket", "polling"], // 👈 Добавь polling fallback
 });
 
 app.use(
   cors({
     origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true,
   })
 );
 

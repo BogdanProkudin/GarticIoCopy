@@ -311,7 +311,6 @@ const wordChoosed = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         return res.status(400).json({ message: "roomId is required" });
     }
     timers[roomId].isFinish = false;
-    const roomData = yield roomModel_1.RoomModel.findOne({ roomId });
     if (!timers[roomId]) {
         timers[roomId] = {
             wordResponseSent: false,
