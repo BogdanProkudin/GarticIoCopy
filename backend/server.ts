@@ -45,6 +45,7 @@ io.on("connection", async (socket) => {
 
   socket.on("createRoom", async (data) => {
     await socket.join(data.roomId);
+    console.log("createdRoom Socket");
 
     await io.to(data.roomId).emit("getClickq", data);
   });
