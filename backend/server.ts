@@ -40,19 +40,21 @@ mongoose
     console.log("BD BAD", err);
   });
 
-io.on("connection", (socket) => {
-  socket.on("createRoom", (data) => {
-    socket.join(data.roomId);
+io.on("connection", async (socket) => {
+  console.log("User connected", socket.id);
 
-    io.to(data.roomId).emit("getClickq", data);
+  socket.on("createRoom", async (data) => {
+    await socket.join(data.roomId);
+
+    await io.to(data.roomId).emit("getClickq", data);
   });
-  socket.on("joinRoom", (data) => {
-    socket.join(data);
+  socket.on("joinRoom", async (data) => {
+    await socket.join(data);
   });
-  socket.on("leaveRoom", (room) => {
+  socket.on("leaveRoom", async (room) => {
     console.log("leave", room.userName);
 
-    socket.leave(room.roomId);
+    await socket.leave(room.roomId);
   });
 
   socket.on("userLeft", (data) => {});

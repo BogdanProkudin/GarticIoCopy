@@ -80,18 +80,19 @@ mongoose_1.default
     .catch((err) => {
     console.log("BD BAD", err);
 });
-exports.io.on("connection", (socket) => {
-    socket.on("createRoom", (data) => {
-        socket.join(data.roomId);
-        exports.io.to(data.roomId).emit("getClickq", data);
-    });
-    socket.on("joinRoom", (data) => {
-        socket.join(data);
-    });
-    socket.on("leaveRoom", (room) => {
+exports.io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("User connected", socket.id);
+    socket.on("createRoom", (data) => __awaiter(void 0, void 0, void 0, function* () {
+        yield socket.join(data.roomId);
+        yield exports.io.to(data.roomId).emit("getClickq", data);
+    }));
+    socket.on("joinRoom", (data) => __awaiter(void 0, void 0, void 0, function* () {
+        yield socket.join(data);
+    }));
+    socket.on("leaveRoom", (room) => __awaiter(void 0, void 0, void 0, function* () {
         console.log("leave", room.userName);
-        socket.leave(room.roomId);
-    });
+        yield socket.leave(room.roomId);
+    }));
     socket.on("userLeft", (data) => { });
     socket.on("answersSent", (data) => {
         exports.io.to(data.roomId).emit("getAnswer", data);
@@ -178,7 +179,7 @@ exports.io.on("connection", (socket) => {
         console.log("в 2 все юзеры угадали");
         exports.io.to(roomId).emit("getAllUsersGuessed2", { roomUsers });
     });
-});
+}));
 // Функция для запуска таймера  интервала
 app.post("/createRoom", RoomController.createRoom);
 app.get("/getRoomData", RoomController.getRoomInfo);
