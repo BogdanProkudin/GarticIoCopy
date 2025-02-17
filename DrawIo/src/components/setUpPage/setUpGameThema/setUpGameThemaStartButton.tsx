@@ -84,7 +84,7 @@ const SetUpGameThemaStartButton = () => {
       const roomId = await generateRoomId();
       const generatedUserId = await generateUserId();
       setIsLoadingRoom(true);
-      const roomData: roomDataProps = {
+      const roomData: roomDataProps = await {
         usersInfo: [
           {
             userId: userId,
@@ -111,9 +111,7 @@ const SetUpGameThemaStartButton = () => {
       dispatch(resetUserInfoState());
       dispatch(setIsGameRoomLoading(true));
 
-      socket.connect();
-
-      socket.emit("createRoom", roomData);
+      await socket.emit("createRoom", roomData);
       localStorage.setItem("userId", generatedUserId);
       localStorage.setItem("pageAccessedByReload", `false`);
       setIsGameRoomLoading(false);
