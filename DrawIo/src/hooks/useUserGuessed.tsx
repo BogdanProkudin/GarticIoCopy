@@ -46,7 +46,7 @@ export const useNotifyOneUserGuessed = ({
   roomId,
   userNameStorage,
   activeUser,
-  dispatch,
+
   activeIndex,
 }: IuseNotifyOneUserGuessed) => {
   useEffect(() => {
@@ -55,7 +55,6 @@ export const useNotifyOneUserGuessed = ({
         (el) => el.userName === usersGuessed[usersGuessed.length - 1]
       );
       if (guessedUser && guessedUser.userName === userNameStorage) {
-        handleUserGuessedAddedPointAnimation(guessedUser.userName, dispatch);
         socket.emit("oneUserGuessed", { roomId });
 
         const url = "https://bottg-63go.onrender.com/userGuessed";
@@ -74,10 +73,6 @@ export const useNotifyOneUserGuessed = ({
 
           if (response.data.usersGuessedList.length === roomUsers.length - 1) {
             const sendaAllUserGuessed = async (url: string) => {
-              handleUserGuessedAddedPointAnimation(
-                guessedUser.userName,
-                dispatch
-              );
               socket.emit("allUsersGuessed2", {
                 roomId,
                 roomUsers: response.data.usersList,
@@ -116,7 +111,11 @@ export const useUpdateUserGuessedStatus = ({
 }: IuseUpdateUserGuessedStatus) => {
   useEffect(() => {
     const handleUserGuessed = () => {
-      if (usersGuessed.length === roomUsers.length - 1) {
+      const guessedUser = roomUsers.find(
+        (el) => el.userName === usersGuessed[usersGuessed.length - 1]
+      );
+      if (usersGuessed.length === roomUsers.length - 1 && guessedUser) {
+        handleUserGuessedAddedPointAnimation(guessedUser.userName, dispatch);
         dispatch(setToolsPanel(false));
         dispatch(setIsUserDraw(false));
         dispatch(setIsAllUsersGuessed(true));
