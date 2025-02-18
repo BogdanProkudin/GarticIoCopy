@@ -45,7 +45,14 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   const [isGuessedAnimationFinished, setIsGuessedAnimationFinished] =
     useState(false);
   const mousePosition = useMousePosition();
-
+  const roomData = useAppSelector((state) => state.drawThema.roomData);
+  const toolsPanel = useAppSelector((state) => state.drawInfo.toolsPanel);
+  const isGameStarted = useAppSelector(
+    (state) => state.drawThema.isGameStarted
+  );
+  const maxGamePoints = useAppSelector(
+    (state) => state.drawThema.maxRoomPoints
+  );
   const activeUser = useAppSelector((state) => state.drawThema.activeUser);
   const dispatch = useAppDispatch();
   const roundCount = useAppSelector((state) => state.drawThema.roundCount);
@@ -94,19 +101,27 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   const isAllUsersGuessed = useAppSelector(
     (state) => state.userInfo.isAllUsersGuessed
   );
-  const toolsPanel = useAppSelector((state) => state.drawInfo.toolsPanel);
-  const isGameStarted = useAppSelector(
-    (state) => state.drawThema.isGameStarted
-  );
-  const maxGamePoints = useAppSelector(
-    (state) => state.drawThema.maxRoomPoints
-  );
 
   useEffect(() => {
+    const suggestionWordsList = roomData.thema.words;
+    const getRandomWords = async (count: any) => {
+      const randomWords: any = [];
+      const words = await suggestionWordsList;
+      while (randomWords.length < count) {
+        const randomIndex = await Math.floor(Math.random() * words.length);
+        const randomWord = await words[randomIndex];
+        if (!randomWords.includes(randomWord)) {
+          await randomWords.push(randomWord);
+        }
+      }
+      return randomWords;
+    };
+
     socket.on("getNextUserCall", async (data) => {
       const awaitedData = await data;
-
+      const chosenWords = await getRandomWords(2);
       handleNextUserCall({
+        chosenWords,
         dispatch,
         roundCount,
         setIsGuessedAnimationFinished,
@@ -121,8 +136,6 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
       socket.off("getNextUserCall", handleNextUserCall);
     };
   }, []);
-
-  useEffect(() => {});
 
   const { handleDrawing } = useDrawing({
     activeUser,

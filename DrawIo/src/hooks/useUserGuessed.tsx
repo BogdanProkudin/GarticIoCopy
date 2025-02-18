@@ -19,6 +19,7 @@ interface IuseNotifyOneUserGuessed {
   userNameStorage: string;
   activeUser: IActiveUser;
   activeIndex: number;
+  dispatch: Dispatch;
 }
 interface IuseUpdateUserGuessedStatus {
   usersGuessed: string[];
@@ -45,18 +46,19 @@ export const useNotifyOneUserGuessed = ({
   roomId,
   userNameStorage,
   activeUser,
-
+  dispatch,
   activeIndex,
 }: IuseNotifyOneUserGuessed) => {
   useEffect(() => {
     const handleOneUserGuessed = async () => {
-      const guessedUser = await roomUsers.find(
+      const guessedUser = roomUsers.find(
         (el) => el.userName === usersGuessed[usersGuessed.length - 1]
       );
       if (guessedUser && guessedUser.userName === userNameStorage) {
-        const url = "https://bottg-63go.onrender.com/userGuessed";
+        handleUserGuessedAddedPointAnimation(guessedUser.userName, dispatch);
+        socket.emit("oneUserGuessed", { roomId });
 
-        await socket.emit("oneUserGuessed", { roomId });
+        const url = "http://localhost:3000/userGuessed";
 
         const response = await axios.post(url, {
           headers: { "Content-Type": "application/json" },
@@ -72,6 +74,14 @@ export const useNotifyOneUserGuessed = ({
 
           if (response.data.usersGuessedList.length === roomUsers.length - 1) {
             const sendaAllUserGuessed = async (url: string) => {
+              handleUserGuessedAddedPointAnimation(
+                guessedUser.userName,
+                dispatch
+              );
+              socket.emit("allUsersGuessed2", {
+                roomId,
+                roomUsers: response.data.usersList,
+              });
               try {
                 await axios.post(url, {
                   headers: {
@@ -83,13 +93,10 @@ export const useNotifyOneUserGuessed = ({
                 console.error("Error:", error);
               }
             };
-            const url = "https://bottg-63go.onrender.com/allUsersGuessed";
+            const url = "http://localhost:3000/allUsersGuessed";
 
             sendaAllUserGuessed(url);
-            socket.emit("allUsersGuessed2", {
-              roomId,
-              roomUsers: response.data.usersList,
-            });
+
             console.log("EVERYONE GUESSED");
           }
         }

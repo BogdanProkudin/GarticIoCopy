@@ -6,7 +6,6 @@ import {
   setRoundCount,
   setChoosedWordsList,
   setIsGameStarted,
-  setChosenWords,
 } from "../store/slices/roomInfo";
 import { setToolsPanel } from "../store/slices/drawInfo";
 import { setIsUserDraw } from "../store/slices/userInfo";
@@ -28,12 +27,8 @@ export const useGetWords = async (
       dispatch(setIsGameStarted(true));
     });
 
-    socket.on("gameWords", async (words) => {
-      const resWords = await words;
-      dispatch(setChosenWords(resWords));
-    });
-
     return () => {
+      socket.off("getWordChoosed");
       socket.off("gameWords");
       socket.off("getWord");
     };
