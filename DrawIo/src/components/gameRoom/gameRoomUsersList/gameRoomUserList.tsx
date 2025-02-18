@@ -41,6 +41,7 @@ const GameRoomUserList: React.FC<GameRoomUserListProps> = ({
   useEffect(() => {
     if (isPointsAnimation.userName) {
       setShowPointsForUsers([isPointsAnimation.userName, activeUser.userName]);
+      console.log("отображение поинтов");
 
       const timer = setTimeout(() => {
         setShowPointsForUsers([]);
