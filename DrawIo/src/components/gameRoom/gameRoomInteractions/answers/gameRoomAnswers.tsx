@@ -63,6 +63,7 @@ const GameRoomAnswers = () => {
     userNameStorage,
     activeUser,
     activeIndex,
+    dispatch,
   });
 
   useUpdateUserGuessedStatus({
