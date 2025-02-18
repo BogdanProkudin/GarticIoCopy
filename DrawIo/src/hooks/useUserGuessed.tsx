@@ -58,7 +58,7 @@ export const useNotifyOneUserGuessed = ({
         handleUserGuessedAddedPointAnimation(guessedUser.userName, dispatch);
         socket.emit("oneUserGuessed", { roomId });
 
-        const url = "http://localhost:3000/userGuessed";
+        const url = "https://bottg-63go.onrender.com//userGuessed";
 
         const response = await axios.post(url, {
           headers: { "Content-Type": "application/json" },
@@ -93,7 +93,7 @@ export const useNotifyOneUserGuessed = ({
                 console.error("Error:", error);
               }
             };
-            const url = "http://localhost:3000/allUsersGuessed";
+            const url = "https://bottg-63go.onrender.com/allUsersGuessed";
 
             sendaAllUserGuessed(url);
 
