@@ -46,7 +46,7 @@ export const useNotifyOneUserGuessed = ({
   roomId,
   userNameStorage,
   activeUser,
-
+  dispatch,
   activeIndex,
 }: IuseNotifyOneUserGuessed) => {
   useEffect(() => {
@@ -55,6 +55,7 @@ export const useNotifyOneUserGuessed = ({
         (el) => el.userName === usersGuessed[usersGuessed.length - 1]
       );
       if (guessedUser && guessedUser.userName === userNameStorage) {
+        handleUserGuessedAddedPointAnimation(guessedUser.userName, dispatch);
         socket.emit("oneUserGuessed", { roomId });
 
         const url = "https://bottg-63go.onrender.com/userGuessed";
