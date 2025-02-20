@@ -596,10 +596,11 @@ const userLeavesRoom = (roomId, userId) => __awaiter(void 0, void 0, void 0, fun
         const bulkOperations = [
             {
                 updateOne: {
-                    filter: { roomId, "usersInfo.userId": userId },
+                    filter: { roomId },
                     update: {
-                        $set: { "usersInfo.$.isUserLeave": true },
+                        $set: { "usersInfo.$[user].isUserLeave": true },
                     },
+                    arrayFilters: [{ "user.userId": userId }], // Обновляет всех с userId
                 },
             },
             {

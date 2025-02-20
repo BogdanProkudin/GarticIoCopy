@@ -754,10 +754,11 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
     const bulkOperations = [
       {
         updateOne: {
-          filter: { roomId, "usersInfo.userId": userId },
+          filter: { roomId },
           update: {
-            $set: { "usersInfo.$.isUserLeave": true },
+            $set: { "usersInfo.$[user].isUserLeave": true },
           },
+          arrayFilters: [{ "user.userId": userId }], // Обновляет всех с userId
         },
       },
       {
