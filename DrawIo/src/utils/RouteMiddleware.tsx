@@ -68,8 +68,7 @@ const RouteMiddleware = ({ children }: any) => {
           !roomDataFromResponse.usersInfo.some(
             (user: any) => user.userId === userId
           ) &&
-          userId !== roomDataFromResponse.host.hostId &&
-          localStorage.getItem("firstStart") !== "true"
+          userId !== roomDataFromResponse.host.hostId
         ) {
           dispatch(setRoomData(roomDataFromResponse));
           setIsChecking(false); // Завершаем проверку
