@@ -5,8 +5,15 @@ import PrepareGameRoomData from "./RoomInfo/prepareGameRoomData";
 import PrepareGameUserData from "./UserInfo/prepareGameUserData";
 import PrepareGameButton from "./prepareGameButton";
 import styles from "./styles.module.scss";
+import UserNameErrorModal from "../welcomePage/userInfo/modal/UserNameErrorModal";
+import { useAppDispatch, useAppSelector } from "../../store/hook";
+import { setIsUserNameError } from "../../store/slices/userAuth";
 const PrepareGameRoomInfo = () => {
   const [isUserNameTook, setIsUserNameTook] = useState(false);
+  const isUserNameError = useAppSelector(
+    (state) => state.userAuth.isUserNameError
+  );
+  const dispatch = useAppDispatch();
   const [isGameStartedError, setIsGameStartedError] = useState(false);
   console.log("ISUSERNAMETOOK", isUserNameTook);
 
@@ -33,6 +40,13 @@ const PrepareGameRoomInfo = () => {
       <UserNameTookModal
         setIsUserNameTook={setIsUserNameTook}
         isUserNameTook={isUserNameTook}
+      />
+      <UserNameErrorModal
+        modalName="Alert"
+        errorText=" Invalid nickname: It must contain at least 2 characters, without special
+        characters."
+        isOpen={isUserNameError}
+        closeModal={() => dispatch(setIsUserNameError(false))}
       />
       <GameStartedErrorModal
         isGameStartedError={isGameStartedError}

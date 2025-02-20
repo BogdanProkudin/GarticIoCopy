@@ -9,12 +9,10 @@ import { useAppDispatch, useAppSelector } from "../../../store/hook";
 import styles from "../styles.module.scss";
 import GameRoomUserItem from "./gameRoomUserItem";
 import { setIsPointAnimation } from "../../../store/slices/roomInfo";
-import { motion } from "framer-motion";
 
 type GameRoomUserListProps = {
   setShowUserActionModal: Dispatch<SetStateAction<boolean>>;
 };
-
 const GameRoomUserList: React.FC<GameRoomUserListProps> = ({
   setShowUserActionModal,
 }) => {
@@ -24,27 +22,26 @@ const GameRoomUserList: React.FC<GameRoomUserListProps> = ({
   );
   const isToolsPanel = useAppSelector((state) => state.drawInfo.toolsPanel);
   const activeUser = useAppSelector((state) => state.drawThema.activeUser);
+
+  const userNameStorage = localStorage.getItem("userName");
   const isGameStarted = useAppSelector(
     (state) => state.drawThema.isGameStarted
+  );
+  const [showPointsForUsers, setShowPointsForUsers] = useState<string[]>([]);
+  const sortedRoomUsers = useMemo(
+    () => roomUsers?.slice().sort((a, b) => b.userPoints - a.userPoints) || [],
+    [roomUsers]
   );
   const isPointsAnimation = useAppSelector(
     (state) => state.drawThema.isPointsAnimation
   );
 
-  const userNameStorage = localStorage.getItem("userName");
   const dispatch = useAppDispatch();
-
-  const [showPointsForUsers, setShowPointsForUsers] = useState<string[]>([]);
-
-  // 🔥 Fix: Ensure sorted list updates correctly
-  const sortedRoomUsers = useMemo(
-    () => [...roomUsers].sort((a, b) => b.userPoints - a.userPoints),
-    [roomUsers]
-  );
 
   useEffect(() => {
     if (isPointsAnimation.userName) {
       setShowPointsForUsers([isPointsAnimation.userName, activeUser.userName]);
+      console.log("отображение поинтов");
 
       const timer = setTimeout(() => {
         setShowPointsForUsers([]);
@@ -63,50 +60,47 @@ const GameRoomUserList: React.FC<GameRoomUserListProps> = ({
       }}
       className={styles.game_room_user_list_container}
     >
-      {sortedRoomUsers.slice(0, selectedPlayers).map((user, index) => (
-        <motion.div
-          key={user.userName} // ✅ Fix: Ensure stable keys
-          layout
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className={styles.game_room_user}
-          onClick={() => setShowUserActionModal(true)}
-        >
-          <GameRoomUserItem
-            userAvatar={user.userAvatar || ""}
-            userName={user.userName || ""}
-            userPoints={user.userPoints || ""}
-            showPointsAnimation={showPointsForUsers.includes(user.userName)}
-            addedPoints={user.addedPoints}
-          />
+      {Array.from({ length: selectedPlayers }).map((_, index) => {
+        const currentUser = sortedRoomUsers[index];
 
-          {isGameStarted && index <= 2 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              style={{ position: "relative" }}
-            >
-              <div
-                style={{
-                  right:
-                    activeUser.userName === userNameStorage && isToolsPanel
-                      ? "12.2rem"
-                      : "",
-                }}
-                className={
-                  index === 0
-                    ? styles.gold_icon
-                    : index === 1
-                    ? styles.silver_icon
-                    : styles.bronze_icon
-                }
-              />
-            </motion.div>
-          )}
-        </motion.div>
-      ))}
+        return (
+          <div
+            onClick={() => setShowUserActionModal(true)}
+            key={index}
+            className={styles.game_room_user}
+          >
+            <GameRoomUserItem
+              userAvatar={currentUser?.userAvatar || ""}
+              userName={currentUser?.userName || ""}
+              userPoints={currentUser?.userPoints || ""}
+              showPointsAnimation={showPointsForUsers.includes(
+                currentUser?.userName
+              )}
+              addedPoints={currentUser && currentUser.addedPoints}
+            />
+            {isGameStarted &&
+              index <= 2 && ( //PLACE ICONS
+                <div style={{ position: "relative" }}>
+                  <div
+                    style={{
+                      right:
+                        activeUser.userName === userNameStorage && isToolsPanel
+                          ? "12.2rem"
+                          : "",
+                    }}
+                    className={
+                      index === 0
+                        ? styles.gold_icon
+                        : index === 1
+                        ? styles.silver_icon
+                        : styles.brown_icon
+                    }
+                  />
+                </div>
+              )}
+          </div>
+        );
+      })}
     </div>
   );
 };

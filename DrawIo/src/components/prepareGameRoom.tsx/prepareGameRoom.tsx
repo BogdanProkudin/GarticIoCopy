@@ -10,18 +10,20 @@ import styles from "./styles.module.scss";
 import { useMediaQuery } from "react-responsive";
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import LobbyNotFound from "../lobbyNotFound/lobbyNotFound";
+import Loading from "../LoadingGame/Loading";
 const PrepareGameRoom = () => {
   const roomId = useGetRoomIdFromUrl();
   const dispatch = useAppDispatch();
 
   const userId = localStorage.getItem("userId");
   const [isError, setIsError] = useState<boolean>(false);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const isBigScreen = useMediaQuery({ query: "(max-width: 640px)" });
   useEffect(() => {
     localStorage.setItem("pageAccessedByReload", `false`);
     const fetchRoomData = async () => {
       try {
+        setIsLoading(true);
         const response = await dispatch(getRoomData({ roomId, userId }));
 
         if (!response.payload) {
@@ -39,9 +41,11 @@ const PrepareGameRoom = () => {
         }
 
         dispatch(setRoomData(roomDataFromResponse));
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching room data:", error);
         setIsError(true);
+        setIsLoading(false);
       } finally {
       }
     };
@@ -79,6 +83,7 @@ const PrepareGameRoom = () => {
     <div className={styles.prepare_room_container}>
       <>
         {!isBigScreen && <PrepareGameUserInfo />}
+        {isLoading && <Loading />}
         <PrepareGameRoomInfo />
       </>
     </div>

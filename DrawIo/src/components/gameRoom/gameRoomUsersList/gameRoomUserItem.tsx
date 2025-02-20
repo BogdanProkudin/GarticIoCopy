@@ -37,11 +37,6 @@ const GameRoomUserItem: React.FC<GameRoomUserItemProps> = ({
     () => isCurrentUser && isToolsPanel,
     [isCurrentUser, isToolsPanel]
   );
-  // const showChoosedWord = useMemo(
-  //   () => isCurrentUser && choosedWord.length > 1,
-  //   [isCurrentUser, choosedWord.length]
-  // );
-  // console.log("isNIgga", isActiveUser, userName);
 
   return (
     <div

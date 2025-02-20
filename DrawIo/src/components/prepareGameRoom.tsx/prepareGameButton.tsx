@@ -2,8 +2,9 @@ import { useState } from "react";
 
 import { useGetRoomIdFromUrl } from "../../hooks/useGetRoomIdFromUrl";
 import { useJoinGameRoom } from "../../hooks/useJoinGameRoom";
-import { useAppSelector } from "../../store/hook";
+import { useAppDispatch, useAppSelector } from "../../store/hook";
 import styles from "./styles.module.scss";
+import { setIsUserNameError } from "../../store/slices/userAuth";
 interface PrepareGameButtonProps {
   setIsGameStartedError: React.Dispatch<React.SetStateAction<boolean>>;
   setIsUserNameTook: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,9 +21,9 @@ const PrepareGameButton: React.FC<PrepareGameButtonProps> = ({
   const userNameStorage = localStorage.getItem("userName");
   const userId = localStorage.getItem("userId");
   const roomId = useGetRoomIdFromUrl();
-
+  const regex = /^[a-zA-Z0-9]{2,20}$/;
   const [isSending, setIsSending] = useState(false);
-
+  const dispatch = useAppDispatch();
   // Вызов хука на верхнем уровне
   const handleJoinRoom = useJoinGameRoom({
     userAvatar,
@@ -38,6 +39,12 @@ const PrepareGameButton: React.FC<PrepareGameButtonProps> = ({
 
   const handleButtonClick = async () => {
     setIsSending(true);
+    if (!regex.test(userName)) {
+      dispatch(setIsUserNameError(true));
+      setIsSending(false);
+      return;
+    }
+    dispatch(setIsUserNameError(false));
     await handleJoinRoom(); // Асинхронный вызов
     setIsSending(false);
   };
