@@ -871,10 +871,11 @@ export const updateUserState = async (req: Request, res: Response) => {
     const bulkOperations = [
       {
         updateOne: {
-          filter: { roomId, "usersInfo.userId": userId },
+          filter: { roomId },
           update: {
-            $set: { "usersInfo.$.isUserInLobby": true },
+            $set: { "usersInfo.$[user].isUserInLobby": true },
           },
+          arrayFilters: [{ "user.userId": userId }], // Фильтр обновляет только пользователей с нужным userId
         },
       },
     ];
