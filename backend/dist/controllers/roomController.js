@@ -693,13 +693,15 @@ const updateUserState = (req, res) => __awaiter(void 0, void 0, void 0, function
         const bulkOperations = [
             {
                 updateOne: {
-                    filter: { roomId, "usersInfo.userId": userId },
+                    filter: { roomId },
                     update: {
-                        $set: { "usersInfo.$.isUserInLobby": true },
+                        $set: { "usersInfo.$[user].isUserInLobby": true },
                     },
+                    arrayFilters: [{ "user.userId": userId }], // Фильтр обновляет только пользователей с нужным userId
                 },
             },
         ];
+        console.log("boos");
         const bulkWriteResult = yield roomModel_1.RoomModel.bulkWrite(bulkOperations, {
             ordered: true,
         });

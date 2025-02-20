@@ -84,7 +84,7 @@ exports.io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, functi
     console.log("User connected", socket.id);
     socket.on("createRoom", (data) => __awaiter(void 0, void 0, void 0, function* () {
         yield socket.join(data.roomId);
-        console.log("createdRoom Socket");
+        console.log("createdRoom Socket", data);
         yield exports.io.to(data.roomId).emit("getClickq", data);
     }));
     socket.on("joinRoom", (data) => __awaiter(void 0, void 0, void 0, function* () {
