@@ -16,7 +16,7 @@ const PrepareGameRoom = () => {
 
   const userId = localStorage.getItem("userId");
   const [isError, setIsError] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   // const isBigScreen = useMediaQuery({ query: "(max-width: 640px)" });
   useEffect(() => {
     localStorage.setItem("pageAccessedByReload", `false`);
@@ -83,7 +83,7 @@ const PrepareGameRoom = () => {
       <>
         {!isLoading && <PrepareGameUserInfo />}
         {isLoading && <Loading />}
-        <PrepareGameRoomInfo />
+        {!isLoading && <PrepareGameRoomInfo />}
       </>
     </div>
   );
