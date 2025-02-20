@@ -82,7 +82,7 @@ const PrepareGameRoom = () => {
   return (
     <div className={styles.prepare_room_container}>
       <>
-        {!isBigScreen && <PrepareGameUserInfo />}
+        {!isBigScreen && !isLoading && <PrepareGameUserInfo />}
         {isLoading && <Loading />}
         <PrepareGameRoomInfo />
       </>
