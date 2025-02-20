@@ -68,7 +68,7 @@ const WordGuessSuccess = () => {
           <span className={styles.game_room_inactive_small_text}>
             every body guessed correct
           </span>
-          <AllUserGuessed time={47} />
+          <AllUserGuessed />
         </div>
       </div>
     </div>
