@@ -1,33 +1,46 @@
-import React, { useEffect, useState } from "react";
-import { useSpring, animated } from "react-spring";
+import { useEffect, useRef } from "react";
+
 import styles from "../styles.module.scss";
 
-type AllUserGuessedProps = {
-  time: number;
-};
-const AllUserGuessed: React.FC<AllUserGuessedProps> = ({ time }) => {
-  const [completed, setCompleted] = useState<any>(100);
-
-  const { width } = useSpring({
-    from: { width: "100%" },
-    to: { width: `${completed}%` },
-    config: { duration: 500 }, // Уменьшаем длительность анимации
-  });
+const AllUserGuessed = () => {
+  const boxRef = useRef<any>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCompleted((prev: any) => (prev > 0 ? prev - 1 : prev));
-    }, time); // Уменьшаем интервал для более плавной анимации
+    const box = boxRef.current;
+    let startTime: any = null;
 
-    return () => clearInterval(interval);
+    const animate = (timestamp: any) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const duration = 10000; // 7 секунд
+
+      if (progress < duration) {
+        const scale = 1 - progress / duration; // Уменьшаем масштаб по X
+        box.style.transform = `scaleX(${scale})`;
+        requestAnimationFrame(animate);
+      } else {
+        console.log("закончилось анимация");
+
+        box.style.transform = "scaleX(0)"; // Завершаем анимацию
+      }
+    };
+
+    requestAnimationFrame(animate);
   }, []);
 
   return (
     <div style={{ top: "14rem" }} className={styles.progressBarContainer}>
-      <animated.div
-        className={styles.progress_bar_lines}
-        style={{ width, height: "10px", backgroundColor: "rgb(5, 187, 242)" }}
-      />
+      <div
+        ref={boxRef}
+        style={{
+          width: "100%",
+          borderBottomLeftRadius: "10px",
+          borderTopLeftRadius: "10px",
+          height: "10px",
+          backgroundColor: "rgb(5, 187, 242)",
+          transformOrigin: "left", // Точка отсчета для трансформации
+        }}
+      ></div>
     </div>
   );
 };
