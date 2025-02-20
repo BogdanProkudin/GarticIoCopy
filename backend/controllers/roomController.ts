@@ -879,6 +879,7 @@ export const updateUserState = async (req: Request, res: Response) => {
         },
       },
     ];
+    console.log("boos");
 
     const bulkWriteResult = await RoomModel.bulkWrite(bulkOperations, {
       ordered: true,
