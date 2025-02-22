@@ -903,10 +903,18 @@ export const Ping = async (req: Request, res: Response) => {
     return res.status(400).send("userId and roomId are required");
   }
   const roomData = await RoomModel.findOne({ roomId });
+  if (!roomData) {
+    return res.status(404).send("Room not found");
+  }
   const currentUser = await roomData?.usersInfo.find((user) => {
     return user.userId === userId;
   });
 
+  const roomUsers = (await roomData?.usersInfo) || [];
+  const remainUsers = roomUsers.filter((user) => !user.isUserLeave);
+  if (remainUsers.length === 1) {
+    return res.status(400).json({ message: "User left the room" });
+  }
   const userRoomKey = `${roomId}-${userId}`; // Создаем уникальный ключ для пользователя в комнат
   if (
     (currentUser && !roomData) ||
