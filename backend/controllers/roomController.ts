@@ -749,8 +749,11 @@ export const userLeavesRoom = async (roomId: string, userId: string) => {
   if (!userId) {
     return { message: "Invalid request" };
   }
-
+  const user = await RoomModel.findOne({ roomId, "usersInfo.userId": userId });
   try {
+    if (!user) {
+      return { message: "User not found" };
+    }
     const bulkOperations = [
       {
         updateOne: {
@@ -912,9 +915,7 @@ export const Ping = async (req: Request, res: Response) => {
 
   const roomUsers = (await roomData?.usersInfo) || [];
   const remainUsers = roomUsers.filter((user) => !user.isUserLeave);
-  if (remainUsers.length === 1) {
-    return res.status(400).json({ message: "User left the room" });
-  }
+
   const userRoomKey = `${roomId}-${userId}`; // Создаем уникальный ключ для пользователя в комнат
   if (
     (currentUser && !roomData) ||
