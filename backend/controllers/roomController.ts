@@ -906,15 +906,12 @@ export const Ping = async (req: Request, res: Response) => {
     return res.status(400).send("userId and roomId are required");
   }
   const roomData = await RoomModel.findOne({ roomId });
-  if (!roomData) {
-    return res.status(404).send("Room not found");
-  }
   const currentUser = await roomData?.usersInfo.find((user) => {
     return user.userId === userId;
   });
-
-  const roomUsers = (await roomData?.usersInfo) || [];
-  const remainUsers = roomUsers.filter((user) => !user.isUserLeave);
+  if (!roomData) {
+    return res.status(404).json({ message: "Room not found" });
+  }
 
   const userRoomKey = `${roomId}-${userId}`; // Создаем уникальный ключ для пользователя в комнат
   if (
@@ -948,5 +945,4 @@ export const Ping = async (req: Request, res: Response) => {
 
   res.send("Ping received");
 };
-
 // Запуск функции проверки таймеров
