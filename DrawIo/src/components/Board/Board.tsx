@@ -22,6 +22,7 @@ import {
   setIsUserDraw,
   setIsOneUserGuessed,
 } from "../../store/slices/userInfo";
+import { useNavigate } from "react-router-dom";
 
 type BoardProps = {
   roomId: string;
@@ -58,7 +59,8 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   const roundCount = useAppSelector((state) => state.drawThema.roundCount);
   const activeTool = useAppSelector((state) => state.drawInfo.activeTool);
   const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
-
+  const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
   useEffect(() => {
     // Обработчик события getUserLeft
     const handleUserLeft = (data: {
@@ -68,6 +70,9 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
       host: { userName: string; userId: string };
     }) => {
       console.log("User left:", data.userName, data.roomUsers, data.host);
+      if (data.userName === userId) {
+        navigate("/", { replace: true });
+      }
       dispatch(setRoomUsers(data.roomUsers));
       dispatch(
         setHost({ hostName: data.host.userName, hostId: data.host.userId })

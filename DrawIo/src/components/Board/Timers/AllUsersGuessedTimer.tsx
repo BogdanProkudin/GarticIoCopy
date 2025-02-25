@@ -12,7 +12,7 @@ const AllUserGuessed = () => {
     const animate = (timestamp: any) => {
       if (!startTime) startTime = timestamp;
       const progress = timestamp - startTime;
-      const duration = 10000; // 7 секунд
+      const duration = 5000; // 7 секунд
 
       if (progress < duration) {
         const scale = 1 - progress / duration; // Уменьшаем масштаб по X
