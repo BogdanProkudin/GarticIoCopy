@@ -23,7 +23,6 @@ const getNextActiveUser = (users) => {
 };
 const updateUserActivity = (users, nextActiveUser) => {
     return users.map((user) => {
-        console.log(user, "next", nextActiveUser);
         return Object.assign(Object.assign({}, user), { isActive: user.userName === nextActiveUser.userName, activeCount: user.userName === nextActiveUser.userName
                 ? (user.activeCount || 0) + 1 // Увеличиваем счётчик активности
                 : user.activeCount || 0 });
@@ -47,7 +46,6 @@ const handleNextUserCall = (req, res, roomId) => __awaiter(void 0, void 0, void 
         const roomData = yield roomModel_1.RoomModel.findOne({
             roomId: roomFirstId ? roomFirstId : roomId,
         });
-        console.log("roomddata found 20002 ", roomData);
         if (!roomData) {
             return { message: "Room data not found. ERROR" };
         }
@@ -63,7 +61,6 @@ const handleNextUserCall = (req, res, roomId) => __awaiter(void 0, void 0, void 
         const nextActiveUser = yield getNextActiveUser(users);
         // Обновляем активность и счётчики
         const updatedUsers = yield updateUserActivity(users, nextActiveUser);
-        console.log(updatedUsers);
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId: roomFirstId ? roomFirstId : roomId }, { $set: { activeUser: nextActiveUser, usersInfo: updatedUsers } }, { new: true });
         if (isGameWon(users, maxGamePoints)) {
             console.log("game won");
@@ -75,7 +72,6 @@ const handleNextUserCall = (req, res, roomId) => __awaiter(void 0, void 0, void 
         else {
             const updatedRoom = yield roomModel_1.RoomModel.findOne({ roomId });
             const remainingUsers = yield (updatedRoom === null || updatedRoom === void 0 ? void 0 : updatedRoom.usersInfo.filter((user) => !user.isUserLeave));
-            console.log(remainingUsers === null || remainingUsers === void 0 ? void 0 : remainingUsers.length, "LENGTH REMAIN Users12", updatedRoom);
             yield server_1.io
                 .to(roomId.length !== 6 ? roomFirstId : roomId)
                 .emit("getNextUserCall", {

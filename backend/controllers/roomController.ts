@@ -18,8 +18,6 @@ const getNextActiveUser = (users: any) => {
 
 const updateUserActivity = (users: any, nextActiveUser: any) => {
   return users.map((user: any) => {
-    console.log(user, "next", nextActiveUser);
-
     return {
       ...user,
       isActive: user.userName === nextActiveUser.userName,
@@ -67,7 +65,6 @@ export const handleNextUserCall = async (
     const roomData = await RoomModel.findOne({
       roomId: roomFirstId ? roomFirstId : roomId,
     });
-    console.log("roomddata found 20002 ", roomData);
 
     if (!roomData) {
       return { message: "Room data not found. ERROR" };
@@ -95,7 +92,6 @@ export const handleNextUserCall = async (
 
     // Обновляем активность и счётчики
     const updatedUsers = await updateUserActivity(users, nextActiveUser);
-    console.log(updatedUsers);
 
     await RoomModel.findOneAndUpdate(
       { roomId: roomFirstId ? roomFirstId : roomId },
@@ -120,7 +116,6 @@ export const handleNextUserCall = async (
       const remainingUsers = await updatedRoom?.usersInfo.filter(
         (user: any) => !user.isUserLeave
       );
-      console.log(remainingUsers?.length, "LENGTH REMAIN Users12", updatedRoom);
 
       await io
         .to(roomId.length !== 6 ? roomFirstId : roomId)
