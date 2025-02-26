@@ -529,7 +529,11 @@ export const roundTimer = async (req: Request, res: Response) => {
             return;
           }
           console.log(`в раунд сет таймоуте что юзер не угадал `);
-
+          await RoomModel.findOneAndUpdate(
+            { roomId },
+            { $set: { isRoundOver: true } }, // Увеличение счетчика пропущенных раундов
+            { new: true }
+          );
           await io.to(roomId).emit("getSkipRound");
           await io.to(roomId).emit("getNextUserCall", data);
           await usersNotGuessedTimer({ body: roomId }, null);
@@ -659,7 +663,9 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
-
+    if (roomData?.isRoundOver) {
+      return res.status(400).json({ message: "Round already over" });
+    }
     const userGuessedList = (await roomData.usersGuessedList) || [];
     const roomUsers = (await roomData.usersInfo) || [];
 

@@ -418,6 +418,8 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                         return;
                     }
                     console.log(`в раунд сет таймоуте что юзер не угадал `);
+                    yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { $set: { isRoundOver: true } }, // Увеличение счетчика пропущенных раундов
+                    { new: true });
                     yield server_1.io.to(roomId).emit("getSkipRound");
                     yield server_1.io.to(roomId).emit("getNextUserCall", data);
                     yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
@@ -519,6 +521,9 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const roomData = yield roomModel_1.RoomModel.findOne({ roomId });
         if (!roomData) {
             return res.status(404).json({ message: "Room not found" });
+        }
+        if (roomData === null || roomData === void 0 ? void 0 : roomData.isRoundOver) {
+            return res.status(400).json({ message: "Round already over" });
         }
         const userGuessedList = (yield roomData.usersGuessedList) || [];
         const roomUsers = (yield roomData.usersInfo) || [];
