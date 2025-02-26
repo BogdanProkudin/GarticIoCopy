@@ -438,6 +438,10 @@ exports.roundTimer = roundTimer;
 const usersNotGuessedTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const roomId = yield req.body;
+        if (timers[roomId].isAllGuessed) {
+            console.log("в юзеры не угадали но все угадали ");
+            return;
+        }
         yield (0, exports.handleNextUserCall)(null, null, roomId);
         yield server_1.io.to(roomId).emit("getAnswer", {
             message: `the answer was`,
@@ -517,9 +521,6 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!roomData) {
             return res.status(404).json({ message: "Room not found" });
         }
-        yield clearTimeout(timers[roomId].roundTimer);
-        timers[roomId].roundTimer = undefined;
-        timers[roomId].isAllGuessed = true;
         const userGuessedList = (yield roomData.usersGuessedList) || [];
         const roomUsers = (yield roomData.usersInfo) || [];
         // Добавляем пользователя в список угаданных
@@ -567,6 +568,9 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
         if (guessedUsersLength ===
             roomUsers.filter((user) => !user.isUserLeave).length - 1) {
+            yield clearTimeout(timers[roomId].roundTimer);
+            delete timers[roomId].roundTimer;
+            timers[roomId].isAllGuessed = true;
             yield server_1.io.to(roomId).emit("getAnswer", {
                 userName: "",
                 message: "Everybody guessed correctly!",

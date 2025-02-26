@@ -556,6 +556,11 @@ export const usersNotGuessedTimer = async (
 ) => {
   try {
     const roomId = await req.body;
+    if (timers[roomId].isAllGuessed) {
+      console.log("в юзеры не угадали но все угадали ");
+
+      return;
+    }
     await handleNextUserCall(null, null, roomId);
     await io.to(roomId).emit("getAnswer", {
       message: `the answer was`,
@@ -659,9 +664,6 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
-    await clearTimeout(timers[roomId].roundTimer);
-    timers[roomId].roundTimer = undefined;
-    timers[roomId].isAllGuessed = true;
 
     const userGuessedList = (await roomData.usersGuessedList) || [];
     const roomUsers = (await roomData.usersInfo) || [];
@@ -722,6 +724,9 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
       guessedUsersLength ===
       roomUsers.filter((user) => !user.isUserLeave).length - 1
     ) {
+      await clearTimeout(timers[roomId].roundTimer);
+      delete timers[roomId].roundTimer;
+      timers[roomId].isAllGuessed = true;
       await io.to(roomId).emit("getAnswer", {
         userName: "",
         message: "Everybody guessed correctly!",
