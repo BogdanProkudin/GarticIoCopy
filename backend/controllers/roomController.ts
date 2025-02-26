@@ -659,6 +659,9 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
+    await clearTimeout(timers[roomId].roundTimer);
+    timers[roomId].roundTimer = undefined;
+    timers[roomId].isAllGuessed = true;
 
     const userGuessedList = (await roomData.usersGuessedList) || [];
     const roomUsers = (await roomData.usersInfo) || [];

@@ -517,6 +517,9 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!roomData) {
             return res.status(404).json({ message: "Room not found" });
         }
+        yield clearTimeout(timers[roomId].roundTimer);
+        timers[roomId].roundTimer = undefined;
+        timers[roomId].isAllGuessed = true;
         const userGuessedList = (yield roomData.usersGuessedList) || [];
         const roomUsers = (yield roomData.usersInfo) || [];
         // Добавляем пользователя в список угаданных
