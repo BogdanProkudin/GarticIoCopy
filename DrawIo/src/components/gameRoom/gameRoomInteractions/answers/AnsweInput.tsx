@@ -8,6 +8,7 @@ interface AnswerInputProps {
   isShowGuessedAnimation: boolean;
   setAnswersInputText: Dispatch<SetStateAction<string>>;
   answersInputText: string;
+  inputDisabled: boolean;
   handleKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   isUserGuessed: boolean;
 }
@@ -17,6 +18,7 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
   answersInputText,
   handleKeyPress,
   isUserGuessed,
+  inputDisabled,
 }) => {
   const defaultLottieOptions = {
     loop: true,
@@ -75,7 +77,8 @@ const AnswerInput: React.FC<AnswerInputProps> = ({
           !isGameStarted ||
           choosedWord.length < 1 ||
           isUserGuessed ||
-          isUserNotGuessedStarted
+          isUserNotGuessedStarted ||
+          inputDisabled
         }
         value={answersInputText}
         className={styles.game_room_answers_input}

@@ -56,7 +56,7 @@ export const useNotifyOneUserGuessed = ({
       );
       if (guessedUser && guessedUser.userName === userNameStorage) {
         handleUserGuessedAddedPointAnimation(guessedUser.userName, dispatch);
-        socket.emit("oneUserGuessed", { roomId });
+        await socket.emit("oneUserGuessed", { roomId });
 
         const url = "https://bottg-63go.onrender.com/userGuessed";
 

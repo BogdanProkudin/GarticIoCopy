@@ -28,6 +28,7 @@ const GameRoomAnswers = () => {
 
   const [isShowGuessedAnimation, setIsShowGuessedAnimation] = useState(false);
   const [answersInputText, setAnswersInputText] = useState("");
+  const [inputDisabled, setInputDisabled] = useState(false);
   const usersGuessed = useAppSelector((state) => state.drawThema.usersGuessed);
   const userNameStorage = localStorage.getItem("userName") || "";
   const roomId = useGetRoomIdFromUrl();
@@ -40,7 +41,20 @@ const GameRoomAnswers = () => {
   );
 
   const roomUsers = useAppSelector((state) => state.drawThema.roomUsers);
+  useEffect(() => {
+    const handleRoundEnd = () => {
+      setInputDisabled(true);
 
+      setTimeout(() => {
+        setInputDisabled(false);
+      }, 3000);
+    };
+    socket.on("getRoundEnd", handleRoundEnd);
+
+    return () => {
+      socket.off("getRoundEnd", handleRoundEnd);
+    };
+  }, []);
   const handleAnswerReceived = useHandleAnswerReceived({
     userNameStorage,
     usersGuessed,
@@ -91,6 +105,7 @@ const GameRoomAnswers = () => {
       <footer className={styles.game_room_answers_input_container}>
         <AnswerInput
           isUserGuessed={isOneUserGuessed}
+          inputDisabled={inputDisabled}
           isShowGuessedAnimation={isShowGuessedAnimation}
           setAnswersInputText={setAnswersInputText}
           answersInputText={answersInputText}
