@@ -528,7 +528,7 @@ export const roundTimer = async (req: Request, res: Response) => {
         try {
           const updatedRoomData = await RoomModel.findOne({ roomId });
 
-          if (!updatedRoomData?.isRoundOver && timers[roomId].isAllGuessed) {
+          if (!updatedRoomData?.isRoundOver && !timers[roomId].isAllGuessed) {
             console.log(`Timer ended for room game ${roomId}, no one guessed.`);
 
             await io.to(roomId).emit("getSkipRound");

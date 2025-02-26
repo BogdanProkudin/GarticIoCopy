@@ -413,7 +413,7 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
                 try {
                     const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
-                    if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver) && timers[roomId].isAllGuessed) {
+                    if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver) && !timers[roomId].isAllGuessed) {
                         console.log(`Timer ended for room game ${roomId}, no one guessed.`);
                         yield server_1.io.to(roomId).emit("getSkipRound");
                         yield server_1.io.to(roomId).emit("getNextUserCall", data);
