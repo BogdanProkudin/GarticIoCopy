@@ -395,6 +395,7 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!roomData) {
             return res.status(404).json({ message: "Room not found" });
         }
+        timers[roomId].isAllGuessed = false;
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { skippedRoundsinLine: 0, isRoundOver: false }, // Сброс состояния
         { new: true });
         // Очистка предыдущего таймера, если он был запущен
@@ -412,7 +413,7 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
                 try {
                     const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
-                    if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver)) {
+                    if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver) && timers[roomId].isAllGuessed) {
                         console.log(`Timer ended for room game ${roomId}, no one guessed.`);
                         yield server_1.io.to(roomId).emit("getSkipRound");
                         yield server_1.io.to(roomId).emit("getNextUserCall", data);
@@ -473,6 +474,7 @@ const allUsersGuessed = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
         yield clearTimeout(timers[roomId].roundTimer);
         timers[roomId].roundTimer = undefined;
+        timers[roomId].isAllGuessed = true;
         yield roomModel_1.RoomModel.findOneAndUpdate({
             roomId: roomId,
         }, { isRoundOver: true }, { new: true });
@@ -493,6 +495,7 @@ const allUsersGuessed = (req, res) => __awaiter(void 0, void 0, void 0, function
                 resolve(true);
             }), 4800);
         });
+        timers[roomId].isAllGuessed = false;
         yield (0, exports.intervalTimer)({ body: { roomId } }, null); // Запуск нового таймера раунда
         return res.status(200).json({ timeOutOver });
     }

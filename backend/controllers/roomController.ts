@@ -503,7 +503,7 @@ export const roundTimer = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
-
+    timers[roomId].isAllGuessed = false;
     await RoomModel.findOneAndUpdate(
       { roomId },
       { skippedRoundsinLine: 0, isRoundOver: false }, // Сброс состояния
@@ -528,8 +528,9 @@ export const roundTimer = async (req: Request, res: Response) => {
         try {
           const updatedRoomData = await RoomModel.findOne({ roomId });
 
-          if (!updatedRoomData?.isRoundOver) {
+          if (!updatedRoomData?.isRoundOver && timers[roomId].isAllGuessed) {
             console.log(`Timer ended for room game ${roomId}, no one guessed.`);
+
             await io.to(roomId).emit("getSkipRound");
             await io.to(roomId).emit("getNextUserCall", data);
             await usersNotGuessedTimer({ body: roomId }, null);
@@ -601,6 +602,7 @@ export const allUsersGuessed = async (req: Request, res: Response) => {
     }
     await clearTimeout(timers[roomId].roundTimer);
     timers[roomId].roundTimer = undefined;
+    timers[roomId].isAllGuessed = true;
     await RoomModel.findOneAndUpdate(
       {
         roomId: roomId,
@@ -633,6 +635,7 @@ export const allUsersGuessed = async (req: Request, res: Response) => {
         resolve(true);
       }, 4800);
     });
+    timers[roomId].isAllGuessed = false;
     await intervalTimer({ body: { roomId } }, null); // Запуск нового таймера раунда
 
     return res.status(200).json({ timeOutOver });
