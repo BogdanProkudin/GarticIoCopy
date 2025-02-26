@@ -435,8 +435,12 @@ const usersNotGuessedTimer = (req, res) => __awaiter(void 0, void 0, void 0, fun
     try {
         const roomId = yield req.body;
         const roomData = yield roomModel_1.RoomModel.findOne({ roomId });
-        if (roomData === null || roomData === void 0 ? void 0 : roomData.isRoundOver) {
-            console.log("в юзеры не угадали но все угадали ");
+        if (timers[roomId].roundTimer) {
+            console.log("в юзеры не угадали таймер есть ", timers[roomId].roundTimer);
+            return;
+        }
+        if (!timers[roomId].roundTimer) {
+            console.log("в юзеры не угадали таймера нет ", timers[roomId]);
             return;
         }
         yield (0, exports.handleNextUserCall)(null, null, roomId);

@@ -178,7 +178,7 @@ exports.io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, functi
         exports.io.to(roomId).emit("getOneUserGuessed", { roomUsers });
     });
     socket.on("allUsersGuessed2", (_a) => __awaiter(void 0, [_a], void 0, function* ({ roomId, roomUsers }) {
-        console.log("в 2 все юзеры угадали");
+        console.log("в 2 все юзеры угадали WW");
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isRoundOver: true }, { new: true });
         exports.io.to(roomId).emit("getAllUsersGuessed2", { roomUsers });
     }));

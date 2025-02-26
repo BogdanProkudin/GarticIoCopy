@@ -146,7 +146,7 @@ io.on("connection", async (socket) => {
     io.to(roomId).emit("getOneUserGuessed", { roomUsers });
   });
   socket.on("allUsersGuessed2", async ({ roomId, roomUsers }) => {
-    console.log("в 2 все юзеры угадали");
+    console.log("в 2 все юзеры угадали WW");
     await RoomModel.findOneAndUpdate(
       { roomId },
       { isRoundOver: true },

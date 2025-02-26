@@ -552,8 +552,13 @@ export const usersNotGuessedTimer = async (
   try {
     const roomId = await req.body;
     const roomData = await RoomModel.findOne({ roomId });
-    if (roomData?.isRoundOver) {
-      console.log("в юзеры не угадали но все угадали ");
+    if (timers[roomId].roundTimer) {
+      console.log("в юзеры не угадали таймер есть ", timers[roomId].roundTimer);
+
+      return;
+    }
+    if (!timers[roomId].roundTimer) {
+      console.log("в юзеры не угадали таймера нет ", timers[roomId]);
 
       return;
     }
