@@ -523,6 +523,11 @@ export const roundTimer = async (req: Request, res: Response) => {
     timers[roomId] = {
       roundTimer: setTimeout(async () => {
         try {
+          await RoomModel.findOneAndUpdate(
+            { roomId },
+            { $set: { isUserNotGuessed: true } },
+            { new: true }
+          );
           setTimeout(() => {}, 2000);
           const updatedRoomData = await RoomModel.findOne({ roomId });
           console.log(
@@ -535,14 +540,15 @@ export const roundTimer = async (req: Request, res: Response) => {
             return;
           }
           console.log(`в раунд сет таймоуте что юзер не угадал2 `);
-          await RoomModel.findOneAndUpdate(
-            { roomId },
-            { $set: { isRoundOver: true } }, // Увеличение счетчика пропущенных раундов
-            { new: true }
-          );
+
           await io.to(roomId).emit("getSkipRound");
           await io.to(roomId).emit("getNextUserCall", data);
           await usersNotGuessedTimer({ body: roomId }, null);
+          await RoomModel.findOneAndUpdate(
+            { roomId },
+            { $set: { isUserNotGuessed: false } }, // Увеличение счетчика пропущенных раундов
+            { new: true }
+          );
         } catch (error) {
           console.error(`Error in round timer for room ${roomId}:`, error);
         }
@@ -659,11 +665,12 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
-    await RoomModel.findOneAndUpdate(
-      { roomId },
-      { isRoundOver: true },
-      { new: true }
-    );
+    if (roomData.isUserNotGuessed) {
+      console.log("юзер угадал но время вышло");
+
+      return res.status(400).json({ message: "User not guessed" });
+    }
+
     console.log("User guessed correctly:", roomData.isRoundOver);
 
     if (roomData?.isRoundOver) {

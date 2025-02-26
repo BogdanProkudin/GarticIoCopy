@@ -412,6 +412,7 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
                 var _a;
                 try {
+                    yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { $set: { isUserNotGuessed: true } }, { new: true });
                     setTimeout(() => { }, 2000);
                     const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
                     console.log("в раунд сет таймоуте что юзер не угадал1 ", updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver);
@@ -420,11 +421,11 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                         return;
                     }
                     console.log(`в раунд сет таймоуте что юзер не угадал2 `);
-                    yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { $set: { isRoundOver: true } }, // Увеличение счетчика пропущенных раундов
-                    { new: true });
                     yield server_1.io.to(roomId).emit("getSkipRound");
                     yield server_1.io.to(roomId).emit("getNextUserCall", data);
                     yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
+                    yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { $set: { isUserNotGuessed: false } }, // Увеличение счетчика пропущенных раундов
+                    { new: true });
                 }
                 catch (error) {
                     console.error(`Error in round timer for room ${roomId}:`, error);
@@ -518,7 +519,10 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!roomData) {
             return res.status(404).json({ message: "Room not found" });
         }
-        yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isRoundOver: true }, { new: true });
+        if (roomData.isUserNotGuessed) {
+            console.log("юзер угадал но время вышло");
+            return res.status(400).json({ message: "User not guessed" });
+        }
         console.log("User guessed correctly:", roomData.isRoundOver);
         if (roomData === null || roomData === void 0 ? void 0 : roomData.isRoundOver) {
             return res.status(400).json({ message: "Round already over" });

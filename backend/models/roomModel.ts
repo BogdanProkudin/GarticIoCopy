@@ -19,6 +19,7 @@ const roomSchema = new mongoose.Schema({
   isWordChosen: { type: Boolean },
   usersGuessedList: [{ type: Object }],
   isRoundOver: { type: Boolean },
+  isUserNotGuessed: { type: Boolean },
   usersLeftCount: { type: Number, require: true },
 });
 

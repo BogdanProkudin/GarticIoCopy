@@ -23,6 +23,7 @@ const roomSchema = new mongoose_1.default.Schema({
     isWordChosen: { type: Boolean },
     usersGuessedList: [{ type: Object }],
     isRoundOver: { type: Boolean },
+    isUserNotGuessed: { type: Boolean },
     usersLeftCount: { type: Number, require: true },
 });
 exports.RoomModel = mongoose_1.default.model("Room", roomSchema);
