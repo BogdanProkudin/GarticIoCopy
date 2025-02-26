@@ -523,6 +523,12 @@ export const roundTimer = async (req: Request, res: Response) => {
     timers[roomId] = {
       roundTimer: setTimeout(async () => {
         try {
+          await RoomModel.findOneAndUpdate(
+            { roomId },
+            { isRoundOver: true },
+            { new: true }
+          );
+          setTimeout(() => {}, 2000);
           const updatedRoomData = await RoomModel.findOne({ roomId });
           if (updatedRoomData?.isRoundOver || timers[roomId]?.isAllGuessed) {
             console.log(`Round already over for room ${roomId}.`);
@@ -663,6 +669,11 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
+    await RoomModel.findOneAndUpdate(
+      { roomId },
+      { isRoundOver: true },
+      { new: true }
+    );
     console.log("User guessed correctly:", roomData.isRoundOver);
 
     if (roomData?.isRoundOver) {

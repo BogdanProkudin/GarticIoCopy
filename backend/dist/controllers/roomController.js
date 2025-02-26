@@ -412,6 +412,8 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
                 var _a;
                 try {
+                    yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isRoundOver: true }, { new: true });
+                    setTimeout(() => { }, 2000);
                     const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
                     if ((updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver) || ((_a = timers[roomId]) === null || _a === void 0 ? void 0 : _a.isAllGuessed)) {
                         console.log(`Round already over for room ${roomId}.`);
@@ -522,6 +524,7 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!roomData) {
             return res.status(404).json({ message: "Room not found" });
         }
+        yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isRoundOver: true }, { new: true });
         console.log("User guessed correctly:", roomData.isRoundOver);
         if (roomData === null || roomData === void 0 ? void 0 : roomData.isRoundOver) {
             return res.status(400).json({ message: "Round already over" });
