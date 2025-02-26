@@ -404,17 +404,23 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             activeUser: roomData.activeUser,
             users: roomData.usersInfo,
         };
+        timers[roomId] = {
+            fakeTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () { }), 45000),
+        };
         // Запуск нового таймера
         timers[roomId] = {
             roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+                var _a;
                 try {
                     const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
-                    if (!(updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver)) {
-                        console.log(`Timer ended for room game ${roomId}, no one guessed.`);
-                        yield server_1.io.to(roomId).emit("getSkipRound");
-                        yield server_1.io.to(roomId).emit("getNextUserCall", data);
-                        yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
+                    if ((updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver) || ((_a = timers[roomId]) === null || _a === void 0 ? void 0 : _a.isAllGuessed)) {
+                        console.log(`Round already over for room ${roomId}.`);
+                        return;
                     }
+                    console.log(`в раунд сет таймоуте что юзер не угадал `);
+                    yield server_1.io.to(roomId).emit("getSkipRound");
+                    yield server_1.io.to(roomId).emit("getNextUserCall", data);
+                    yield (0, exports.usersNotGuessedTimer)({ body: roomId }, null);
                 }
                 catch (error) {
                     console.error(`Error in round timer for room ${roomId}:`, error);
@@ -435,14 +441,6 @@ const usersNotGuessedTimer = (req, res) => __awaiter(void 0, void 0, void 0, fun
     try {
         const roomId = yield req.body;
         const roomData = yield roomModel_1.RoomModel.findOne({ roomId });
-        if (timers[roomId].roundTimer) {
-            console.log("в юзеры не угадали таймер есть ", timers[roomId].roundTimer);
-            return;
-        }
-        if (!timers[roomId].roundTimer) {
-            console.log("в юзеры не угадали таймера нет ", timers[roomId]);
-            return;
-        }
         yield (0, exports.handleNextUserCall)(null, null, roomId);
         yield server_1.io.to(roomId).emit("getAnswer", {
             message: `the answer was`,
@@ -569,8 +567,11 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
         if (guessedUsersLength ===
             roomUsers.filter((user) => !user.isUserLeave).length - 1) {
-            yield clearTimeout(timers[roomId].roundTimer);
             delete timers[roomId].roundTimer;
+            yield roomModel_1.RoomModel.findOneAndUpdate({
+                roomId: roomId,
+            }, { isRoundOver: true }, { new: true });
+            yield clearTimeout(timers[roomId].roundTimer);
             timers[roomId].isAllGuessed = true;
             yield server_1.io.to(roomId).emit("getAnswer", {
                 userName: "",

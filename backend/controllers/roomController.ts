@@ -516,20 +516,23 @@ export const roundTimer = async (req: Request, res: Response) => {
       activeUser: roomData.activeUser,
       users: roomData.usersInfo,
     };
-
+    timers[roomId] = {
+      fakeTimer: setTimeout(async () => {}, 45000),
+    };
     // Запуск нового таймера
     timers[roomId] = {
       roundTimer: setTimeout(async () => {
         try {
           const updatedRoomData = await RoomModel.findOne({ roomId });
-
-          if (!updatedRoomData?.isRoundOver) {
-            console.log(`Timer ended for room game ${roomId}, no one guessed.`);
-
-            await io.to(roomId).emit("getSkipRound");
-            await io.to(roomId).emit("getNextUserCall", data);
-            await usersNotGuessedTimer({ body: roomId }, null);
+          if (updatedRoomData?.isRoundOver || timers[roomId]?.isAllGuessed) {
+            console.log(`Round already over for room ${roomId}.`);
+            return;
           }
+          console.log(`в раунд сет таймоуте что юзер не угадал `);
+
+          await io.to(roomId).emit("getSkipRound");
+          await io.to(roomId).emit("getNextUserCall", data);
+          await usersNotGuessedTimer({ body: roomId }, null);
         } catch (error) {
           console.error(`Error in round timer for room ${roomId}:`, error);
         }
@@ -552,16 +555,7 @@ export const usersNotGuessedTimer = async (
   try {
     const roomId = await req.body;
     const roomData = await RoomModel.findOne({ roomId });
-    if (timers[roomId].roundTimer) {
-      console.log("в юзеры не угадали таймер есть ", timers[roomId].roundTimer);
 
-      return;
-    }
-    if (!timers[roomId].roundTimer) {
-      console.log("в юзеры не угадали таймера нет ", timers[roomId]);
-
-      return;
-    }
     await handleNextUserCall(null, null, roomId);
     await io.to(roomId).emit("getAnswer", {
       message: `the answer was`,
@@ -725,8 +719,16 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
       guessedUsersLength ===
       roomUsers.filter((user) => !user.isUserLeave).length - 1
     ) {
-      await clearTimeout(timers[roomId].roundTimer);
       delete timers[roomId].roundTimer;
+      await RoomModel.findOneAndUpdate(
+        {
+          roomId: roomId,
+        },
+        { isRoundOver: true },
+        { new: true }
+      );
+      await clearTimeout(timers[roomId].roundTimer);
+
       timers[roomId].isAllGuessed = true;
       await io.to(roomId).emit("getAnswer", {
         userName: "",
