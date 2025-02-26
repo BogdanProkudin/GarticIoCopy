@@ -458,7 +458,7 @@ export const intervalTimer = async (
         console.log(`Слово выбрано для комнаты ${roomId}, таймер остановлен.`);
         return;
       }
-      if (timers[roomId].isFinish === true) {
+      if (timers[roomId] && timers[roomId].isFinish === true) {
         console.log(
           `Timer ended for room ${roomId}, time to choose word end .`
         );
@@ -523,7 +523,7 @@ export const roundTimer = async (req: Request, res: Response) => {
         try {
           const updatedRoomData = await RoomModel.findOne({ roomId });
 
-          if (!updatedRoomData?.isRoundOver && !timers[roomId].isAllGuessed) {
+          if (!updatedRoomData?.isRoundOver) {
             console.log(`Timer ended for room game ${roomId}, no one guessed.`);
 
             await io.to(roomId).emit("getSkipRound");
@@ -551,7 +551,8 @@ export const usersNotGuessedTimer = async (
 ) => {
   try {
     const roomId = await req.body;
-    if (timers[roomId].isAllGuessed) {
+    const roomData = await RoomModel.findOne({ roomId });
+    if (roomData?.isRoundOver) {
       console.log("в юзеры не угадали но все угадали ");
 
       return;

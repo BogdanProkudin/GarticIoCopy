@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import * as RoomController from "./controllers/roomController";
 import cors from "cors";
 import { Server } from "socket.io";
+import { RoomModel } from "./models/roomModel";
 const app = express();
 const server = http.createServer(app);
 export const io = new Server(server, {
@@ -144,8 +145,13 @@ io.on("connection", async (socket) => {
   socket.on("oneUserGuessed", ({ roomId, roomUsers }) => {
     io.to(roomId).emit("getOneUserGuessed", { roomUsers });
   });
-  socket.on("allUsersGuessed2", ({ roomId, roomUsers }) => {
+  socket.on("allUsersGuessed2", async ({ roomId, roomUsers }) => {
     console.log("в 2 все юзеры угадали");
+    await RoomModel.findOneAndUpdate(
+      { roomId },
+      { isRoundOver: true },
+      { new: true }
+    );
 
     io.to(roomId).emit("getAllUsersGuessed2", { roomUsers });
   });

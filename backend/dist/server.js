@@ -52,6 +52,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const RoomController = __importStar(require("./controllers/roomController"));
 const cors_1 = __importDefault(require("cors"));
 const socket_io_1 = require("socket.io");
+const roomModel_1 = require("./models/roomModel");
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
 exports.io = new socket_io_1.Server(server, {
@@ -176,10 +177,11 @@ exports.io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, functi
     socket.on("oneUserGuessed", ({ roomId, roomUsers }) => {
         exports.io.to(roomId).emit("getOneUserGuessed", { roomUsers });
     });
-    socket.on("allUsersGuessed2", ({ roomId, roomUsers }) => {
+    socket.on("allUsersGuessed2", (_a) => __awaiter(void 0, [_a], void 0, function* ({ roomId, roomUsers }) {
         console.log("в 2 все юзеры угадали");
+        yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isRoundOver: true }, { new: true });
         exports.io.to(roomId).emit("getAllUsersGuessed2", { roomUsers });
-    });
+    }));
 }));
 // Функция для запуска таймера  интервала
 app.post("/createRoom", RoomController.createRoom);
