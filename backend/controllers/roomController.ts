@@ -516,9 +516,12 @@ export const roundTimer = async (req: Request, res: Response) => {
       activeUser: roomData.activeUser,
       users: roomData.usersInfo,
     };
-    timers[roomId] = {
-      fakeTimer: setTimeout(async () => {}, 45000),
-    };
+    setTimeout(() => {
+      console.log("запуск блока инпута");
+
+      io.to(roomId).emit("getRoundEnd");
+    }, 48000);
+
     // Запуск нового таймера
     timers[roomId] = {
       roundTimer: setTimeout(async () => {

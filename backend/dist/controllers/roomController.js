@@ -404,9 +404,10 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             activeUser: roomData.activeUser,
             users: roomData.usersInfo,
         };
-        timers[roomId] = {
-            fakeTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () { }), 45000),
-        };
+        setTimeout(() => {
+            console.log("запуск блока инпута");
+            server_1.io.to(roomId).emit("getRoundEnd");
+        }, 48000);
         // Запуск нового таймера
         timers[roomId] = {
             roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
