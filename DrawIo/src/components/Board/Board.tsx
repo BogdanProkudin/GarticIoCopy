@@ -63,7 +63,7 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
   const navigate = useNavigate();
   useEffect(() => {
     // Обработчик события getUserLeft
-    const handleUserLeft = (data: {
+    const handleUserLeft = async (data: {
       roomId: string;
       userName: string;
       roomUsers: any[];
@@ -73,8 +73,8 @@ const Board: React.FC<BoardProps> = ({ contextRef, drawRef }) => {
       if (data.userName === userId) {
         navigate("/", { replace: true });
       }
-      dispatch(setRoomUsers(data.roomUsers));
-      dispatch(
+      await dispatch(setRoomUsers(data.roomUsers));
+      await dispatch(
         setHost({ hostName: data.host.userName, hostId: data.host.userId })
       );
     };
