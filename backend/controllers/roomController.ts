@@ -663,6 +663,8 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
+    console.log("User guessed correctly:", roomData.isRoundOver);
+
     if (roomData?.isRoundOver) {
       return res.status(400).json({ message: "Round already over" });
     }

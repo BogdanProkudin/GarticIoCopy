@@ -522,6 +522,7 @@ const userGuessedCorrect = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!roomData) {
             return res.status(404).json({ message: "Room not found" });
         }
+        console.log("User guessed correctly:", roomData.isRoundOver);
         if (roomData === null || roomData === void 0 ? void 0 : roomData.isRoundOver) {
             return res.status(400).json({ message: "Round already over" });
         }
