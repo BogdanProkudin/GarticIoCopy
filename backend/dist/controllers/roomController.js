@@ -412,14 +412,14 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
                 var _a;
                 try {
-                    yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isRoundOver: true }, { new: true });
                     setTimeout(() => { }, 2000);
                     const updatedRoomData = yield roomModel_1.RoomModel.findOne({ roomId });
+                    console.log("в раунд сет таймоуте что юзер не угадал1 ", updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver);
                     if ((updatedRoomData === null || updatedRoomData === void 0 ? void 0 : updatedRoomData.isRoundOver) || ((_a = timers[roomId]) === null || _a === void 0 ? void 0 : _a.isAllGuessed)) {
                         console.log(`Round already over for room ${roomId}.`);
                         return;
                     }
-                    console.log(`в раунд сет таймоуте что юзер не угадал `);
+                    console.log(`в раунд сет таймоуте что юзер не угадал2 `);
                     yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { $set: { isRoundOver: true } }, // Увеличение счетчика пропущенных раундов
                     { new: true });
                     yield server_1.io.to(roomId).emit("getSkipRound");

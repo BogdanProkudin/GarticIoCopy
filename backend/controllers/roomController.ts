@@ -523,18 +523,18 @@ export const roundTimer = async (req: Request, res: Response) => {
     timers[roomId] = {
       roundTimer: setTimeout(async () => {
         try {
-          await RoomModel.findOneAndUpdate(
-            { roomId },
-            { isRoundOver: true },
-            { new: true }
-          );
           setTimeout(() => {}, 2000);
           const updatedRoomData = await RoomModel.findOne({ roomId });
+          console.log(
+            "в раунд сет таймоуте что юзер не угадал1 ",
+            updatedRoomData?.isRoundOver
+          );
+
           if (updatedRoomData?.isRoundOver || timers[roomId]?.isAllGuessed) {
             console.log(`Round already over for room ${roomId}.`);
             return;
           }
-          console.log(`в раунд сет таймоуте что юзер не угадал `);
+          console.log(`в раунд сет таймоуте что юзер не угадал2 `);
           await RoomModel.findOneAndUpdate(
             { roomId },
             { $set: { isRoundOver: true } }, // Увеличение счетчика пропущенных раундов
