@@ -147,11 +147,13 @@ io.on("connection", async (socket) => {
   });
   socket.on("allUsersGuessed2", async ({ roomId, roomUsers }) => {
     console.log("в 2 все юзеры угадали WW");
-    await RoomModel.findOneAndUpdate(
-      { roomId },
-      { isRoundOver: true },
-      { new: true }
-    );
+    const roomData = await RoomModel.findOne({ roomId });
+    if (!roomData) {
+      return;
+    }
+    if (roomData.isRoundOver) {
+      return;
+    }
 
     io.to(roomId).emit("getAllUsersGuessed2", { roomUsers });
   });

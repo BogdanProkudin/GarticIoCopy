@@ -479,12 +479,6 @@ const allUsersGuessed = (req, res) => __awaiter(void 0, void 0, void 0, function
         if (!roomId) {
             return res.status(400).json({ message: "roomId is required" });
         }
-        yield clearTimeout(timers[roomId].roundTimer);
-        timers[roomId].roundTimer = undefined;
-        timers[roomId].isAllGuessed = true;
-        yield roomModel_1.RoomModel.findOneAndUpdate({
-            roomId: roomId,
-        }, { isRoundOver: true }, { new: true });
         if (timers[roomId].response) {
             timers[roomId].response
                 .status(200)

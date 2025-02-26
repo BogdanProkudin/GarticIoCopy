@@ -179,7 +179,13 @@ exports.io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, functi
     });
     socket.on("allUsersGuessed2", (_a) => __awaiter(void 0, [_a], void 0, function* ({ roomId, roomUsers }) {
         console.log("в 2 все юзеры угадали WW");
-        yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { isRoundOver: true }, { new: true });
+        const roomData = yield roomModel_1.RoomModel.findOne({ roomId });
+        if (!roomData) {
+            return;
+        }
+        if (roomData.isRoundOver) {
+            return;
+        }
         exports.io.to(roomId).emit("getAllUsersGuessed2", { roomUsers });
     }));
 }));

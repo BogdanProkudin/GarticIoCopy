@@ -610,16 +610,6 @@ export const allUsersGuessed = async (req: Request, res: Response) => {
     if (!roomId) {
       return res.status(400).json({ message: "roomId is required" });
     }
-    await clearTimeout(timers[roomId].roundTimer);
-    timers[roomId].roundTimer = undefined;
-    timers[roomId].isAllGuessed = true;
-    await RoomModel.findOneAndUpdate(
-      {
-        roomId: roomId,
-      },
-      { isRoundOver: true },
-      { new: true }
-    );
 
     if (timers[roomId].response) {
       timers[roomId].response
