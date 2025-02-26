@@ -537,7 +537,7 @@ export const roundTimer = async (req: Request, res: Response) => {
         } catch (error) {
           console.error(`Error in round timer for room ${roomId}:`, error);
         }
-      }, 50000), // Заменил 50 сек на 7, как ты просил
+      }, 50000),
     };
 
     return res.status(200).json({ message: "Timer started" });
@@ -596,11 +596,11 @@ export const allUsersGuessed = async (req: Request, res: Response) => {
   try {
     const roomId = req.body.roomId;
 
-    const roomData = await RoomModel.findOne({ roomId });
     if (!roomId) {
       return res.status(400).json({ message: "roomId is required" });
     }
-
+    await clearTimeout(timers[roomId].roundTimer);
+    timers[roomId].roundTimer = undefined;
     await RoomModel.findOneAndUpdate(
       {
         roomId: roomId,

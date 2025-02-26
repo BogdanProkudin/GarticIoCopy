@@ -422,7 +422,7 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 catch (error) {
                     console.error(`Error in round timer for room ${roomId}:`, error);
                 }
-            }), 50000), // Заменил 50 сек на 7, как ты просил
+            }), 50000),
         };
         return res.status(200).json({ message: "Timer started" });
     }
@@ -468,10 +468,11 @@ exports.usersNotGuessedTimer = usersNotGuessedTimer;
 const allUsersGuessed = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const roomId = req.body.roomId;
-        const roomData = yield roomModel_1.RoomModel.findOne({ roomId });
         if (!roomId) {
             return res.status(400).json({ message: "roomId is required" });
         }
+        yield clearTimeout(timers[roomId].roundTimer);
+        timers[roomId].roundTimer = undefined;
         yield roomModel_1.RoomModel.findOneAndUpdate({
             roomId: roomId,
         }, { isRoundOver: true }, { new: true });
