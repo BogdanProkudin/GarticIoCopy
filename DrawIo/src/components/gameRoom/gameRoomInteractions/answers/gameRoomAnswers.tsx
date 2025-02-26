@@ -44,8 +44,9 @@ const GameRoomAnswers = () => {
   useEffect(() => {
     const handleRoundEnd = () => {
       setInputDisabled(true);
-
+      setAnswersInputText("Round is about to end...");
       setTimeout(() => {
+        setAnswersInputText("");
         setInputDisabled(false);
       }, 3000);
     };
