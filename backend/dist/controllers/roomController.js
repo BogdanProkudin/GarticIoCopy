@@ -381,7 +381,7 @@ const intervalTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.intervalTimer = intervalTimer;
 const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     try {
         const roomId = yield req.body.roomId;
         if (!roomId) {
@@ -399,15 +399,21 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             clearTimeout(timers[roomId].roundTimer);
             delete timers[roomId].roundTimer;
         }
+        if ((_b = timers[roomId]) === null || _b === void 0 ? void 0 : _b.inputDisabledTimer) {
+            clearTimeout(timers[roomId].inputDisabledTimer);
+            delete timers[roomId].inputDisabledTimer;
+        }
         const data = {
             roomId,
             activeUser: roomData.activeUser,
             users: roomData.usersInfo,
         };
-        setTimeout(() => {
-            console.log("запуск блока инпута");
-            server_1.io.to(roomId).emit("getRoundEnd");
-        }, 48000);
+        timers[roomId] = {
+            inputDisabledTimer: setTimeout(() => {
+                console.log("запуск блока инпута");
+                server_1.io.to(roomId).emit("getRoundEnd");
+            }, 48000),
+        };
         // Запуск нового таймера
         timers[roomId] = {
             roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
@@ -481,6 +487,8 @@ const allUsersGuessed = (req, res) => __awaiter(void 0, void 0, void 0, function
         if (!roomId) {
             return res.status(400).json({ message: "roomId is required" });
         }
+        clearTimeout(timers[roomId].inputDisabledTimer);
+        delete timers[roomId].inputDisabledTimer;
         if (timers[roomId].response) {
             timers[roomId].response
                 .status(200)

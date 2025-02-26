@@ -510,18 +510,22 @@ export const roundTimer = async (req: Request, res: Response) => {
       clearTimeout(timers[roomId].roundTimer);
       delete timers[roomId].roundTimer;
     }
+    if (timers[roomId]?.inputDisabledTimer) {
+      clearTimeout(timers[roomId].inputDisabledTimer);
+      delete timers[roomId].inputDisabledTimer;
+    }
 
     const data = {
       roomId,
       activeUser: roomData.activeUser,
       users: roomData.usersInfo,
     };
-    setTimeout(() => {
-      console.log("запуск блока инпута");
-
-      io.to(roomId).emit("getRoundEnd");
-    }, 48000);
-
+    timers[roomId] = {
+      inputDisabledTimer: setTimeout(() => {
+        console.log("запуск блока инпута");
+        io.to(roomId).emit("getRoundEnd");
+      }, 48000),
+    };
     // Запуск нового таймера
     timers[roomId] = {
       roundTimer: setTimeout(async () => {
@@ -619,7 +623,8 @@ export const allUsersGuessed = async (req: Request, res: Response) => {
     if (!roomId) {
       return res.status(400).json({ message: "roomId is required" });
     }
-
+    clearTimeout(timers[roomId].inputDisabledTimer);
+    delete timers[roomId].inputDisabledTimer;
     if (timers[roomId].response) {
       timers[roomId].response
         .status(200)
@@ -668,6 +673,7 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
+
     if (roomData.isUserNotGuessed) {
       console.log("юзер угадал но время вышло");
 
@@ -679,6 +685,7 @@ export const userGuessedCorrect = async (req: Request, res: Response) => {
     if (roomData?.isRoundOver) {
       return res.status(400).json({ message: "Round already over" });
     }
+
     const userGuessedList = (await roomData.usersGuessedList) || [];
     const roomUsers = (await roomData.usersInfo) || [];
 
