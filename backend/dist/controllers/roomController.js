@@ -395,6 +395,10 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         timers[roomId].isAllGuessed = false;
         yield roomModel_1.RoomModel.findOneAndUpdate({ roomId }, { skippedRoundsinLine: 0, isRoundOver: false }, // Сброс состояния
         { new: true });
+        if (timers[roomId].wordTimer) {
+            clearTimeout(timers[roomId].wordTimer);
+            delete timers[roomId].wordTimer;
+        }
         // Очистка предыдущего таймера, если он был запущен
         if ((_a = timers[roomId]) === null || _a === void 0 ? void 0 : _a.roundTimer) {
             clearTimeout(timers[roomId].roundTimer);
@@ -409,14 +413,12 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             activeUser: roomData.activeUser,
             users: roomData.usersInfo,
         };
+        // Запуск нового таймера
         timers[roomId] = {
             inputDisabledTimer: setTimeout(() => {
                 console.log("запуск блока инпута");
                 server_1.io.to(roomId).emit("getRoundEnd");
             }, 48000),
-        };
-        // Запуск нового таймера
-        timers[roomId] = {
             roundTimer: setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
                 var _a;
                 try {

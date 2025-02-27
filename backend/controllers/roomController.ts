@@ -505,7 +505,10 @@ export const roundTimer = async (req: Request, res: Response) => {
       { skippedRoundsinLine: 0, isRoundOver: false }, // Сброс состояния
       { new: true }
     );
-
+    if (timers[roomId].wordTimer) {
+      clearTimeout(timers[roomId].wordTimer);
+      delete timers[roomId].wordTimer;
+    }
     // Очистка предыдущего таймера, если он был запущен
     if (timers[roomId]?.roundTimer) {
       clearTimeout(timers[roomId].roundTimer);
@@ -521,14 +524,13 @@ export const roundTimer = async (req: Request, res: Response) => {
       activeUser: roomData.activeUser,
       users: roomData.usersInfo,
     };
+
+    // Запуск нового таймера
     timers[roomId] = {
       inputDisabledTimer: setTimeout(() => {
         console.log("запуск блока инпута");
         io.to(roomId).emit("getRoundEnd");
       }, 48000),
-    };
-    // Запуск нового таймера
-    timers[roomId] = {
       roundTimer: setTimeout(async () => {
         try {
           await RoomModel.findOneAndUpdate(
