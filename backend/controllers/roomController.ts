@@ -493,6 +493,7 @@ export const roundTimer = async (req: Request, res: Response) => {
     if (!roomId) {
       return res.status(400).json({ message: "roomId is required" });
     }
+    console.log("начало раунд таймера");
 
     const roomData = await RoomModel.findOne({ roomId });
     if (!roomData) {

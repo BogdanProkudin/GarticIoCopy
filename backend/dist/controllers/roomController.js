@@ -387,6 +387,7 @@ const roundTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!roomId) {
             return res.status(400).json({ message: "roomId is required" });
         }
+        console.log("начало раунд таймера");
         const roomData = yield roomModel_1.RoomModel.findOne({ roomId });
         if (!roomData) {
             return res.status(404).json({ message: "Room not found" });
